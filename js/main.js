@@ -1,143 +1,151 @@
-// ============= POINT D'ENTRÉE PRINCIPAL =============
+// ============= SCRIPT PRINCIPAL - HEROES ARENA =============
 
-import { AppState } from './config.js';
-import { autoLoadHeroes, saveHeroes } from './data.js';
-import { createDemoHeroes } from './demo-data.js';
+// Imports des modules
 import { 
     showSection, 
-    showAvatarCategory, 
+    showAvatarCategory,
     initAvatars, 
     selectAvatar,
     updateStats, 
     randomStats, 
-    updateClassInfo,
+    updateClassInfo, 
     createHeroFromForm,
     displayHeroes,
     filterHeroes,
     deleteHeroHandler,
     clearAllHeroesHandler,
-    loadHeroesHandler,
+    saveHeroesToFileHandler,
+    loadHeroesFromFileHandler,
+    loadHeroesFromLocalStorageHandler,
+    exportStatsHandler,
     updateFighters,
     updateFighterSelectors,
     resetArena,
-    addLogEntry
+    addLogEntry,
+    clearCombatLog
 } from './ui.js';
-import { startFight } from './combat.js';
 
-// ============= API GLOBALE =============
-// Exposer les fonctions nécessaires pour les événements HTML
-window.HeroesArena = {
-    // Navigation
+import { autoLoadHeroes } from './data.js';
+import { startCombat } from './combat.js';
+
+// Fonction d'initialisation
+function initializeHeroesArena() {
+    console.log('🎮 Initialisation de Heroes Arena...');
+    
+    try {
+        // Chargement automatique des héros depuis localStorage
+        autoLoadHeroes();
+        console.log('✅ Héros chargés automatiquement');
+        
+        // Initialisation de l'interface
+        showSection('create');
+        console.log('✅ Section création affichée');
+        
+        initAvatars();
+        console.log('✅ Avatars initialisés');
+        
+        updateStats();
+        console.log('✅ Statistiques initialisées');
+        
+        updateClassInfo();
+        console.log('✅ Informations de classe initialisées');
+        
+        // Initialiser les sélecteurs de l'arène
+        updateFighterSelectors();
+        console.log('✅ Sélecteurs de l\'arène initialisés');
+        
+        console.log('🚀 Heroes Arena initialisé avec succès !');
+        console.log('📁 Gestion des fichiers JSON activée');
+        console.log('🎯 Interface simplifiée des héros activée');
+        
+    } catch (error) {
+        console.error('❌ Erreur lors de l\'initialisation:', error);
+        
+        // Fallback en cas d'erreur
+        try {
+            showSection('create');
+            updateStats();
+            console.log('⚠️ Initialisation de secours réussie');
+        } catch (fallbackError) {
+            console.error('💥 Échec de l\'initialisation de secours:', fallbackError);
+        }
+    }
+}
+
+// Créer l'objet global HeroesArena
+const HeroesArena = {
+    // Navigation et sections
     showSection,
     
     // Gestion des avatars
     showAvatarCategory,
+    initAvatars,
     selectAvatar,
     
-    // Gestion des stats
+    // Création de héros
     updateStats,
     randomStats,
     updateClassInfo,
+    createHeroFromForm,
+    
+    // Affichage des héros
+    displayHeroes,
+    filterHeroes,
     
     // Gestion des héros
-    createHero: createHeroFromForm,
-    filterHeroes,
     deleteHeroHandler,
     clearAllHeroesHandler,
-    saveHeroes,
-    loadHeroesHandler,
+    
+    // Gestion des fichiers JSON
+    saveHeroesToFileHandler,
+    loadHeroesFromFileHandler,
+    loadHeroesFromLocalStorageHandler,
+    exportStatsHandler,
     
     // Arène
     updateFighters,
-    startFight,
+    updateFighterSelectors,
     resetArena,
+    startCombat,
     
-    // État de l'application
-    getAppState: () => AppState,
+    // Logs de combat
+    addLogEntry,
+    clearCombatLog,
     
-    // Fonctions de démo
-    createDemoHeroes: () => {
-        AppState.heroes = []; // Vider d'abord la liste
-        createDemoHeroes();
-        displayHeroes();
-        updateFighterSelectors();
-        showSection('heroes');
-    }
+    // Fonction d'initialisation
+    init: initializeHeroesArena
 };
 
-// ============= INITIALISATION =============
-function initializeApp() {
-    console.log('🚀 Initialisation de Heroes Arena...');
-    
-    // Initialiser les avatars
-    initAvatars();
-    
-    // Mettre à jour les stats par défaut
-    updateStats();
-    
-    // Mettre à jour les informations de classe
-    updateClassInfo();
-    
-    // Charger les héros sauvegardés
-    autoLoadHeroes();
-    
-    // Si aucun héros n'est chargé, proposer la création de héros de démo
-    if (AppState.heroes.length === 0) {
-        console.log('💡 Aucun héros trouvé. Création d\'héros de démonstration...');
-        createDemoHeroes();
-    }
-    
-    // Générer des stats aléatoires par défaut
-    randomStats();
-    
-    // Mettre à jour les sélecteurs de l'arène
-    updateFighterSelectors();
-    
-    // Ajouter un message de bienvenue dans l'arène
-    addLogEntry('Bienvenue dans l\'arène ! Sélectionnez deux héros pour commencer le combat...', 'info');
-    
-    console.log('✅ Heroes Arena initialisé avec succès !');
-    console.log(`📊 ${AppState.heroes.length} héros chargés`);
-    
-    // Afficher des conseils dans la console
-    showConsoleHelp();
+// Rendre HeroesArena accessible globalement
+window.HeroesArena = HeroesArena;
+
+// Auto-initialisation quand le DOM est prêt
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeHeroesArena);
+} else {
+    // Le DOM est déjà chargé
+    initializeHeroesArena();
 }
 
-// ============= AIDE CONSOLE =============
-function showConsoleHelp() {
-    console.log('\n🎮 === HEROES ARENA - AIDE CONSOLE ===');
-    console.log('💡 Commandes disponibles :');
-    console.log('  • HeroesArena.createDemoHeroes() - Créer des héros de démo');
-    console.log('  • HeroesArena.getAppState() - Voir l\'état de l\'application');
-    console.log('  • DemoData.resetToDemo() - Reset avec données de démo');
-    console.log('🎯 Raccourcis clavier :');
-    console.log('  • Ctrl+1/2/3 - Navigation rapide');
-    console.log('  • Échap - Fermer les modales');
-    console.log('═══════════════════════════════════\n');
-}
-
-// ============= GESTION DES ERREURS =============
+// Gestion des erreurs globales
 window.addEventListener('error', (event) => {
-    console.error('❌ Erreur dans Heroes Arena:', event.error);
+    console.error('💥 Erreur globale:', event.error);
 });
 
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('❌ Promesse rejetée dans Heroes Arena:', event.reason);
-});
+// Message de bienvenue dans la console
+console.log(`
+🎮 HEROES ARENA - Ultimate Edition
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ Fonctionnalités disponibles:
+   📁 Sauvegarde vers fichiers JSON
+   📂 Chargement depuis fichiers JSON
+   💾 Backup automatique localStorage
+   📊 Export de statistiques
+   🎯 Interface simplifiée des héros
+   📱 Modal de détails interactive
+   ⚔️  Système de combat avancé
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`);
 
-// ============= DÉMARRAGE DE L'APPLICATION =============
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('📄 DOM chargé, initialisation de l\'application...');
-    initializeApp();
-});
-
-// Pour compatibilité avec l'ancien code
-window.onload = function() {
-    // Si DOMContentLoaded n'a pas été déclenché
-    if (document.readyState === 'loading') {
-        initializeApp();
-    }
-};
-
-// ============= EXPORTS POUR TESTS =============
-export { initializeApp };
+// Export pour compatibilité ES6
+export default HeroesArena;
