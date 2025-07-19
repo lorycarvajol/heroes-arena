@@ -1,15 +1,18 @@
-// netlify.toml - Configuration Netlify
+# Configuration Netlify pour Heroes Arena
 [build]
   publish = "."
   functions = "netlify/functions"
 
+# Redirections pour les API
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
+# Configuration pour le développement local
 [dev]
   functions = "netlify/functions"
+  port = 8888
 
 # Headers de sécurité
 [[headers]]
@@ -20,7 +23,7 @@
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Configuration pour les fichiers statiques
+# Cache pour les fichiers statiques
 [[headers]]
   for = "/js/*"
   [headers.values]
@@ -31,208 +34,13 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000"
 
----
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
 
-// package.json - Dépendances pour Netlify
-{
-  "name": "heroes-arena",
-  "version": "1.0.0",
-  "description": "Jeu de combat de héros avec système de sauvegarde cloud",
-  "main": "index.html",
-  "scripts": {
-    "dev": "netlify dev",
-    "build": "npm run build:js && npm run optimize:images",
-    "build:js": "echo 'JavaScript modules déjà prêts'",
-    "optimize:images": "echo 'Images optimisées'",
-    "test": "node js/test-simple.js"
-  },
-  "dependencies": {
-    "@netlify/functions": "^2.0.0",
-    "faunadb": "^4.8.0"
-  },
-  "devDependencies": {
-    "netlify-cli": "^17.0.0"
-  },
-  "keywords": ["game", "heroes", "combat", "javascript"],
-  "author": "Heroes Arena Team",
-  "license": "MIT"
-}
-
----
-
-// netlify/functions/auth.js - Système d'authentification basique
-import { Context } from "@netlify/functions";
-
-const users = new Map(); // En production, utiliser une vraie base de données
-
-export default async (req, context) => {
-  const { httpMethod, body, headers } = req;
-  
-  // CORS headers
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
-  };
-
-  if (httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers: corsHeaders,
-      body: ''
-    };
-  }
-
-  try {
-    const data = JSON.parse(body || '{}');
-    
-    switch (httpMethod) {
-      case 'POST':
-        if (req.url.includes('/register')) {
-          return await register(data, corsHeaders);
-        } else if (req.url.includes('/login')) {
-          return await login(data, corsHeaders);
-        }
-        break;
-        
-      case 'GET':
-        if (req.url.includes('/verify')) {
-          return await verifyToken(headers.authorization, corsHeaders);
-        }
-        break;
-    }
-    
-    return {
-      statusCode: 404,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: 'Endpoint not found' })
-    };
-    
-  } catch (error) {
-    return {
-      statusCode: 500,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: error.message })
-    };
-  }
-};
-
-async function register(data, headers) {
-  const { username, password, email } = data;
-  
-  if (!username || !password) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: 'Username et password requis' })
-    };
-  }
-  
-  if (users.has(username)) {
-    return {
-      statusCode: 409,
-      headers,
-      body: JSON.stringify({ error: 'Utilisateur déjà existant' })
-    };
-  }
-  
-  // Hash du mot de passe (simplifié pour la démo)
-  const hashedPassword = btoa(password); // En production: utiliser bcrypt
-  
-  const user = {
-    id: Date.now().toString(),
-    username,
-    password: hashedPassword,
-    email: email || '',
-    createdAt: new Date().toISOString(),
-    heroes: []
-  };
-  
-  users.set(username, user);
-  
-  const token = generateToken(user);
-  
-  return {
-    statusCode: 201,
-    headers,
-    body: JSON.stringify({
-      success: true,
-      user: { id: user.id, username: user.username, email: user.email },
-      token
-    })
-  };
-}
-
-async function login(data, headers) {
-  const { username, password } = data;
-  
-  const user = users.get(username);
-  if (!user || user.password !== btoa(password)) {
-    return {
-      statusCode: 401,
-      headers,
-      body: JSON.stringify({ error: 'Identifiants invalides' })
-    };
-  }
-  
-  const token = generateToken(user);
-  
-  return {
-    statusCode: 200,
-    headers,
-    body: JSON.stringify({
-      success: true,
-      user: { id: user.id, username: user.username, email: user.email },
-      token
-    })
-  };
-}
-
-async function verifyToken(authHeader, headers) {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return {
-      statusCode: 401,
-      headers,
-      body: JSON.stringify({ error: 'Token manquant' })
-    };
-  }
-  
-  const token = authHeader.substring(7);
-  const payload = verifyJWT(token);
-  
-  if (!payload) {
-    return {
-      statusCode: 401,
-      headers,
-      body: JSON.stringify({ error: 'Token invalide' })
-    };
-  }
-  
-  return {
-    statusCode: 200,
-    headers,
-    body: JSON.stringify({ valid: true, user: payload })
-  };
-}
-
-function generateToken(user) {
-  // JWT simplifié (en production: utiliser une vraie lib JWT)
-  const payload = {
-    id: user.id,
-    username: user.username,
-    exp: Date.now() + (24 * 60 * 60 * 1000) // 24h
-  };
-  return btoa(JSON.stringify(payload));
-}
-
-function verifyJWT(token) {
-  try {
-    const payload = JSON.parse(atob(token));
-    if (payload.exp < Date.now()) {
-      return null; // Token expiré
-    }
-    return payload;
-  } catch {
-    return null;
-  }
-}
+# Configuration pour les modules ES6
+[[headers]]
+  for = "/js/*.js"
+  [headers.values]
+    Content-Type = "application/javascript"

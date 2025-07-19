@@ -1,47 +1,31 @@
 {
-  "name": "heroes-arena-modular",
-  "version": "2.0.0",
-  "description": "Jeu web de création et combat de héros avec architecture modulaire",
+  "name": "heroes-arena",
+  "version": "1.0.0",
+  "description": "Jeu de combat de héros avec système de sauvegarde cloud",
   "main": "index.html",
   "type": "module",
   "scripts": {
-    "start": "python -m http.server 8000",
-    "serve": "npx http-server -p 8000 -c-1",
-    "dev": "npx live-server --port=8000",
-    "build": "echo 'Pas de build nécessaire - application statique'",
-    "test": "echo 'Tests à implémenter'",
-    "lint": "echo 'Linting à implémenter'"
+    "dev": "netlify dev",
+    "build": "echo 'Build complete - static files ready'",
+    "test": "node js/test-simple.js",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "@netlify/functions": "^2.4.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
   },
   "keywords": [
     "game",
-    "javascript",
-    "modular",
     "heroes",
-    "arena",
     "combat",
-    "rpg",
-    "web-game"
+    "javascript",
+    "netlify"
   ],
   "author": "Heroes Arena Team",
   "license": "MIT",
-  "devDependencies": {
-    "live-server": "^1.2.2",
-    "http-server": "^14.1.1"
-  },
   "engines": {
-    "node": ">=14.0.0"
-  },
-  "browserslist": [
-    "last 2 versions",
-    "> 1%",
-    "not dead"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/votre-username/heroes-arena-modular.git"
-  },
-  "bugs": {
-    "url": "https://github.com/votre-username/heroes-arena-modular/issues"
-  },
-  "homepage": "https://github.com/votre-username/heroes-arena-modular#readme"
+    "node": ">=18.0.0"
+  }
 }
