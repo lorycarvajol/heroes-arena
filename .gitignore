@@ -1,0 +1,172 @@
+# ============= HEROES ARENA - GITIGNORE =============
+
+# ============= FICHIERS DE SAUVEGARDE GÉNÉRÉS =============
+# Fichiers JSON de sauvegarde générés par l'application
+heroes_*.json
+*_stats_*.json
+backup_*.json
+export_*.json
+
+# ============= FICHIERS SYSTÈME =============
+# Fichiers système Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Fichiers système macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Fichiers système Linux
+*~
+.directory
+.Trash-*
+
+# ============= ÉDITEURS ET IDEs =============
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Atom
+.atom/
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Vim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ============= NODE.JS (si utilisé pour outils de build) =============
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ============= SERVEURS DE DÉVELOPPEMENT =============
+# Live Server
+.vscode/settings.json
+
+# Python simple server
+__pycache__/
+*.py[cod]
+
+# ============= FICHIERS DE BUILD ET DISTRIBUTION =============
+dist/
+build/
+.cache/
+.parcel-cache/
+
+# ============= LOGS =============
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============= FICHIERS TEMPORAIRES =============
+*.tmp
+*.temp
+.temp/
+temp/
+
+# ============= ENVIRONNEMENT ET CONFIGURATION =============
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ============= ARCHIVES ET BACKUPS =============
+*.zip
+*.rar
+*.7z
+*.tar.gz
+*.bak
+*.backup
+*.old
+
+# ============= ASSETS VOLUMINEUX (optionnel) =============
+# Décommentez si vous avez beaucoup d'images lourdes
+# images/*.png
+# images/*.jpg
+# images/*.jpeg
+# images/*.gif
+# images/*.bmp
+# images/*.tiff
+# images/*.webp
+
+# Mais gardez un dossier d'exemple
+!images/example/
+!images/README.md
+
+# ============= DOCUMENTATION GÉNÉRÉE =============
+docs/generated/
+coverage/
+
+# ============= DÉPENDANCES BROWSER =============
+# Si vous utilisez des CDN locaux
+libs/
+vendor/
+third-party/
+
+# ============= TESTS =============
+.nyc_output/
+coverage/
+*.lcov
+
+# ============= DIVERS =============
+# Fichiers de verrouillage
+*.lock
+
+# Fichiers de cache
+.cache/
+*.cache
+
+# Fichiers de debug
+debug.log
+error.log
+
+# ============= EXCLUSIONS SPÉCIFIQUES AU PROJET =============
+# Ajoutez ici vos exclusions spécifiques au projet Heroes Arena
+
+# Exemples :
+# config/local.js
+# data/test-heroes.json
+# screenshots/
+# demos/

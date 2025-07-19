@@ -2,21 +2,48 @@
 
 import { AppState, avatarCatalog, classInfo, powerInfo } from './config.js';
 import { createHero } from './classes.js';
-import { saveHeroes, loadHeroes, clearAllHeroes, deleteHero } from './data.js';
+import { 
+    saveHeroesToFile, 
+    loadHeroesFromFile, 
+    saveHeroesToLocalStorage,
+    loadHeroesFromLocalStorage, 
+    clearAllHeroes, 
+    deleteHero,
+    exportHeroesStats 
+} from './data.js';
 
 // Navigation entre sections
 export function showSection(sectionName) {
+    // Vérifier que la section existe
+    const targetSection = document.getElementById(sectionName);
+    if (!targetSection) {
+        console.error(`❌ Section "${sectionName}" introuvable !`);
+        console.log('📋 Sections disponibles:', Array.from(document.querySelectorAll('.section')).map(s => s.id));
+        return;
+    }
+
+    // Désactiver toutes les sections
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
     });
     
+    // Désactiver tous les onglets
     document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    document.getElementById(sectionName).classList.add('active');
-    document.querySelector(`[onclick="showSection('${sectionName}')"]`).classList.add('active');
+    // Activer la section cible
+    targetSection.classList.add('active');
     
+    // Activer l'onglet correspondant
+    const targetTab = document.querySelector(`[onclick*="showSection('${sectionName}')"]`);
+    if (targetTab) {
+        targetTab.classList.add('active');
+    } else {
+        console.warn(`⚠️ Onglet pour "${sectionName}" introuvable`);
+    }
+    
+    // Actions spécifiques selon la section
     if (sectionName === 'heroes') {
         displayHeroes();
     } else if (sectionName === 'arena') {
@@ -185,12 +212,12 @@ export function createHeroFromForm() {
     }
     
     alert(`${hero.nom} le ${hero.classe} a été créé avec succès !`);
-    saveHeroes();
+    saveHeroesToLocalStorage(); // Sauvegarde automatique locale
     updateFighterSelectors();
     return true;
 }
 
-// Affichage des héros
+// Affichage des héros (version simplifiée)
 export function displayHeroes() {
     const container = document.getElementById('heroesList');
     
@@ -219,65 +246,138 @@ export function displayHeroes() {
         const index = AppState.heroes.indexOf(hero);
         const badgeClass = hero.getBadgeClass();
         const badgeText = hero.getBadgeText();
-        const power = powerInfo[hero.classe] || { name: 'Aucun', description: 'Pas de pouvoir spécial' };
         
         return `
-            <div class="hero-card ${badgeClass}">
-                ${badgeText ? `<div class="badge-indicator badge-${hero.getBadge()}">${badgeText}</div>` : ''}
+            <div class="hero-card-simple ${badgeClass}" onclick="showHeroDetails(${index})">
                 <div class="delete-btn" onclick="window.HeroesArena.deleteHeroHandler(${index}); event.stopPropagation();">×</div>
-                <div class="hero-header">
-                    <div class="hero-avatar">
-                        <img src="images/${hero.avatar}" alt="${hero.nom}" 
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                             onload="this.nextElementSibling.style.display='none';">
-                        <div class="avatar-placeholder" style="display: none;">
-                            ${hero.nom.substring(0, 2).toUpperCase()}
-                        </div>
-                    </div>
-                    <div class="hero-info">
-                        <h3>${hero.nom}</h3>
-                        <div class="hero-class">${hero.classe}</div>
+                ${badgeText ? `<div class="badge-indicator badge-${hero.getBadge()}">${badgeText}</div>` : ''}
+                <div class="hero-avatar-simple">
+                    <img src="images/${hero.avatar}" alt="${hero.nom}" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                         onload="this.nextElementSibling.style.display='none';">
+                    <div class="avatar-placeholder" style="display: none;">
+                        ${hero.nom.substring(0, 2).toUpperCase()}
                     </div>
                 </div>
-                <div class="hero-record">
-                    <div class="record-item">
-                        <div class="record-label">Victoires</div>
-                        <div class="record-value record-wins">${hero.victoires}</div>
-                    </div>
-                    <div class="record-item">
-                        <div class="record-label">Défaites</div>
-                        <div class="record-value record-losses">${hero.defaites}</div>
-                    </div>
-                    <div class="record-item">
-                        <div class="record-label">Ratio</div>
-                        <div class="record-value record-ratio">${hero.getRatio()}%</div>
-                    </div>
-                </div>
-                <div class="power-indicator">
-                    <div class="power-name">${power.name}</div>
-                    <div class="power-description">${power.description}</div>
-                </div>
-                <div class="hero-stats">
-                    <div class="hero-stat">
-                        <span class="hero-stat-label">Force</span>
-                        <span class="hero-stat-value">${hero.force}</span>
-                    </div>
-                    <div class="hero-stat">
-                        <span class="hero-stat-label">Agilité</span>
-                        <span class="hero-stat-value">${hero.agility}</span>
-                    </div>
-                    <div class="hero-stat">
-                        <span class="hero-stat-label">Magie</span>
-                        <span class="hero-stat-value">${hero.magic}</span>
-                    </div>
-                    <div class="hero-stat">
-                        <span class="hero-stat-label">Défense</span>
-                        <span class="hero-stat-value">${hero.defense}</span>
-                    </div>
+                <div class="hero-info-simple">
+                    <h3 class="hero-name-simple">${hero.nom}</h3>
+                    <div class="hero-class-simple">${hero.classe}</div>
+                    <div class="hero-rank-simple">Rang: ${badgeText || 'Novice'}</div>
                 </div>
             </div>
         `;
     }).join('');
+}
+
+// Afficher les détails d'un héros dans une modal
+export function showHeroDetails(index) {
+    const hero = AppState.heroes[index];
+    if (!hero) return;
+    
+    const power = powerInfo[hero.classe] || { name: 'Aucun', description: 'Pas de pouvoir spécial' };
+    
+    const modalHTML = `
+        <div class="hero-modal-overlay" onclick="closeHeroDetails()">
+            <div class="hero-modal" onclick="event.stopPropagation()">
+                <div class="hero-modal-header">
+                    <h2>${hero.nom}</h2>
+                    <button class="close-modal" onclick="closeHeroDetails()">×</button>
+                </div>
+                <div class="hero-modal-content">
+                    <div class="hero-modal-left">
+                        <div class="hero-avatar-large">
+                            <img src="images/${hero.avatar}" alt="${hero.nom}" 
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 onload="this.nextElementSibling.style.display='none';">
+                            <div class="avatar-placeholder" style="display: none; font-size: 48px;">
+                                ${hero.nom.substring(0, 2).toUpperCase()}
+                            </div>
+                        </div>
+                        <div class="hero-class-badge">${hero.classe}</div>
+                        ${hero.getBadgeText() ? `<div class="hero-rank-badge">${hero.getBadgeText()}</div>` : ''}
+                    </div>
+                    <div class="hero-modal-right">
+                        <div class="hero-record-detailed">
+                            <h3>Statistiques de Combat</h3>
+                            <div class="record-grid">
+                                <div class="record-item-detailed">
+                                    <div class="record-label">Victoires</div>
+                                    <div class="record-value record-wins">${hero.victoires}</div>
+                                </div>
+                                <div class="record-item-detailed">
+                                    <div class="record-label">Défaites</div>
+                                    <div class="record-value record-losses">${hero.defaites}</div>
+                                </div>
+                                <div class="record-item-detailed">
+                                    <div class="record-label">Ratio de Victoire</div>
+                                    <div class="record-value record-ratio">${hero.getRatio()}%</div>
+                                </div>
+                                <div class="record-item-detailed">
+                                    <div class="record-label">Combats Totaux</div>
+                                    <div class="record-value">${hero.victoires + hero.defaites}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="hero-power-detailed">
+                            <h3>Pouvoir Spécial</h3>
+                            <div class="power-card">
+                                <div class="power-name">${power.name}</div>
+                                <div class="power-description">${power.description}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="hero-stats-detailed">
+                            <h3>Caractéristiques</h3>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-label">Force</div>
+                                    <div class="stat-bar">
+                                        <div class="stat-fill force" style="width: ${(hero.force / 40) * 100}%"></div>
+                                        <span class="stat-value">${hero.force}</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">Agilité</div>
+                                    <div class="stat-bar">
+                                        <div class="stat-fill agility" style="width: ${(hero.agility / 40) * 100}%"></div>
+                                        <span class="stat-value">${hero.agility}</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">Magie</div>
+                                    <div class="stat-bar">
+                                        <div class="stat-fill magic" style="width: ${(hero.magic / 40) * 100}%"></div>
+                                        <span class="stat-value">${hero.magic}</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">Défense</div>
+                                    <div class="stat-bar">
+                                        <div class="stat-fill defense" style="width: ${(hero.defense / 40) * 100}%"></div>
+                                        <span class="stat-value">${hero.defense}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="total-stats">
+                                Total: ${hero.force + hero.agility + hero.magic + hero.defense}/100 points
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// Fermer la modal des détails
+export function closeHeroDetails() {
+    const modal = document.querySelector('.hero-modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
 }
 
 export function filterHeroes(filter) {
@@ -296,6 +396,7 @@ export function deleteHeroHandler(index) {
     if (deleteHero(index)) {
         displayHeroes();
         updateFighterSelectors();
+        saveHeroesToLocalStorage(); // Sauvegarde automatique locale
     }
 }
 
@@ -304,13 +405,62 @@ export function clearAllHeroesHandler() {
         displayHeroes();
         resetArena();
         updateFighterSelectors();
+        saveHeroesToLocalStorage(); // Sauvegarde automatique locale
     }
 }
 
-export function loadHeroesHandler() {
-    if (loadHeroes()) {
+// Nouveaux handlers pour la gestion des fichiers JSON
+export async function saveHeroesToFileHandler() {
+    await saveHeroesToFile();
+}
+
+export async function loadHeroesFromFileHandler() {
+    const success = await loadHeroesFromFile();
+    if (success) {
         displayHeroes();
         updateFighterSelectors();
+    }
+}
+
+export async function exportStatsHandler() {
+    await exportHeroesStats();
+}
+
+// Handler pour charger depuis localStorage (pour le bouton de chargement local)
+export function loadHeroesFromLocalStorageHandler() {
+    const saved = localStorage.getItem('heroes');
+    if (!saved) {
+        alert('Aucune sauvegarde locale trouvée !');
+        return;
+    }
+    
+    try {
+        const heroesData = JSON.parse(saved);
+        AppState.heroes = [];
+        
+        heroesData.forEach(data => {
+            const hero = createHero(
+                data.nom,
+                data.avatar,
+                data.classe,
+                data.force,
+                data.agility,
+                data.magic,
+                data.defense
+            );
+            
+            if (hero) {
+                hero.victoires = data.victoires || 0;
+                hero.defaites = data.defaites || 0;
+                AppState.heroes.push(hero);
+            }
+        });
+        
+        alert(`${AppState.heroes.length} héros chargés depuis la sauvegarde locale !`);
+        displayHeroes();
+        updateFighterSelectors();
+    } catch (error) {
+        alert('Erreur lors du chargement local : ' + error.message);
     }
 }
 
@@ -435,3 +585,7 @@ export function addLogEntry(message, type = 'info') {
 export function clearCombatLog() {
     document.getElementById('combatLog').innerHTML = '';
 }
+
+// Rendre les fonctions accessibles globalement
+window.showHeroDetails = showHeroDetails;
+window.closeHeroDetails = closeHeroDetails;
