@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heroes Arena - Version Simple</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <div class="header">
+            <h1>HEROES ARENA</h1>
+            <p>Version de test - modules ES6</p>
+            <div id="moduleStatus">Chargement des modules...</div>
+        </div>
+        
+        <div class="content">
+            <div id="testResults"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        const statusDiv = document.getElementById('moduleStatus');
+        const resultsDiv = document.getElementById('testResults');
+        
+        function updateStatus(message, type = 'info') {
+            const color = type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6';
+            statusDiv.style.color = color;
+            statusDiv.textContent = message;
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.style.color = color;
+            resultDiv.style.margin = '5px 0';
+            resultDiv.textContent = message;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        try {
+            updateStatus('Chargement des modules...');
+            
+            // Import principal
+            const main = await import('./js/main.js');
+            updateStatus('✅ Modules chargés avec succès!', 'success');
+            
+            // Test de l'objet global
+            setTimeout(() => {
+                if (window.HeroesArena) {
+                    updateStatus('✅ HeroesArena est disponible!', 'success');
+                    updateStatus(`Fonctions disponibles: ${Object.keys(window.HeroesArena).length}`, 'info');
+                } else {
+                    updateStatus('❌ HeroesArena non défini', 'error');
+                }
+            }, 100);
+            
+        } catch (error) {
+            updateStatus(`❌ Erreur: ${error.message}`, 'error');
+            console.error('Erreur complète:', error);
+        }
+    </script>
+</body>
+</html>

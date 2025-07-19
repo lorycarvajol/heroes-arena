@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Modules - Heroes Arena</title>
+</head>
+<body>
+    <h1>Debug Modules Heroes Arena</h1>
+    <div id="output"></div>
+
+    <script type="module">
+        const output = document.getElementById('output');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            div.textContent = `[${type.toUpperCase()}] ${message}`;
+            output.appendChild(div);
+            console.log(message);
+        }
+
+        // Test des imports un par un
+        try {
+            log('Testing config.js import...');
+            const { AppState, avatarCatalog, classInfo, powerInfo } = await import('./js/config.js');
+            log('✓ config.js imported successfully', 'success');
+            log(`AppState: ${typeof AppState}, powerInfo: ${typeof powerInfo}`);
+        } catch (error) {
+            log(`✗ config.js failed: ${error.message}`, 'error');
+        }
+
+        try {
+            log('Testing classes.js import...');
+            const classes = await import('./js/classes.js');
+            log('✓ classes.js imported successfully', 'success');
+        } catch (error) {
+            log(`✗ classes.js failed: ${error.message}`, 'error');
+        }
+
+        try {
+            log('Testing utils.js import...');
+            const utils = await import('./js/utils.js');
+            log('✓ utils.js imported successfully', 'success');
+        } catch (error) {
+            log(`✗ utils.js failed: ${error.message}`, 'error');
+        }
+
+        try {
+            log('Testing data.js import...');
+            const data = await import('./js/data.js');
+            log('✓ data.js imported successfully', 'success');
+        } catch (error) {
+            log(`✗ data.js failed: ${error.message}`, 'error');
+        }
+
+        try {
+            log('Testing ui.js import...');
+            const ui = await import('./js/ui.js');
+            log('✓ ui.js imported successfully', 'success');
+        } catch (error) {
+            log(`✗ ui.js failed: ${error.message}`, 'error');
+        }
+
+        try {
+            log('Testing main.js import...');
+            const main = await import('./js/main.js');
+            log('✓ main.js imported successfully', 'success');
+            log('✓ All modules loaded successfully!', 'success');
+        } catch (error) {
+            log(`✗ main.js failed: ${error.message}`, 'error');
+        }
+    </script>
+</body>
+</html>

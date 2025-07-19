@@ -21,7 +21,7 @@ import {
     resetArena,
     addLogEntry
 } from './ui.js';
-import { startFight } from './combat.js';
+import { startCombat } from './combat.js';
 
 // ============= API GLOBALE ÉTENDUE =============
 window.HeroesArena = {
@@ -58,7 +58,7 @@ window.HeroesArena = {
     
     // Arène
     updateFighters,
-    startFight,
+    startCombat,
     resetArena,
     
     // État de l'application

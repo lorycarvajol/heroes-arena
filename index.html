@@ -265,7 +265,15 @@
     </div>
 
     <!-- Scripts modularisés -->
-    <script type="module" src="js/main.js"></script>
+    <script type="module">
+        // Cache-busting pour éviter les problèmes de cache
+        const timestamp = Date.now();
+        import(`./js/main.js?v=${timestamp}`).catch(error => {
+            console.error('Erreur lors du chargement de main.js:', error);
+            document.getElementById('moduleStatus')?.textContent = 
+                'Erreur de chargement des modules. Rechargez la page.';
+        });
+    </script>
 <!-- Script de fallback pour s'assurer que HeroesArena est défini -->
 <script>
     // Vérification que HeroesArena est bien défini

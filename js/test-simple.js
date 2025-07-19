@@ -64,7 +64,7 @@ window.testApp = function() {
     
     // Test 4: Fonctions principales
     const functionsToCheck = [
-        'showSection', 'createHero', 'updateStats', 'startFight'
+        'showSection', 'createHero', 'updateStats', 'startCombat'
     ];
     
     let functionsFound = 0;
@@ -175,7 +175,7 @@ window.testCombat = function() {
     
     setTimeout(() => {
         if (!document.getElementById('fightBtn').disabled) {
-            window.HeroesArena.startFight();
+            window.HeroesArena.startCombat();
             console.log('🥊 Combat lancé ! Regardez l\'arène.');
         } else {
             console.log('❌ Impossible de lancer le combat');
