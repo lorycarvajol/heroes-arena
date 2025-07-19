@@ -464,6 +464,14 @@ export function loadHeroesFromLocalStorageHandler() {
     }
 }
 
+export async function loadHeroesHandler() {
+    const success = await loadHeroesFromFile();
+    if (success) {
+        displayHeroes();
+        updateFighterSelectors();
+    }
+}
+
 // Arène - mise à jour des sélecteurs
 export function updateFighterSelectors() {
     const fighter1Select = document.getElementById('fighter1Select');

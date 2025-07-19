@@ -330,6 +330,130 @@ export function stopAutoSave() {
     }
 }
 
+// Export des statistiques des héros
+export function exportHeroesStats() {
+    if (AppState.heroes.length === 0) {
+        alert('Aucun héros à exporter !');
+        return;
+    }
+
+    const stats = {
+        totalHeroes: AppState.heroes.length,
+        heroDetails: AppState.heroes.map(hero => ({
+            nom: hero.nom,
+            classe: hero.classe,
+            niveau: hero.niveau || 1,
+            force: hero.force,
+            agility: hero.agility,
+            magic: hero.magic,
+            defense: hero.defense,
+            victoires: hero.victoires || 0,
+            defaites: hero.defaites || 0,
+            ratio: hero.victoires && hero.defaites ? (hero.victoires / (hero.victoires + hero.defaites) * 100).toFixed(1) + '%' : 'N/A',
+            createdAt: hero.createdAt
+        })),
+        classeDistribution: {},
+        totalBattles: 0,
+        exportDate: new Date().toISOString()
+    };
+
+    // Calculer la distribution par classe
+    AppState.heroes.forEach(hero => {
+        stats.classeDistribution[hero.classe] = (stats.classeDistribution[hero.classe] || 0) + 1;
+        stats.totalBattles += (hero.victoires || 0) + (hero.defaites || 0);
+    });
+
+    // Créer le fichier CSV
+    const csvHeader = 'Nom,Classe,Force,Agilité,Magie,Défense,Victoires,Défaites,Ratio,Date de création\n';
+    const csvRows = stats.heroDetails.map(hero => 
+        `"${hero.nom}","${hero.classe}",${hero.force},${hero.agility},${hero.magic},${hero.defense},${hero.victoires},${hero.defaites},"${hero.ratio}","${hero.createdAt}"`
+    ).join('\n');
+    
+    const csvContent = csvHeader + csvRows;
+
+    // Télécharger le fichier
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `heroes-stats-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    alert(`Statistiques de ${stats.totalHeroes} héros exportées !`);
+}
+
+// Fonctions héritées pour compatibilité
+export function saveHeroesToFile() {
+    const heroesData = AppState.heroes.map(hero => hero.toJSON());
+    const dataStr = JSON.stringify({ heroes: heroesData, exportDate: new Date().toISOString() }, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `heroes-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    alert('Héros sauvegardés dans un fichier !');
+}
+
+export function loadHeroesFromFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            
+            if (data.heroes && Array.isArray(data.heroes)) {
+                if (confirm(`Charger ${data.heroes.length} héros depuis le fichier ?\nCela remplacera vos héros actuels.`)) {
+                    AppState.heroes = [];
+                    data.heroes.forEach(heroData => {
+                        const hero = createHeroFromData(heroData);
+                        if (hero) AppState.heroes.push(hero);
+                    });
+                    
+                    await saveHeroes();
+                    alert(`${AppState.heroes.length} héros chargés !`);
+                    return true;
+                }
+            } else {
+                alert('Format de fichier invalide');
+            }
+        } catch (error) {
+            alert('Erreur lors du chargement : ' + error.message);
+        }
+        return false;
+    };
+    
+    input.click();
+}
+
+export function saveHeroesToLocalStorage() {
+    try {
+        const heroesData = AppState.heroes.map(hero => hero.toJSON());
+        localStorage.setItem('heroes', JSON.stringify(heroesData));
+        alert('Héros sauvegardés localement !');
+    } catch (error) {
+        alert('Erreur de sauvegarde : ' + error.message);
+    }
+}
+
+export function loadHeroesFromLocalStorage() {
+    return loadHeroes();
+}
+
 // Démarrer l'auto-sauvegarde par défaut
 if (typeof window !== 'undefined') {
     window.addEventListener('load', () => {

@@ -38,7 +38,7 @@ window.HeroesArena = {
     updateClassInfo,
     
     // Gestion des héros
-    createHero: createHeroFromForm,
+    createHeroFromForm,
     createHeroFromData, // Nouveau: pour la reconstruction depuis le cloud
     filterHeroes,
     deleteHeroHandler,
@@ -303,7 +303,7 @@ function enhancedCreateHero() {
 }
 
 // Remplacer la fonction originale
-window.HeroesArena.createHero = enhancedCreateHero;
+window.HeroesArena.createHeroFromForm = enhancedCreateHero;
 
 // Hook après suppression d'un héros
 const originalDeleteHero = deleteHeroHandler;
