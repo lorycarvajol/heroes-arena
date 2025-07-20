@@ -205,7 +205,7 @@ export class UIManager {
                            healthPercent > 25 ? '#f97316' : '#ef4444';
         
         return `
-            <div class="hero-card" data-hero-id="${hero.id}">
+            <div class="hero-card clickable" data-hero-id="${hero.id}" data-hero-index="${index}" onclick="window.showHeroDetailsNow(${index})" title="Cliquer pour voir les détails - ${hero.nom}">
                 <div class="hero-avatar-container">
                     <div class="hero-avatar">
                         <img src="images/${hero.avatar}" alt="${hero.nom}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -250,11 +250,6 @@ export class UIManager {
                     <span class="victories">${hero.victoires}V</span> - 
                     <span class="defeats">${hero.defaites}D</span>
                     <span class="ratio">(${hero.getRatio()}%)</span>
-                </div>
-                
-                <div class="hero-actions">
-                    <button class="btn btn-sm" onclick="window.showHeroDetailsNow(${index})" id="details-btn-${index}">Détails</button>
-                    <button class="btn btn-sm btn-danger" onclick="window.deleteHeroNow(${index})" id="delete-btn-${index}">Supprimer</button>
                 </div>
             </div>
         `;

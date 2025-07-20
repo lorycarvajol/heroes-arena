@@ -515,8 +515,15 @@
             ui: { selectAvatar: () => console.log('Chargement...') }
         };
 
-        (async () => {
+        // Protection contre les erreurs d'extension browser
+        let initializationAttempts = 0;
+        const maxAttempts = 3;
+        
+        async function initializeApp() {
             try {
+                initializationAttempts++;
+                console.log(`🔄 Tentative d'initialisation ${initializationAttempts}/${maxAttempts}`);
+                
                 // Initialiser l'application
                 const { initHeroesArena } = await import('./js/init.js');
                 const app = await initHeroesArena();
@@ -537,9 +544,23 @@
                     statusElement.style.color = '#10b981';
                 }
                 
-            } catch (error) {
-                console.error('❌ Erreur lors du chargement:', error);
+                return true;
                 
+            } catch (error) {
+                console.error(`❌ Erreur lors du chargement (tentative ${initializationAttempts}):`, error);
+                
+                // Si c'est une erreur liée aux extensions browser, on réessaie
+                if (initializationAttempts < maxAttempts && 
+                    (error.message.includes('message channel') || 
+                     error.message.includes('listener indicated') ||
+                     error.message.includes('Extension context'))) {
+                    
+                    console.log('🔄 Réessai dans 1 seconde...');
+                    setTimeout(() => initializeApp(), 1000);
+                    return false;
+                }
+                
+                // Erreur définitive
                 const statusElement = document.getElementById('appStatus');
                 if (statusElement) {
                     statusElement.textContent = `❌ Erreur: ${error.message}`;
@@ -551,7 +572,7 @@
                 errorDiv.innerHTML = `
                     <div style="background: #fee2e2; border: 1px solid #ef4444; border-radius: 8px; padding: 16px; margin: 20px; color: #991b1b;">
                         <h3>🚨 Erreur de chargement</h3>
-                        <p>L'application n'a pas pu se charger correctement.</p>
+                        <p>L'application n'a pas pu se charger correctement après ${maxAttempts} tentatives.</p>
                         <details>
                             <summary>Détails techniques</summary>
                             <pre style="background: #f8f8f8; padding: 10px; border-radius: 4px; overflow-x: auto;">${error.stack || error.message}</pre>
@@ -559,9 +580,15 @@
                         <button onclick="location.reload()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Recharger la page</button>
                     </div>
                 `;
-                document.querySelector('.content').prepend(errorDiv);
+                const content = document.querySelector('.content') || document.body;
+                content.appendChild(errorDiv);
+                
+                return false;
             }
-        })();
+        }
+        
+        // Démarrer l'initialisation
+        initializeApp();
     </script>
 
     <!-- Gestionnaire pour l'import de fichiers -->

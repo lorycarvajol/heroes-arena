@@ -117,34 +117,107 @@ export async function initHeroesArena() {
                 }
             },
             
-            async deleteHero(index) {
-                const hero = AppState.heroes[index];
-                if (!hero) return;
-                
-                if (confirm(`Êtes-vous sûr de vouloir supprimer ce héros ?\n\n${hero.nom} (${hero.classe})`)) {
-                    const result = await this.data.deleteHero(index);
+            async deleteHero(heroIdOrIndex) {
+                try {
+                    let heroIndex = -1;
+                    let hero = null;
+                    
+                    // Si c'est un nombre, c'est probablement un index
+                    if (typeof heroIdOrIndex === 'number') {
+                        heroIndex = heroIdOrIndex;
+                        hero = AppState.heroes[heroIndex];
+                    } else {
+                        // Sinon, chercher par ID
+                        heroIndex = AppState.heroes.findIndex(h => h.id === heroIdOrIndex);
+                        hero = heroIndex !== -1 ? AppState.heroes[heroIndex] : null;
+                    }
+                    
+                    if (!hero || heroIndex === -1) {
+                        throw new Error('Héros introuvable');
+                    }
+                    
+                    console.log(`🗑️ Suppression du héros: ${hero.nom} (ID: ${hero.id}, Index: ${heroIndex})`);
+                    
+                    const result = await this.data.deleteHero(heroIndex);
                     
                     if (result.success) {
-                        this.ui.showSuccess('Héros supprimé');
+                        this.auth.saveUserHeroes(AppState.heroes);
+                        this.ui.showSuccess(`${hero.nom} a été supprimé`);
                         this.ui.displayHeroes();
                         this.ui.updateFighterSelectors();
-                        
-                        // Mettre à jour les statistiques utilisateur
                         this.auth.refreshUserStats();
+                        
+                        console.log(`✅ Héros ${hero.nom} supprimé avec succès`);
                     } else {
-                        this.ui.showError(result.error);
+                        throw new Error(result.error || 'Erreur lors de la suppression');
                     }
+                    
+                } catch (error) {
+                    console.error('Erreur lors de la suppression:', error);
+                    this.ui.showError('Impossible de supprimer le héros: ' + error.message);
                 }
             },
             
             async healHero(index) {
-                const hero = AppState.heroes[index];
-                if (!hero) return;
-                
-                hero.heal();
-                await this.data.saveHeroes();
-                this.ui.displayHeroes();
-                this.ui.showSuccess(`${hero.nom} a été complètement soigné !`);
+                try {
+                    const hero = AppState.heroes[index];
+                    if (!hero) {
+                        throw new Error('Héros introuvable');
+                    }
+                    
+                    if (hero.pv >= hero.pvMax) {
+                        this.ui.showError(`${hero.nom} a déjà tous ses PV !`);
+                        return;
+                    }
+                    
+                    hero.heal();
+                    await this.data.saveHeroes();
+                    this.auth.saveUserHeroes(AppState.heroes);
+                    this.ui.displayHeroes();
+                    this.ui.showSuccess(`${hero.nom} a été complètement soigné !`);
+                    
+                } catch (error) {
+                    console.error('Erreur lors du soin:', error);
+                    this.ui.showError('Impossible de soigner le héros');
+                }
+            },
+            
+            async renameHero(index) {
+                try {
+                    const hero = AppState.heroes[index];
+                    if (!hero) {
+                        throw new Error('Héros introuvable');
+                    }
+                    
+                    const newName = prompt(`Nouveau nom pour ${hero.nom} :`, hero.nom);
+                    if (!newName || !newName.trim() || newName.trim() === hero.nom) {
+                        return; // Annulation ou pas de changement
+                    }
+                    
+                    const trimmedName = newName.trim();
+                    if (trimmedName.length > 20) {
+                        this.ui.showError('Le nom ne peut pas dépasser 20 caractères');
+                        return;
+                    }
+                    
+                    if (trimmedName.length < 1) {
+                        this.ui.showError('Le nom ne peut pas être vide');
+                        return;
+                    }
+                    
+                    hero.nom = trimmedName;
+                    hero.updatedAt = new Date().toISOString();
+                    
+                    await this.data.saveHeroes();
+                    this.auth.saveUserHeroes(AppState.heroes);
+                    this.ui.displayHeroes();
+                    this.ui.updateFighterSelectors();
+                    this.ui.showSuccess(`Héros renommé en "${trimmedName}" !`);
+                    
+                } catch (error) {
+                    console.error('Erreur lors du renommage:', error);
+                    this.ui.showError('Impossible de renommer le héros');
+                }
             },
             
             showHeroDetails(index) {
@@ -175,7 +248,7 @@ export async function initHeroesArena() {
                                     <div class="hero-badge-display">${hero.getBadgeText()}</div>
                                 </div>
                             </div>
-                            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+                            <button class="modal-close" data-action="close">×</button>
                         </div>
                         
                         <div class="modal-body">
@@ -239,19 +312,138 @@ export async function initHeroesArena() {
                             </div>
                         </div>
                         
+                        <div class="modal-actions">
+                            <h3>Actions</h3>
+                            <div class="action-buttons">
+                                <button class="action-btn heal-btn" data-action="heal" data-index="${index}">
+                                    <span class="action-icon">💚</span>
+                                    <span class="action-text">
+                                        <strong>Soigner</strong>
+                                        <small>Restaure tous les PV</small>
+                                    </span>
+                                </button>
+                                
+                                <button class="action-btn combat-btn" data-action="combat" data-index="${index}">
+                                    <span class="action-icon">⚔️</span>
+                                    <span class="action-text">
+                                        <strong>Combat</strong>
+                                        <small>Aller à l'arène</small>
+                                    </span>
+                                </button>
+                                
+                                <button class="action-btn rename-btn" data-action="rename" data-index="${index}">
+                                    <span class="action-icon">✏️</span>
+                                    <span class="action-text">
+                                        <strong>Renommer</strong>
+                                        <small>Changer le nom</small>
+                                    </span>
+                                </button>
+                                
+                                <button class="action-btn delete-btn danger" data-action="delete" data-index="${index}" data-hero-id="${hero.id}" data-hero-name="${hero.nom}">
+                                    <span class="action-icon">⚠️</span>
+                                    <span class="action-text">
+                                        <strong>Supprimer définitivement</strong>
+                                        <small>Cette action est irréversible</small>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Fermer</button>
-                            <button class="btn btn-danger" onclick="if(confirm('Supprimer ce héros ?')) { HeroesArena.deleteHero(${index}); this.closest('.modal-overlay').remove(); }">Supprimer</button>
+                            <button class="btn btn-secondary modal-close-btn" onclick="this.closest('.modal-overlay').remove()">Fermer</button>
                         </div>
                     </div>
                 `;
                 
                 document.body.appendChild(modal);
                 
-                // Fermer en cliquant à l'extérieur
-                modal.addEventListener('click', (e) => {
+                // Empêcher le scroll du body quand le modal est ouvert
+                document.body.style.overflow = 'hidden';
+                
+                // Scroll automatique vers le modal avec animation fluide
+                requestAnimationFrame(() => {
+                    // Scroll vers le haut de la page d'abord pour centrer le modal
+                    window.scrollTo({ 
+                        top: 0, 
+                        behavior: 'smooth' 
+                    });
+                });
+                
+                // Fonction pour fermer le modal
+                const closeModal = () => {
+                    document.body.style.overflow = ''; // Restaurer le scroll
+                    modal.remove();
+                };
+                
+                // Gestionnaire d'événements pour les actions
+                modal.addEventListener('click', async (e) => {
+                    // Fermer en cliquant à l'extérieur
                     if (e.target === modal) {
-                        modal.remove();
+                        closeModal();
+                        return;
+                    }
+                    
+                    // Gérer les boutons d'action
+                    const actionBtn = e.target.closest('.action-btn');
+                    if (actionBtn) {
+                        const action = actionBtn.dataset.action;
+                        const heroIndex = parseInt(actionBtn.dataset.index);
+                        
+                        try {
+                            switch (action) {
+                                case 'heal':
+                                    await this.healHero(heroIndex);
+                                    closeModal();
+                                    break;
+                                    
+                                case 'combat':
+                                    closeModal();
+                                    this.showSection('arena');
+                                    break;
+                                    
+                                case 'rename':
+                                    await this.renameHero(heroIndex);
+                                    closeModal();
+                                    break;
+                                    
+                                case 'delete':
+                                    const heroId = actionBtn.dataset.heroId;
+                                    const heroName = actionBtn.dataset.heroName;
+                                    
+                                    // Confirmation avec meilleure UX
+                                    const confirmMessage = `⚠️ ATTENTION - SUPPRESSION DÉFINITIVE\n\n` +
+                                                          `Voulez-vous vraiment supprimer ${heroName} ?\n\n` +
+                                                          `Cette action est IRRÉVERSIBLE et supprimera :\n` +
+                                                          `• Le héros et toutes ses statistiques\n` +
+                                                          `• Son historique de combats\n` +
+                                                          `• Ses victoires et défaites\n\n` +
+                                                          `Tapez "SUPPRIMER" pour confirmer :`;
+                                    
+                                    const confirmation = prompt(confirmMessage);
+                                    
+                                    if (confirmation === "SUPPRIMER") {
+                                        try {
+                                            console.log(`🗑️ Confirmation reçue pour supprimer le héros ID: ${heroId}`);
+                                            await this.deleteHero(heroId);
+                                            closeModal();
+                                        } catch (error) {
+                                            console.error('Erreur lors de la suppression depuis la modal:', error);
+                                            this.ui.showError('Erreur lors de la suppression');
+                                        }
+                                    } else if (confirmation !== null) {
+                                        this.ui.showError('Suppression annulée - confirmation incorrecte');
+                                    }
+                                    break;
+                            }
+                        } catch (error) {
+                            console.error('Erreur lors de l\'action:', error);
+                            this.ui.showError('Une erreur est survenue lors de l\'action');
+                        }
+                    }
+                    
+                    // Fermer avec le bouton close
+                    if (e.target.classList.contains('modal-close') || e.target.classList.contains('modal-close-btn')) {
+                        closeModal();
                     }
                 });
             },
@@ -489,12 +681,23 @@ export async function initHeroesArena() {
             }
         };
         
-        window.deleteHeroNow = function(index) {
-            console.log('🗑️ deleteHeroNow appelé avec index:', index);
-            if (confirm('Êtes-vous sûr de vouloir supprimer ce héros ?')) {
+        window.deleteHeroNow = function(heroIdOrIndex) {
+            console.log('🗑️ deleteHeroNow appelé avec:', heroIdOrIndex);
+            
+            // Trouver le héros pour afficher son nom
+            let hero = null;
+            if (typeof heroIdOrIndex === 'number') {
+                hero = AppState.heroes[heroIdOrIndex];
+            } else {
+                hero = AppState.heroes.find(h => h.id === heroIdOrIndex);
+            }
+            
+            const heroName = hero ? hero.nom : 'ce héros';
+            
+            if (confirm(`⚠️ Supprimer définitivement ${heroName} ?\n\nCette action est irréversible.`)) {
                 try {
                     if (app && app.deleteHero) {
-                        app.deleteHero(index);
+                        app.deleteHero(heroIdOrIndex);
                     } else {
                         console.error('❌ Méthode deleteHero non disponible');
                     }
@@ -574,14 +777,18 @@ export async function initHeroesArena() {
                             cursor: pointer;
                             margin-right: 10px;
                         ">Fermer</button>
-                        <button onclick="if(confirm('Supprimer ce héros ?')) { window.deleteHeroNow(${index}); this.closest('div[style*=\"position: fixed\"]').remove(); }" style="
-                            background: #ef4444;
-                            color: white;
-                            border: none;
-                            padding: 10px 20px;
+                        <button onclick="if(confirm('⚠️ Supprimer définitivement ce héros ?\\nCette action est irréversible.')) { window.deleteHeroNow('${hero.id}'); this.closest('div[style*=\"position: fixed\"]').remove(); }" style="
+                            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
+                            color: #fecaca;
+                            border: 1px solid rgba(239, 68, 68, 0.4);
+                            padding: 12px 24px;
                             border-radius: 8px;
                             cursor: pointer;
-                        ">Supprimer</button>
+                            font-weight: 600;
+                            font-size: 0.9rem;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(239, 68, 68, 0.3)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 15px rgba(239, 68, 68, 0.2)'">⚠️ Supprimer</button>
                     </div>
                 </div>
             `;
