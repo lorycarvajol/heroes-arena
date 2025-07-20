@@ -149,10 +149,10 @@ export class Hero {
         hero.id = data.id || hero.id;
         hero.pvMax = data.pvMax || hero.pvMax;
         hero.pv = data.pv !== undefined ? data.pv : hero.pv;
-        hero.victoires = data.victoires || 0;
-        hero.defaites = data.defaites || 0;
-        hero.xp = data.xp || 0;
-        hero.niveau = data.niveau || 1;
+        hero.victoires = data.victoires !== undefined ? data.victoires : 0;
+        hero.defaites = data.defaites !== undefined ? data.defaites : 0;
+        hero.xp = data.xp !== undefined ? data.xp : 0;
+        hero.niveau = data.niveau !== undefined ? data.niveau : 1;
         hero.createdAt = data.createdAt || hero.createdAt;
         hero.updatedAt = data.updatedAt || hero.updatedAt;
         

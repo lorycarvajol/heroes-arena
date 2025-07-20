@@ -834,11 +834,18 @@ class AuthSystem {
         const user = this.users.find(u => u.id === this.currentUser.id);
         const heroesData = user ? user.heroes || [] : [];
         
+        console.log(`📖 Chargement de ${heroesData.length} héros pour l'utilisateur ${this.currentUser.username}`);
+        heroesData.forEach(heroData => {
+            console.log(`  - ${heroData.nom}: XP=${heroData.xp}, Niveau=${heroData.niveau}, Victoires=${heroData.victoires}`);
+        });
+        
         // Convertir les données en instances de Hero pour restaurer les méthodes
         return heroesData.map(heroData => {
             // Dynamically import Hero class to avoid circular dependency
             if (window.Hero && window.Hero.fromJSON) {
-                return window.Hero.fromJSON(heroData);
+                const hero = window.Hero.fromJSON(heroData);
+                console.log(`✅ Héros ${hero.nom} chargé avec Hero.fromJSON - XP: ${hero.xp}, Niveau: ${hero.niveau}`);
+                return hero;
             } else {
                 // Fallback: créer un objet avec les méthodes essentielles
                 return this.createHeroWithMethods(heroData);
@@ -849,6 +856,14 @@ class AuthSystem {
     // Méthode de fallback pour créer un héros avec les méthodes nécessaires
     createHeroWithMethods(heroData) {
         const hero = { ...heroData };
+        
+        // S'assurer que toutes les propriétés importantes sont préservées
+        hero.xp = heroData.xp !== undefined ? heroData.xp : 0;
+        hero.niveau = heroData.niveau !== undefined ? heroData.niveau : 1;
+        hero.victoires = heroData.victoires !== undefined ? heroData.victoires : 0;
+        hero.defaites = heroData.defaites !== undefined ? heroData.defaites : 0;
+        
+        console.log(`🔧 Héros ${hero.nom} chargé avec fallback - XP: ${hero.xp}, Niveau: ${hero.niveau}`);
         
         // Ajouter les méthodes essentielles
         hero.getBadgeText = function() {
@@ -877,6 +892,27 @@ class AuthSystem {
             return this.nom && this.classe && this.force && this.agility && this.magic && this.defense;
         };
         
+        // Ajouter les méthodes de progression XP
+        hero.gainXp = function(amount) {
+            this.xp = (this.xp || 0) + amount;
+            const newLevel = Math.floor(this.xp / 100) + 1;
+            if (newLevel > this.niveau) {
+                this.niveau = newLevel;
+                // Level up bonus (simplifié pour le fallback)
+                const bonus = Math.floor(Math.random() * 3) + 1;
+                const stats = ['force', 'agility', 'magic', 'defense'];
+                const randomStat = stats[Math.floor(Math.random() * stats.length)];
+                this[randomStat] += bonus;
+                this.pvMax = Math.floor((this.force + this.defense) * 2.5);
+                this.pv = this.pvMax;
+            }
+            this.updatedAt = new Date().toISOString();
+        };
+        
+        hero.calculateLevel = function() {
+            return Math.floor(this.xp / 100) + 1;
+        };
+        
         return hero;
     }
     
@@ -885,7 +921,39 @@ class AuthSystem {
         
         const userIndex = this.users.findIndex(u => u.id === this.currentUser.id);
         if (userIndex !== -1) {
-            this.users[userIndex].heroes = heroes;
+            // Convertir les héros en JSON pour la sauvegarde, en préservant l'XP
+            const heroesData = heroes.map(hero => {
+                if (hero.toJSON) {
+                    return hero.toJSON();
+                } else {
+                    // Fallback : sauvegarder toutes les propriétés importantes
+                    return {
+                        id: hero.id,
+                        nom: hero.nom,
+                        avatar: hero.avatar,
+                        classe: hero.classe,
+                        force: hero.force,
+                        agility: hero.agility,
+                        magic: hero.magic,
+                        defense: hero.defense,
+                        pvMax: hero.pvMax,
+                        pv: hero.pv,
+                        victoires: hero.victoires || 0,
+                        defaites: hero.defaites || 0,
+                        xp: hero.xp || 0,
+                        niveau: hero.niveau || 1,
+                        createdAt: hero.createdAt,
+                        updatedAt: hero.updatedAt
+                    };
+                }
+            });
+            
+            console.log(`💾 Sauvegarde de ${heroesData.length} héros pour l'utilisateur ${this.currentUser.username}`);
+            heroesData.forEach(hero => {
+                console.log(`  - ${hero.nom}: XP=${hero.xp}, Niveau=${hero.niveau}, Victoires=${hero.victoires}`);
+            });
+            
+            this.users[userIndex].heroes = heroesData;
             return this.saveUsers();
         }
         

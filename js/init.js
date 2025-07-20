@@ -279,9 +279,18 @@ export async function initHeroesArena() {
                                 
                                 <div class="progress-section">
                                     <h3>Progression</h3>
-                                    <div class="progress-item">
-                                        <span>Expérience</span>
-                                        <span>${hero.xp} XP</span>
+                                    <div class="xp-section">
+                                        <div class="xp-header">
+                                            <span>Expérience</span>
+                                            <span class="xp-values">${hero.xp} XP</span>
+                                        </div>
+                                        <div class="xp-bar">
+                                            <div class="xp-fill" style="width: ${((hero.xp % 100) / 100) * 100}%"></div>
+                                            <div class="xp-text">${hero.xp % 100}/100 XP</div>
+                                        </div>
+                                        <div class="level-info">
+                                            <small>Niveau ${hero.niveau} • ${100 - (hero.xp % 100)} XP pour niveau ${hero.niveau + 1}</small>
+                                        </div>
                                     </div>
                                     <div class="health-section">
                                         <span>Points de vie</span>
@@ -472,8 +481,13 @@ export async function initHeroesArena() {
                     const result = await this.combat.startCombat(AppState.fighter1, AppState.fighter2);
                     
                     if (result.success) {
-                        // Sauvegarder automatiquement
+                        console.log('🏆 Combat terminé, sauvegarde des données...');
+                        
+                        // Sauvegarder automatiquement dans le système de données
                         await this.data.saveHeroes();
+                        
+                        // Sauvegarder spécifiquement pour l'utilisateur connecté (double sécurité)
+                        this.auth.saveUserHeroes(AppState.heroes);
                         
                         // Mettre à jour l'affichage
                         this.ui.displayHeroes();
@@ -481,6 +495,8 @@ export async function initHeroesArena() {
                         
                         // Mettre à jour les statistiques utilisateur
                         this.auth.refreshUserStats();
+                        
+                        console.log('✅ Données sauvegardées après combat');
                     } else {
                         this.ui.showError(result.error);
                     }
@@ -759,7 +775,8 @@ export async function initHeroesArena() {
                         
                         <div>
                             <h3 style="margin: 0 0 15px 0; color: #e2e8f0; font-size: 1.1rem;">Progression</h3>
-                            <div style="margin: 8px 0;">🎖️ Expérience: <strong>${hero.xp} XP</strong></div>
+                            <div style="margin: 8px 0;">🎖️ Niveau: <strong style="color: #fbbf24;">${hero.niveau}</strong></div>
+                            <div style="margin: 8px 0;">⭐ Expérience: <strong style="color: #fbbf24;">${hero.xp} XP</strong> <small style="color: #94a3b8;">(${100 - (hero.xp % 100)} XP pour niveau ${hero.niveau + 1})</small></div>
                             <div style="margin: 8px 0;">❤️ Vie: <strong>${hero.pv}/${hero.pvMax}</strong></div>
                             <div style="margin: 8px 0;">🏆 Victoires: <strong style="color: #10b981;">${hero.victoires}</strong></div>
                             <div style="margin: 8px 0;">💀 Défaites: <strong style="color: #ef4444;">${hero.defaites}</strong></div>

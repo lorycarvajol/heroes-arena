@@ -532,8 +532,22 @@ export class CombatSystem {
         const winnerXp = 50 + Math.floor(this.currentCombat.round * 5);
         const loserXp = 20 + Math.floor(this.currentCombat.round * 2);
         
+        const winnerLevelBefore = originalWinner.niveau;
+        const loserLevelBefore = originalLoser.niveau;
+        
         originalWinner.gainXp(winnerXp);
         originalLoser.gainXp(loserXp);
+        
+        this.addLogEntry(`⭐ ${originalWinner.nom} gagne ${winnerXp} XP ! (Total: ${originalWinner.xp} XP)`, 'success');
+        this.addLogEntry(`⭐ ${originalLoser.nom} gagne ${loserXp} XP ! (Total: ${originalLoser.xp} XP)`, 'info');
+        
+        if (originalWinner.niveau > winnerLevelBefore) {
+            this.addLogEntry(`🎉 ${originalWinner.nom} passe au niveau ${originalWinner.niveau} !`, 'success');
+        }
+        
+        if (originalLoser.niveau > loserLevelBefore) {
+            this.addLogEntry(`🎉 ${originalLoser.nom} passe au niveau ${originalLoser.niveau} !`, 'success');
+        }
         
         originalWinner.heal();
         originalLoser.heal();
