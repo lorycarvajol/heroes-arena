@@ -1,476 +1,439 @@
-// js/main.js - Point d'entrée principal modifié pour Netlify
-import { AppState } from './config.js';
-import { autoLoadHeroes, saveHeroes, createHeroFromData, forceSyncToCloud } from './data.js';
-import { createDemoHeroes } from './demo-data.js';
-import { 
-    showSection, 
-    showAvatarCategory, 
-    initAvatars, 
-    selectAvatar,
-    updateStats, 
-    randomStats, 
-    updateClassInfo,
-    createHeroFromForm,
-    displayHeroes,
-    filterHeroes,
-    deleteHeroHandler,
-    clearAllHeroesHandler,
-    loadHeroesHandler,
-    updateFighters,
-    updateFighterSelectors,
-    resetArena,
-    addLogEntry
-} from './ui.js';
-import { startFight } from './combat.js';
+// Point d'entrée principal - Heroes Arena
 
-// ============= API GLOBALE ÉTENDUE =============
-window.HeroesArena = {
-    // Navigation
-    showSection,
-    
-    // Gestion des avatars
-    showAvatarCategory,
-    selectAvatar,
-    
-    // Gestion des stats
-    updateStats,
-    randomStats,
-    updateClassInfo,
-    
-    // Gestion des héros
-    createHero: createHeroFromForm,
-    createHeroFromData, // Nouveau: pour la reconstruction depuis le cloud
-    filterHeroes,
-    deleteHeroHandler,
-    clearAllHeroesHandler,
-    saveHeroes,
-    loadHeroesHandler,
-    
-    // Nouvelle fonction pour la synchronisation cloud
-    syncToCloud: async function() {
-        if (window.AuthUI && window.AuthUI.isOnline()) {
-            await window.AuthUI.autoSave();
-            alert('Synchronisation avec le cloud terminée !');
-        } else {
-            alert('Vous devez être connecté pour synchroniser avec le cloud');
-        }
-    },
-    
-    // Arène
-    updateFighters,
-    startFight,
-    resetArena,
-    
-    // État de l'application
-    getAppState: () => AppState,
-    
-    // Fonctions de démo
-    createDemoHeroes: () => {
-        AppState.heroes = [];
-        createDemoHeroes();
-        displayHeroes();
-        updateFighterSelectors();
-        showSection('heroes');
-        
-        // Auto-sync si connecté
-        if (window.AuthUI && window.AuthUI.isOnline()) {
-            setTimeout(() => window.AuthUI.autoSave(), 1000);
-        }
-    },
-    
-    // Nouvelle fonction pour afficher l'état de connexion
-    getConnectionStatus: function() {
-        if (window.AuthUI) {
-            return {
-                isOnline: window.AuthUI.isOnline(),
-                user: window.AuthUI.getCurrentUser ? window.AuthUI.getCurrentUser() : null
-            };
-        }
-        return { isOnline: false, user: null };
-    },
-    
-    // Fonction pour forcer la synchronisation
-    forceSyncToCloud
-};
+import { AppState } from './core/config.js';
+import { uiManager } from './modules/ui.js';
+import { dataManager } from './modules/data.js';
+import { combatSystem } from './modules/combat.js';
 
-// ============= INITIALISATION MODIFIÉE =============
-async function initializeApp() {
-    console.log('🚀 Initialisation de Heroes Arena (version Cloud)...');
-    
-    // Initialiser les avatars
-    initAvatars();
-    
-    // Mettre à jour les stats par défaut
-    updateStats();
-    
-    // Mettre à jour les informations de classe
-    updateClassInfo();
-    
-    // Ajouter un message de bienvenue dans l'arène
-    addLogEntry('Bienvenue dans l\'arène ! Sélectionnez deux héros pour commencer le combat...', 'info');
-    
-    // Attendre que l'authentification soit initialisée
-    await waitForAuth();
-    
-    // Charger les héros (cloud ou local selon l'état de connexion)
-    await autoLoadHeroes();
-    
-    // Si aucun héros n'est chargé, proposer la création de héros de démo
-    if (AppState.heroes.length === 0) {
-        console.log('💡 Aucun héros trouvé.');
-        
-        // Si connecté, proposer de créer des héros de démo dans le cloud
-        if (window.AuthUI && window.AuthUI.isOnline()) {
-            if (confirm('Aucun héros trouvé. Voulez-vous créer des héros de démonstration ?')) {
-                createDemoHeroes();
-                await saveHeroes(); // Sauvegarder dans le cloud
-            }
-        } else {
-            // Mode hors ligne - créer automatiquement des héros de démo
-            console.log('Mode hors ligne - création d\'héros de démonstration...');
-            createDemoHeroes();
-        }
+class HeroesArena {
+    constructor() {
+        this.isInitialized = false;
+        this.ui = uiManager;
+        this.data = dataManager;
+        this.combat = combatSystem;
     }
     
-    // Générer des stats aléatoires par défaut
-    randomStats();
-    
-    // Mettre à jour les sélecteurs de l'arène
-    updateFighterSelectors();
-    
-    // Afficher les héros
-    displayHeroes();
-    
-    // Configurer l'interface utilisateur selon l'état de connexion
-    setupUIForConnectionState();
-    
-    console.log('✅ Heroes Arena initialisé avec succès !');
-    console.log(`📊 ${AppState.heroes.length} héros chargés`);
-    console.log(`🌐 Mode: ${window.AuthUI && window.AuthUI.isOnline() ? 'En ligne' : 'Hors ligne'}`);
-    
-    // Afficher des conseils dans la console
-    showConsoleHelp();
-}
-
-// ============= FONCTIONS UTILITAIRES =============
-async function waitForAuth() {
-    return new Promise((resolve) => {
-        if (window.AuthUI) {
-            // Si AuthUI existe déjà, attendre qu'il soit initialisé
-            const checkInit = () => {
-                if (window.AuthUI.isOnline !== undefined) {
-                    resolve();
-                } else {
-                    setTimeout(checkInit, 100);
-                }
-            };
-            checkInit();
-        } else {
-            // Attendre que AuthUI soit chargé
-            const checkExists = () => {
-                if (window.AuthUI) {
-                    waitForAuth().then(resolve);
-                } else {
-                    setTimeout(checkExists, 100);
-                }
-            };
-            checkExists();
-        }
-    });
-}
-
-function setupUIForConnectionState() {
-    // Ajouter des éléments UI pour indiquer l'état de connexion
-    const header = document.querySelector('.header');
-    if (header && window.AuthUI) {
-        const statusDiv = document.createElement('div');
-        statusDiv.id = 'connectionStatus';
-        statusDiv.style.cssText = `
-            margin-top: 10px;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        `;
-        
-        if (window.AuthUI.isOnline()) {
-            const user = window.AuthUI.getCurrentUser();
-            statusDiv.innerHTML = `🌐 Connecté en tant que <strong>${user ? user.username : 'Utilisateur'}</strong>`;
-            statusDiv.style.color = '#10b981';
-        } else {
-            statusDiv.innerHTML = '📱 Mode hors ligne - données sauvegardées localement';
-            statusDiv.style.color = '#fbbf24';
-        }
-        
-        header.appendChild(statusDiv);
-    }
-    
-    // Ajouter des boutons de synchronisation si connecté
-    if (window.AuthUI && window.AuthUI.isOnline()) {
-        addCloudSyncButtons();
-    }
-}
-
-function addCloudSyncButtons() {
-    const heroesSection = document.getElementById('heroes');
-    if (!heroesSection) return;
-    
-    const buttonContainer = heroesSection.querySelector('div[style*="display: flex"]');
-    if (buttonContainer) {
-        // Bouton de synchronisation forcée
-        const syncBtn = document.createElement('button');
-        syncBtn.className = 'btn btn-secondary';
-        syncBtn.innerHTML = '🔄 Sync Cloud';
-        syncBtn.onclick = () => window.HeroesArena.syncToCloud();
-        syncBtn.title = 'Forcer la synchronisation avec le cloud';
-        
-        buttonContainer.appendChild(syncBtn);
-    }
-}
-
-// ============= AIDE CONSOLE MISE À JOUR =============
-function showConsoleHelp() {
-    console.log('\n🎮 === HEROES ARENA - AIDE CONSOLE (Version Cloud) ===');
-    console.log('💡 Commandes disponibles :');
-    console.log('  • HeroesArena.createDemoHeroes() - Créer des héros de démo');
-    console.log('  • HeroesArena.getAppState() - Voir l\'état de l\'application');
-    console.log('  • HeroesArena.getConnectionStatus() - État de la connexion');
-    console.log('  • HeroesArena.syncToCloud() - Synchroniser avec le cloud');
-    console.log('  • HeroesArena.forceSyncToCloud() - Forcer la synchronisation');
-    console.log('  • DemoData.resetToDemo() - Reset avec données de démo');
-    console.log('🌐 Authentification :');
-    console.log('  • AuthUI.logout() - Se déconnecter');
-    console.log('  • AuthUI.isOnline() - Vérifier l\'état de connexion');
-    console.log('🎯 Raccourcis clavier :');
-    console.log('  • Ctrl+1/2/3 - Navigation rapide');
-    console.log('  • Échap - Fermer les modales');
-    console.log('═══════════════════════════════════\n');
-}
-
-// ============= GESTION DES ERREURS ÉTENDUE =============
-window.addEventListener('error', (event) => {
-    console.error('❌ Erreur dans Heroes Arena:', event.error);
-    
-    // Signaler les erreurs cloud spécifiques
-    if (event.error && event.error.message && event.error.message.includes('fetch')) {
-        console.warn('🌐 Possible problème de connexion réseau');
-        if (window.AuthUI && window.AuthUI.setSyncStatus) {
-            window.AuthUI.setSyncStatus('error', 'Erreur réseau');
-        }
-    }
-});
-
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('❌ Promesse rejetée dans Heroes Arena:', event.reason);
-    
-    // Gérer les erreurs de synchronisation
-    if (event.reason && event.reason.message && event.reason.message.includes('sync')) {
-        console.warn('🔄 Erreur de synchronisation - basculement vers le mode local');
-    }
-});
-
-// ============= GESTION HORS LIGNE =============
-window.addEventListener('online', () => {
-    console.log('🌐 Connexion internet rétablie');
-    if (window.AuthUI && window.AuthUI.isOnline()) {
-        // Tenter une synchronisation automatique
-        setTimeout(() => {
-            window.AuthUI.autoSave();
-        }, 2000);
-    }
-});
-
-window.addEventListener('offline', () => {
-    console.log('📱 Mode hors ligne détecté');
-    if (window.AuthUI && window.AuthUI.setSyncStatus) {
-        window.AuthUI.setSyncStatus('error', 'Hors ligne');
-    }
-});
-
-// ============= HOOKS POUR L'INTÉGRATION CLOUD =============
-
-// Hook après création d'un héros
-const originalCreateHero = createHeroFromForm;
-function enhancedCreateHero() {
-    const result = originalCreateHero.apply(this, arguments);
-    
-    // Auto-sync après création si connecté
-    if (result && window.AuthUI && window.AuthUI.isOnline()) {
-        setTimeout(() => {
-            window.AuthUI.autoSave();
-        }, 1000);
-    }
-    
-    return result;
-}
-
-// Remplacer la fonction originale
-window.HeroesArena.createHero = enhancedCreateHero;
-
-// Hook après suppression d'un héros
-const originalDeleteHero = deleteHeroHandler;
-function enhancedDeleteHero(index) {
-    const result = originalDeleteHero.call(this, index);
-    
-    // Auto-sync après suppression si connecté
-    if (result && window.AuthUI && window.AuthUI.isOnline()) {
-        setTimeout(() => {
-            window.AuthUI.autoSave();
-        }, 1000);
-    }
-    
-    return result;
-}
-
-window.HeroesArena.deleteHeroHandler = enhancedDeleteHero;
-
-// ============= DÉMARRAGE DE L'APPLICATION =============
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('📄 DOM chargé, initialisation de l\'application...');
-    
-    // Injecter l'interface d'authentification si elle n'existe pas
-    if (!document.getElementById('authOverlay')) {
-        await loadAuthInterface();
-    }
-    
-    await initializeApp();
-});
-
-// Fonction pour charger l'interface d'authentification
-async function loadAuthInterface() {
-    try {
-        // Si le fichier auth.html existe, le charger
-        const response = await fetch('./auth.html');
-        if (response.ok) {
-            const authHTML = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(authHTML, 'text/html');
-            
-            // Extraire le contenu nécessaire
-            const authOverlay = doc.getElementById('authOverlay');
-            const userPanel = doc.getElementById('userPanel');
-            
-            if (authOverlay) {
-                document.body.appendChild(authOverlay);
-            }
-            if (userPanel) {
-                // Insérer le panneau utilisateur dans le header
-                const header = document.querySelector('.header');
-                if (header) {
-                    header.appendChild(userPanel);
-                }
-            }
-            
-            console.log('✅ Interface d\'authentification chargée');
-        }
-    } catch (error) {
-        console.warn('⚠️ Impossible de charger l\'interface d\'authentification:', error);
-        console.log('💡 L\'application fonctionnera en mode hors ligne uniquement');
-    }
-}
-
-// Pour compatibilité avec l'ancien code
-window.onload = function() {
-    if (document.readyState === 'loading') {
-        initializeApp();
-    }
-};
-
-// ============= FONCTIONS UTILITAIRES POUR LE CLOUD =============
-
-// Fonction pour exporter les données vers un fichier JSON
-window.HeroesArena.exportToFile = function() {
-    const data = {
-        heroes: AppState.heroes.map(h => h.toJSON()),
-        exportDate: new Date().toISOString(),
-        version: '2.0.0-cloud'
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `heroes-arena-export-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    console.log('📁 Données exportées vers un fichier');
-};
-
-// Fonction pour importer des données depuis un fichier JSON
-window.HeroesArena.importFromFile = function() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    
-    input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    async initialize() {
+        if (this.isInitialized) return;
         
         try {
-            const text = await file.text();
-            const data = JSON.parse(text);
+            console.log('🚀 Initialisation de Heroes Arena...');
             
-            if (data.heroes && Array.isArray(data.heroes)) {
-                const confirmMessage = `Importer ${data.heroes.length} héros ?\nCela remplacera vos héros actuels.`;
-                
-                if (confirm(confirmMessage)) {
-                    AppState.heroes = [];
-                    data.heroes.forEach(heroData => {
-                        const hero = createHeroFromData(heroData);
-                        if (hero) AppState.heroes.push(hero);
-                    });
-                    
-                    await saveHeroes();
-                    displayHeroes();
-                    updateFighterSelectors();
-                    
-                    alert(`${AppState.heroes.length} héros importés avec succès !`);
-                }
-            } else {
-                alert('Format de fichier invalide');
-            }
-        } catch (error) {
-            alert('Erreur lors de l\'importation : ' + error.message);
-        }
-    };
-    
-    input.click();
-};
-
-// ============= STATISTIQUES CLOUD =============
-window.HeroesArena.getCloudStats = async function() {
-    if (!window.AuthUI || !window.AuthUI.isOnline()) {
-        alert('Vous devez être connecté pour voir les statistiques cloud');
-        return;
-    }
-    
-    try {
-        const result = await window.cloudStorage.loadHeroes();
-        if (result.success) {
-            const stats = {
-                totalHeroes: result.heroes.length,
-                byClass: {},
-                totalBattles: 0,
-                creationDates: []
+            // Charger les données
+            await this.data.loadHeroes();
+            
+            // Initialiser l'interface
+            await this.ui.initialize();
+            
+            // Configurer le combat
+            this.combat.onLogUpdate = (entry) => {
+                this.ui.addLogEntry(entry.message, entry.type);
             };
             
-            result.heroes.forEach(hero => {
-                stats.byClass[hero.classe] = (stats.byClass[hero.classe] || 0) + 1;
-                stats.totalBattles += (hero.victoires || 0) + (hero.defaites || 0);
-                if (hero.createdAt) {
-                    stats.creationDates.push(hero.createdAt);
-                }
+            // Démarrer la sauvegarde automatique
+            this.data.startAutoSave();
+            
+            // Afficher l'interface initiale
+            this.ui.displayHeroes();
+            this.ui.updateFighterSelectors();
+            this.ui.addLogEntry('Bienvenue dans l\'arène ! Sélectionnez deux héros pour commencer le combat...', 'info');
+            
+            this.isInitialized = true;
+            console.log('✅ Heroes Arena initialisé avec succès');
+            
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'initialisation:', error);
+            throw error;
+        }
+    }
+    
+    // === MÉTHODES D'INTERFACE ===
+    
+    showSection(sectionName) {
+        return this.ui.showSection(sectionName);
+    }
+    
+    showAvatarCategory(category) {
+        return this.ui.showAvatarCategory(category);
+    }
+    
+    updateClassInfo() {
+        return this.ui.updateClassInfo();
+    }
+    
+    updateStats() {
+        return this.ui.updateStats();
+    }
+    
+    randomStats() {
+        return this.ui.randomStats();
+    }
+    
+    filterHeroes(filter) {
+        return this.ui.filterHeroes(filter);
+    }
+    
+    updateFighters() {
+        return this.ui.updateFighters();
+    }
+    
+    resetArena() {
+        // Réinitialiser les sélections
+        const selectors = [
+            document.getElementById('fighter1Select'),
+            document.getElementById('fighter2Select')
+        ];
+        
+        selectors.forEach(select => {
+            if (select) select.value = '';
+        });
+        
+        // Réinitialiser l'état
+        AppState.fighter1 = null;
+        AppState.fighter2 = null;
+        
+        // Arrêter le combat en cours
+        this.combat.stopCombat();
+        
+        // Mettre à jour l'affichage
+        this.ui.updateFighters();
+        this.ui.clearCombatLog();
+        
+        // Ajouter un message de bienvenue
+        this.ui.addLogEntry('Bienvenue dans l\'arène ! Sélectionnez deux héros pour commencer le combat...', 'info');
+    }
+    
+    stopCombat() {
+        this.combat.stopCombat();
+        
+        const fightBtn = document.getElementById('fightBtn');
+        if (fightBtn) fightBtn.disabled = false;
+    }
+    
+    // === MÉTHODES DE GESTION DES HÉROS ===
+    
+    async createHeroFromForm() {
+        try {
+            const nom = document.getElementById('heroName')?.value?.trim();
+            const classe = document.getElementById('heroClass')?.value;
+            const stats = this.ui.updateStats();
+            
+            if (!nom) {
+                this.ui.showError('Veuillez entrer un nom pour le héros');
+                return false;
+            }
+            
+            const result = await this.data.addHero({
+                nom,
+                avatar: this.ui.selectedAvatar,
+                classe,
+                ...stats
             });
             
-            console.log('📊 Statistiques Cloud:', stats);
-            return stats;
+            if (result.success) {
+                this.ui.showSuccess('Héros créé avec succès !');
+                
+                // Réinitialiser le formulaire
+                document.getElementById('heroName').value = '';
+                this.ui.randomStats();
+                
+                // Afficher les héros et aller à la section héros
+                this.ui.displayHeroes();
+                this.ui.updateFighterSelectors();
+                this.ui.showSection('heroes');
+                
+                return true;
+            } else {
+                this.ui.showError(result.error);
+                return false;
+            }
+            
+        } catch (error) {
+            console.error('Erreur lors de la création du héros:', error);
+            this.ui.showError('Erreur lors de la création du héros');
+            return false;
         }
-    } catch (error) {
-        console.error('Erreur lors de la récupération des stats:', error);
     }
-};
+    
+    async deleteHero(index) {
+        const hero = AppState.heroes[index];
+        if (!hero) return;
+        
+        if (confirm(`Êtes-vous sûr de vouloir supprimer ce héros ?\n\n${hero.nom} (${hero.classe})`)) {
+            const result = await this.data.deleteHero(index);
+            
+            if (result.success) {
+                this.ui.showSuccess('Héros supprimé');
+                this.ui.displayHeroes();
+                this.ui.updateFighterSelectors();
+            } else {
+                this.ui.showError(result.error);
+            }
+        }
+    }
+    
+    async healHero(index) {
+        const hero = AppState.heroes[index];
+        if (!hero) return;
+        
+        hero.heal();
+        await this.data.saveHeroes();
+        this.ui.displayHeroes();
+        this.ui.showSuccess(`${hero.nom} a été complètement soigné !`);
+    }
+    
+    showHeroDetails(index) {
+        const hero = AppState.heroes[index];
+        if (!hero) return;
+        
+        // Créer une modal simple avec les détails du héros
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>${hero.nom}</h2>
+                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+                </div>
+                
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-bottom: 20px;">
+                        <strong>Classe:</strong> <span>${hero.classe}</span>
+                        <strong>Niveau:</strong> <span>${hero.niveau}</span>
+                        <strong>Badge:</strong> <span>${hero.getBadgeText()}</span>
+                        <strong>Expérience:</strong> <span>${hero.xp} XP</span>
+                        <strong>Force:</strong> <span>${hero.force}</span>
+                        <strong>Agilité:</strong> <span>${hero.agility}</span>
+                        <strong>Magie:</strong> <span>${hero.magic}</span>
+                        <strong>Défense:</strong> <span>${hero.defense}</span>
+                        <strong>Points de vie:</strong> <span>${hero.pv}/${hero.pvMax}</span>
+                        <strong>Victoires:</strong> <span style="color: #10b981;">${hero.victoires}</span>
+                        <strong>Défaites:</strong> <span style="color: #ef4444;">${hero.defaites}</span>
+                        <strong>Ratio:</strong> <span style="color: #3b82f6;">${hero.getRatio()}%</span>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Fermer</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Fermer en cliquant à l'extérieur
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+    
+    // === MÉTHODES DE COMBAT ===
+    
+    async startCombat() {
+        if (!AppState.fighter1 || !AppState.fighter2) {
+            this.ui.showError('Veuillez sélectionner deux combattants');
+            return;
+        }
+        
+        if (AppState.fighter1.id === AppState.fighter2.id) {
+            this.ui.showError('Un héros ne peut pas combattre contre lui-même');
+            return;
+        }
+        
+        try {
+            // Désactiver le bouton de combat
+            const fightBtn = document.getElementById('fightBtn');
+            if (fightBtn) fightBtn.disabled = true;
+            
+            // Nettoyer le log de combat
+            this.ui.clearCombatLog();
+            
+            // Démarrer le combat
+            const result = await this.combat.startCombat(AppState.fighter1, AppState.fighter2);
+            
+            if (result.success) {
+                // Sauvegarder automatiquement
+                await this.data.saveHeroes();
+                
+                // Mettre à jour l'affichage
+                this.ui.displayHeroes();
+                this.ui.updateFighterDisplay();
+            } else {
+                this.ui.showError(result.error);
+            }
+            
+        } catch (error) {
+            console.error('Erreur lors du démarrage du combat:', error);
+            this.ui.showError('Erreur lors du démarrage du combat');
+        } finally {
+            // Réactiver le bouton
+            setTimeout(() => {
+                const fightBtn = document.getElementById('fightBtn');
+                if (fightBtn) fightBtn.disabled = false;
+            }, 1000);
+        }
+    }
+    
+    // === MÉTHODES D'IMPORT/EXPORT ===
+    
+    async exportData() {
+        const result = await this.data.exportToFile();
+        
+        if (result.success) {
+            this.ui.showSuccess(`Export réussi: ${result.filename}`);
+        } else {
+            this.ui.showError(result.error);
+        }
+    }
+    
+    async importData(file) {
+        const result = await this.data.importFromFile(file);
+        
+        if (result.success) {
+            this.ui.showSuccess(`Import réussi: ${result.imported}/${result.total} héros importés`);
+            this.ui.displayHeroes();
+            this.ui.updateFighterSelectors();
+            
+            if (result.errors.length > 0) {
+                console.warn('Erreurs d\'import:', result.errors);
+            }
+        } else {
+            this.ui.showError(result.error);
+        }
+        
+        return result;
+    }
+    
+    async loadData() {
+        const result = await this.data.loadHeroes();
+        
+        if (result.success) {
+            this.ui.showSuccess(`${result.count} héros chargés`);
+            this.ui.displayHeroes();
+            this.ui.updateFighterSelectors();
+        } else {
+            this.ui.showError(result.error);
+        }
+    }
+    
+    async clearAllData() {
+        if (confirm('Êtes-vous sûr de vouloir supprimer tous les héros ?')) {
+            const result = await this.data.clearAllHeroes();
+            
+            if (result.success) {
+                this.ui.showSuccess(`${result.count} héros supprimés`);
+                this.ui.displayHeroes();
+                this.ui.updateFighterSelectors();
+                this.resetArena();
+            } else {
+                this.ui.showError(result.error);
+            }
+        }
+    }
+    
+    createDemoHeroes() {
+        // Créer quelques héros de démonstration
+        const demoHeroes = [
+            { nom: 'Aragorn', classe: 'Guerrier', force: 35, agility: 25, magic: 15, defense: 25, avatar: 'warrior1.png' },
+            { nom: 'Gandalf', classe: 'Mage', force: 20, agility: 20, magic: 35, defense: 25, avatar: 'wizard1.png' },
+            { nom: 'Legolas', classe: 'Archer', force: 25, agility: 35, magic: 20, defense: 20, avatar: 'archer1.png' },
+            { nom: 'Gimli', classe: 'Paladin', force: 30, agility: 15, magic: 20, defense: 35, avatar: 'paladin1.png' }
+        ];
+        
+        let created = 0;
+        
+        demoHeroes.forEach(async (heroData) => {
+            const result = await this.data.addHero(heroData);
+            if (result.success) {
+                created++;
+                if (created === demoHeroes.length) {
+                    this.ui.showSuccess(`${created} héros de démo créés !`);
+                    this.ui.displayHeroes();
+                    this.ui.updateFighterSelectors();
+                }
+            }
+        });
+    }
+    
+    // === MÉTHODES DE DEBUG ===
+    
+    debug() {
+        console.log('=== ÉTAT DE L\'APPLICATION ===');
+        console.log('Heroes Arena:', this);
+        console.log('App State:', AppState);
+        console.log('UI Manager:', this.ui);
+        console.log('Data Manager:', this.data);
+        console.log('Combat System:', this.combat);
+        console.log('Héros:', AppState.heroes);
+        console.log('Combat en cours:', this.combat.getCurrentCombat());
+    }
+    
+    getState() {
+        return {
+            isInitialized: this.isInitialized,
+            heroCount: AppState.heroes.length,
+            currentSection: this.ui.currentSection,
+            currentCombat: this.combat.getCurrentCombat(),
+            fighters: {
+                fighter1: AppState.fighter1?.nom || null,
+                fighter2: AppState.fighter2?.nom || null
+            }
+        };
+    }
+}
 
-// ============= EXPORTS POUR TESTS =============
-export { initializeApp, loadAuthInterface };
+// Créer l'instance globale
+const heroesArena = new HeroesArena();
+
+// Initialiser l'application
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await heroesArena.initialize();
+        
+        // Remplacer l'objet temporaire par l'application réelle
+        window.HeroesArena = heroesArena;
+        window.uiManager = heroesArena.ui;
+        
+        // Marquer comme initialisé
+        window.HeroesArena.isInitialized = heroesArena.isInitialized;
+        
+        console.log('🎮 Heroes Arena prêt !');
+        
+    } catch (error) {
+        console.error('💥 Erreur fatale lors de l\'initialisation:', error);
+        
+        // Afficher un message d'erreur à l'utilisateur
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = `
+            <div style="
+                background: #fee2e2;
+                border: 1px solid #ef4444;
+                border-radius: 8px;
+                padding: 16px;
+                margin: 20px;
+                color: #991b1b;
+                text-align: center;
+            ">
+                <h3>🚨 Erreur de chargement</h3>
+                <p>L'application n'a pas pu se charger correctement.</p>
+                <button onclick="location.reload()" style="
+                    background: #ef4444;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    margin-top: 10px;
+                ">Recharger la page</button>
+            </div>
+        `;
+        document.body.appendChild(errorDiv);
+    }
+});
+
+// Exposer pour le debug
+window.app = heroesArena;
+
+export default heroesArena;

@@ -1,247 +1,444 @@
-# Heroes Arena - Version Modularisée
+# 🏟️ Heroes Arena - Ultimate Edition
 
-## 🎮 Description
+> **Un jeu de combat de héros web interactif avec système d'authentification et sauvegarde cloud**
 
-Heroes Arena est un jeu web interactif où vous pouvez créer des héros personnalisés avec des classes uniques et les faire combattre dans une arène. Chaque héros possède des statistiques, des pouvoirs spéciaux et peut gravir les échelons pour obtenir des badges de prestige.
+[![Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/your-badge-id/deploy-status)](https://app.netlify.com/sites/heroes-arena)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
-## 📁 Structure du Projet
+Heroes Arena est un jeu web moderne où vous créez des héros personnalisés avec des classes uniques et les faites combattre dans une arène épique. Avec un système de progression, des badges de prestige, et une sauvegarde cloud sécurisée.
+
+## ✨ Fonctionnalités Principales
+
+### 🎮 **Gameplay**
+- **4 Classes de héros** avec des pouvoirs uniques
+- **Système de combat** au tour par tour avec animations
+- **100 points de statistiques** à répartir librement
+- **Catalogue de 40+ avatars** organisés par classe
+- **Système de badges** et progression (Bronze, Argent, Or)
+
+### 🔐 **Authentification & Cloud**
+- **Système d'authentification** complet (connexion/inscription)
+- **Sauvegarde cloud** automatique via Netlify Functions
+- **Synchronisation** en temps réel entre appareils
+- **Récupération de mot de passe** par email
+
+### 🎨 **Interface**
+- **Design moderne** avec thème sombre et effets glassmorphism
+- **Interface responsive** (mobile et desktop)
+- **Animations fluides** et effets visuels
+- **Raccourcis clavier** pour navigation rapide
+
+## 🚀 Démo en Ligne
+
+🌐 **[Jouer maintenant sur Netlify](https://heroes-arena.netlify.app)**
+
+## 📱 Captures d'Écran
+
+| Authentification | Création de Héros | Combat |
+|------------------|-------------------|---------|
+| ![Auth](docs/screenshots/auth.png) | ![Create](docs/screenshots/create.png) | ![Combat](docs/screenshots/combat.png) |
+
+## 🏗️ Architecture du Projet
 
 ```
 heroes-arena/
+├── 🌐 Frontend
+│   ├── index.html              # Page principale avec auth
+│   ├── style.css               # Styles compilés SCSS
+│   ├── js/                     # Scripts modulaires ES6+
+│   │   ├── main.js            # Point d'entrée principal
+│   │   ├── app-loader.js      # Chargeur d'application
+│   │   ├── init.js            # Initialisation
+│   │   ├── core/              # Modules core
+│   │   │   ├── config.js      # Configuration globale
+│   │   │   ├── classes.js     # Classes de héros (POO)
+│   │   │   └── utils.js       # Utilitaires
+│   │   ├── modules/           # Modules métier
+│   │   │   ├── auth.js        # Authentification
+│   │   │   ├── data.js        # Gestion données
+│   │   │   ├── ui.js          # Interface utilisateur
+│   │   │   ├── combat.js      # Système de combat
+│   │   │   └── combat-effects.js # Effets visuels
+│   │   └── interfaces/        # Types TypeScript (futur)
+│   └── images/                # Assets (avatars)
 │
-├── index.html                 # Page principale
-├── README.md                 # Documentation
+├── ☁️ Backend (Netlify Functions)
+│   └── netlify/
+│       └── functions/
+│           ├── auth.js        # API authentification
+│           └── heroes.js      # API gestion héros
 │
-├── js/                       # Scripts JavaScript modulaires
-│   ├── main.js              # Point d'entrée principal
-│   ├── config.js            # Configuration et variables globales
-│   ├── classes.js           # Classes des héros (POO)
-│   ├── data.js              # Gestion des données et sauvegarde
-│   ├── ui.js                # Interface utilisateur
-│   ├── combat.js            # Système de combat
-│   ├── events.js            # Gestionnaire d'événements
-│   └── utils.js             # Fonctions utilitaires
+├── 🎨 Styles (SCSS)
+│   └── scss/
+│       ├── abstracts/         # Variables, mixins
+│       ├── base/              # Reset, typographie
+│       ├── components/        # Composants UI
+│       ├── layout/            # Layout général
+│       ├── pages/             # Styles spécifiques
+│       └── themes/            # Thèmes couleurs
 │
-├── images/                   # Avatars des héros (optionnel)
-│   ├── warrior1.png
-│   ├── mage1.png
-│   └── ...
-│
-└── css/                      # Styles CSS (optionnel)
-    └── styles.css           # Styles supplémentaires
+└── ⚙️ Configuration
+    ├── package.json           # Dépendances Node.js
+    ├── netlify.toml          # Config déploiement
+    └── README.md             # Documentation
 ```
 
-## 🚀 Installation et Utilisation
+## 🎯 Classes de Héros
 
-### Prérequis
-- Navigateur web moderne supportant ES6 modules
-- Serveur HTTP local (pour éviter les problèmes CORS)
+### ⚔️ **Guerrier** - Maître de la Rage
+- **Bonus** : +20% Force
+- **Pouvoir** : Rage Berserker (+50% dégâts, -30% défense, 3 tours)
+- **Style** : Combat rapproché, haute résistance
 
-### Installation Simple
-1. Téléchargez tous les fichiers dans un dossier
-2. Créez la structure de dossiers ci-dessus
-3. Placez les fichiers JavaScript dans le dossier `js/`
-4. Ouvrez `index.html` via un serveur HTTP local
+### 🔮 **Mage** - Seigneur des Boucliers
+- **Bonus** : +20% Magie  
+- **Pouvoir** : Bouclier Magique (absorbe les dégâts, 4 tours)
+- **Style** : Contrôle, défense magique
 
-### Serveur Local
-```bash
-# Avec Python 3
-python -m http.server 8000
+### 🏹 **Archer** - Expert en Tirs Multiples
+- **Bonus** : +20% Agilité
+- **Pouvoir** : Tir Multiple (2-3 flèches consécutives)
+- **Style** : Attaques à distance, precision
 
-# Avec Node.js (http-server)
-npx http-server
+### 🛡️ **Paladin** - Gardien Guérisseur
+- **Bonus** : +20% Défense
+- **Pouvoir** : Aura de Guérison (régénération sur 4 tours)
+- **Style** : Tank, support, résistance
 
-# Avec PHP
-php -S localhost:8000
-```
+## 🎮 Guide de Jeu
 
-Puis accédez à `http://localhost:8000`
+### 🎯 **Création de Héros**
+1. **Choisissez une classe** selon votre style de jeu
+2. **Répartissez 100 points** entre Force, Agilité, Magie, Défense
+3. **Sélectionnez un avatar** dans le catalogue
+4. **Nommez votre héros** et validez
 
-## 📚 Architecture des Modules
+### ⚔️ **Combat**
+- Les combats sont **au tour par tour**
+- Chaque héros attaque en alternance
+- Les **pouvoirs spéciaux** se déclenchent automatiquement
+- Les **dégâts** dépendent des stats et de la défense
+- **PV** = (Force + Défense) × 2.5
 
-### 🔧 config.js
-- **Rôle** : Configuration globale et constantes
-- **Contient** :
-  - Variables d'état de l'application (`AppState`)
-  - Catalogue d'avatars par classe
-  - Informations des classes et pouvoirs
-  - Configuration des badges
+### 🏆 **Progression**
+- **🥉 Bronze** : 5 victoires → Bordure bronze
+- **🥈 Argent** : 10 victoires → Bordure argent animée  
+- **🥇 Or** : 20 victoires → Bordure or prestigieuse
 
-### 🏛️ classes.js
-- **Rôle** : Définition des classes de héros (POO)
-- **Classes** :
-  - `Hero` : Classe de base
-  - `Guerrier` : Spécialiste de la rage
-  - `Mage` : Maître des boucliers magiques
-  - `Archer` : Expert en tirs multiples
-  - `Paladin` : Gardien avec aura de soin
-- **Factory** : `createHero()` pour instancier les héros
-
-### 💾 data.js
-- **Rôle** : Gestion des données et persistance
-- **Fonctions** :
-  - `saveHeroes()` : Sauvegarde dans localStorage
-  - `loadHeroes()` : Chargement depuis localStorage
-  - `autoLoadHeroes()` : Chargement automatique au démarrage
-  - `deleteHero()` : Suppression d'un héros
-  - `clearAllHeroes()` : Suppression de tous les héros
-
-### 🎨 ui.js
-- **Rôle** : Interface utilisateur et affichage
-- **Fonctions principales** :
-  - Navigation entre sections
-  - Gestion des avatars et du catalogue
-  - Création et affichage des héros
-  - Interface de l'arène
-  - Mise à jour des barres de vie
-  - Filtrage et recherche
-
-### ⚔️ combat.js
-- **Rôle** : Système de combat et logique de jeu
-- **Fonctions** :
-  - `startFight()` : Lancement d'un combat
-  - `combatTurn()` : Gestion des tours de combat
-  - `calculerDegats()` : Calcul des dégâts avec défense
-  - `processPower()` : Activation des pouvoirs spéciaux
-  - Gestion des badges et statistiques
-
-### 🎯 events.js
-- **Rôle** : Gestion avancée des événements
-- **Fonctionnalités** :
-  - Raccourcis clavier (Ctrl+1/2/3 pour naviguer)
-  - Validation en temps réel
-  - Notifications système
-  - Auto-sauvegarde
-  - Gestion responsive
-
-### 🛠️ utils.js
-- **Rôle** : Fonctions utilitaires réutilisables
-- **Outils** :
-  - Générateurs de nombres aléatoires
-  - Validation des statistiques
-  - Utilitaires pour localStorage
-  - Animations et UI helpers
-  - Formatage de données
-
-### 🏠 main.js
-- **Rôle** : Point d'entrée et orchestration
-- **Responsabilités** :
-  - Initialisation de l'application
-  - Exposition de l'API globale (`window.HeroesArena`)
-  - Gestion des erreurs
-  - Coordination entre modules
-
-## 🎯 Fonctionnalités
-
-### Création de Héros
-- **4 classes** : Guerrier, Mage, Archer, Paladin
-- **Système de stats** : 100 points à répartir (Force, Agilité, Magie, Défense)
-- **Catalogue d'avatars** : Plus de 40 avatars organisés par classe
-- **Pouvoirs uniques** : Chaque classe a un pouvoir passif spécial
-
-### Système de Combat
-- **Combat au tour par tour** avec animations
-- **Calculs complexes** : Dégâts, défense, esquive
-- **Pouvoirs spéciaux** :
-  - Guerrier : Rage Berserker (+50% dégâts, -30% défense)
-  - Mage : Bouclier Magique (absorption de dégâts)
-  - Archer : Tir Multiple (2-3 flèches consécutives)
-  - Paladin : Aura de Guérison (régénération sur 4 tours)
-
-### Progression et Badges
-- **Système de badges** :
-  - 🥉 **Bronze** : 5 victoires (Expérimenté)
-  - 🥈 **Argent** : 10 victoires (Vétéran)
-  - 🥇 **Or** : 20 victoires (Légendaire)
-- **Statistiques** : Victoires, défaites, ratio de réussite
-- **Effets visuels** : Bordures animées pour les badges
-
-### Interface Utilisateur
-- **Design moderne** : Thème sombre avec effets glassmorphism
-- **Responsive** : Adapté mobile et desktop
-- **Animations** : Transitions fluides et effets visuels
-- **Raccourcis clavier** : Navigation rapide
-
-## 🎮 Guide d'Utilisation
-
-### Raccourcis Clavier
-- `Ctrl + 1` : Aller à "Créer un Héros"
-- `Ctrl + 2` : Aller à "Mes Héros"
-- `Ctrl + 3` : Aller à "Arène"
+### ⌨️ **Raccourcis Clavier**
+- `Ctrl + 1` : Créer un Héros
+- `Ctrl + 2` : Mes Héros  
+- `Ctrl + 3` : Arène
 - `Échap` : Fermer les modales
-- `Entrée` : Créer un héros (depuis le champ nom)
+- `Entrée` : Valider création
 
-### Conseils de Jeu
-1. **Équilibrage** : Répartissez bien vos 100 points de stats
-2. **Spécialisation** : Chaque classe a un bonus de +20% sur sa stat principale
-3. **Stratégie** : Considérez les pouvoirs passifs lors des combats
-4. **Progression** : Accumulez les victoires pour débloquer les badges
+## 🛠️ Installation & Développement
 
-## 🔧 Personnalisation
+### 📋 **Prérequis**
+- **Node.js** 18+ 
+- **npm** ou **yarn**
+- **Netlify CLI** (pour le développement local)
 
-### Ajouter de Nouveaux Avatars
-1. Ajoutez vos images dans le dossier `images/`
-2. Modifiez `avatarCatalog` dans `config.js`
-3. Respectez le format : `nom_classe_numero.png`
+### 🚀 **Installation Rapide**
 
-### Créer une Nouvelle Classe
-1. Étendez la classe `Hero` dans `classes.js`
-2. Ajoutez les informations dans `config.js`
-3. Implémentez les pouvoirs spéciaux
-4. Mettez à jour l'interface utilisateur
+```bash
+# Cloner le repository
+git clone https://github.com/lorycarvajol/heroes-arena.git
+cd heroes-arena
 
-### Modifier les Statistiques
-- Ajustez les valeurs dans les classes de héros
-- Modifiez les calculs dans `combat.js`
-- Personnalisez les bonus de classe
+# Installer les dépendances
+npm install
 
-## 🐛 Débogage
-
-### Console de Développement
-L'application affiche des logs détaillés :
-```javascript
-🚀 Initialisation de Heroes Arena...
-📊 3 héros chargés
-🦸 Nouveau héros créé: Aragorn (Guerrier)
-⚔️ Combat terminé: Gandalf vs Legolas
+# Démarrer le serveur de développement
+npm run dev
 ```
 
-### Gestion d'Erreurs
-- Sauvegarde automatique après chaque action
-- Validation en temps réel des formulaires
-- Messages d'erreur contextuels
-- Récupération automatique des données
+L'application sera accessible sur `http://localhost:8888`
 
-## 📈 Améliorations Possibles
+### 🧪 **Commandes Disponibles**
 
-### Fonctionnalités Avancées
-- [ ] Système de niveaux et d'expérience
-- [ ] Équipements et objets
-- [ ] Tournois et championnats
-- [ ] Mode multijoueur en ligne
-- [ ] Sauvegarde cloud
-- [ ] Graphiques de progression
+```bash
+# Développement local avec Netlify
+npm run dev
 
-### Optimisations Techniques
-- [ ] Service Worker pour le mode hors-ligne
-- [ ] Compression des données de sauvegarde
-- [ ] Lazy loading des avatars
-- [ ] Tests unitaires
-- [ ] Bundle avec Webpack/Vite
+# Build du projet
+npm run build
 
-## 📄 Licence
+# Tests (si configurés)
+npm test
 
-Ce projet est fourni à des fins éducatives. Libre d'utilisation et de modification.
+# Déploiement production
+npm run deploy
+```
+
+### 🔧 **Configuration Netlify**
+
+Le projet utilise **Netlify Functions** pour l'API backend. Configuration dans `netlify.toml` :
+
+```toml
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[dev]
+  functions = "netlify/functions"
+  port = 8888
+```
+
+## 🔐 Configuration Authentification
+
+### Variables d'Environnement
+
+Créez un fichier `.env` (non versioned) :
+
+```env
+# Base de données (par exemple Supabase)
+DATABASE_URL=your_database_url
+JWT_SECRET=your_jwt_secret
+
+# Email (pour reset password)
+EMAIL_SERVICE_API_KEY=your_email_api_key
+```
+
+### Base de Données
+
+Le projet supporte plusieurs options :
+- **Netlify Identity** (recommandé)
+- **Supabase** 
+- **Firebase Auth**
+- **Base de données custom**
+
+## 🎨 Personnalisation
+
+### 🖼️ **Ajouter des Avatars**
+
+1. Ajoutez vos images dans `images/`
+2. Modifiez `avatarCatalog` dans `js/core/config.js` :
+
+```javascript
+export const avatarCatalog = {
+    guerriers: [
+        'warrior1.png', 'warrior2.png', 
+        'mon-nouveau-guerrier.png' // ← Nouveau
+    ],
+    // ...
+};
+```
+
+### 🆕 **Créer une Nouvelle Classe**
+
+1. **Étendez la classe Hero** dans `js/core/classes.js` :
+
+```javascript
+export class Ninja extends Hero {
+    constructor(nom, avatar, force, agility, magic, defense) {
+        super(nom, avatar, 'Ninja', force, agility, magic, defense);
+    }
+    
+    activatePower() {
+        // Pouvoir spécial : Invisibilité
+        this.invisible = true;
+        this.esquiveBonus = 50;
+    }
+}
+```
+
+2. **Ajoutez les infos** dans `js/core/config.js` :
+
+```javascript
+export const classInfo = {
+    'Ninja': {
+        title: 'Ninja - Maître de l\'Ombre',
+        desc: 'Bonus de +20% en Agilité. Expert en esquive.',
+        power: 'Invisibilité',
+        powerDesc: 'Augmente l\'esquive de 50% pendant 3 tours.',
+        bonusStat: 'agility',
+        bonusPercent: 20
+    }
+};
+```
+
+### 🎨 **Personnaliser les Styles**
+
+Le projet utilise **SCSS** pour une organisation modulaire :
+
+```scss
+// scss/themes/_dark.scss
+$primary-color: #6366f1;
+$background-dark: #0f172a;
+$card-bg: rgba(255, 255, 255, 0.1);
+
+// Votre thème personnalisé
+$custom-primary: #ff6b6b;
+```
+
+## 🧪 Tests
+
+```bash
+# Tests unitaires
+npm test
+
+# Tests d'intégration  
+npm run test:integration
+
+# Tests E2E avec Playwright
+npm run test:e2e
+```
+
+## 📊 Monitoring & Analytics
+
+### Performance Monitoring
+
+Le projet inclut des métriques de performance :
+- Temps de chargement
+- Interactions utilisateur
+- Erreurs JavaScript
+- Usage mémoire
+
+### Analytics
+
+Configuration Google Analytics dans `index.html` :
+
+```html
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+```
+
+## 🚀 Déploiement
+
+### Netlify (Recommandé)
+
+1. **Connectez votre repository** GitHub à Netlify
+2. **Configuration automatique** via `netlify.toml`
+3. **Déploiement automatique** sur push
+
+### Autres Plateformes
+
+- **Vercel** : Compatible avec configuration minimal
+- **GitHub Pages** : Nécessite adaptation (pas de functions)
+- **Firebase Hosting** : Support complet avec Functions
+
+## 🔧 Dépannage
+
+### Problèmes Courants
+
+**❌ Erreur CORS sur les images**
+```bash
+# Solution : Serveur local requis
+npx http-server
+# ou
+python -m http.server 8000
+```
+
+**❌ Modules ES6 non chargés**
+```html
+<!-- Vérifiez le type module -->
+<script type="module" src="js/main.js"></script>
+```
+
+**❌ Authentification échoue**
+```javascript
+// Vérifiez les variables d'environnement
+console.log('API URL:', process.env.NETLIFY_URL);
+```
+
+### Logs de Débogage
+
+Active les logs détaillés dans la console :
+
+```javascript
+// js/core/config.js
+export const DEBUG = true; // ← Activez pour développement
+```
 
 ## 🤝 Contribution
 
-Pour contribuer :
-1. Forkez le projet
-2. Créez une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
-3. Committez vos changements (`git commit -m 'Ajout nouvelle fonctionnalité'`)
-4. Poussez vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
-5. Ouvrez une Pull Request
+### Workflow de Contribution
+
+1. **Fork** le projet
+2. **Créez une branche** : `git checkout -b feature/ma-feature`
+3. **Développez** avec les bonnes pratiques
+4. **Tests** : Assurez-vous que tout passe
+5. **Commit** : Messages explicites
+6. **Push** : `git push origin feature/ma-feature`
+7. **Pull Request** : Description détaillée
+
+### Standards de Code
+
+- **ES6+** avec modules
+- **JSDoc** pour la documentation
+- **Prettier** pour le formatage
+- **ESLint** pour la qualité
+
+```javascript
+/**
+ * Calcule les dégâts d'une attaque
+ * @param {number} force - Force de l'attaquant
+ * @param {number} defense - Défense du défenseur
+ * @returns {number} Dégâts infligés
+ */
+function calculerDegats(force, defense) {
+    return Math.max(1, force - Math.floor(defense * 0.5));
+}
+```
+
+## 📈 Roadmap
+
+### 🎯 **Version 2.0** (Q3 2024)
+- [ ] **Système d'XP et niveaux** 
+- [ ] **Équipements et objets**
+- [ ] **Sorts et compétences**
+- [ ] **Mode histoire/campagne**
+
+### 🎯 **Version 2.5** (Q4 2024)
+- [ ] **Multijoueur en temps réel**
+- [ ] **Tournois et classements**
+- [ ] **Guildes et alliances**
+- [ ] **Chat en jeu**
+
+### 🎯 **Version 3.0** (2025)
+- [ ] **Application mobile** (React Native)
+- [ ] **Marketplace NFT** (optionnel)
+- [ ] **IA avancée** pour NPCs
+- [ ] **Réalité augmentée**
+
+## 📄 Licence
+
+Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+```
+MIT License
+
+Copyright (c) 2024 Heroes Arena Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software...
+```
+
+## 🙏 Remerciements
+
+- **[Netlify](https://netlify.com)** pour l'hébergement et les functions
+- **[SCSS](https://sass-lang.com)** pour les styles modulaires  
+- **[Unsplash](https://unsplash.com)** pour les images placeholder
+- **Communauté JavaScript** pour l'inspiration
+
+## 📞 Support & Contact
+
+- **🐛 Issues** : [GitHub Issues](https://github.com/votre-username/heroes-arena/issues)
+- **💬 Discussions** : [GitHub Discussions](https://github.com/votre-username/heroes-arena/discussions)
+- **📧 Email** : support@heroes-arena.com
+- **🐦 Twitter** : [@HeroesArenaGame](https://twitter.com/HeroesArenaGame)
 
 ---
 
-**Heroes Arena** - Créé avec ❤️ et beaucoup de JavaScript modulaire !
+<div align="center">
+
+**⭐ Heroes Arena - Créé avec ❤️ et beaucoup de JavaScript moderne !**
+
+[🎮 Jouer Maintenant](https://heroes-arena.netlify.app) • [📖 Documentation](docs/) • [🤝 Contribuer](CONTRIBUTING.md)
+
+</div>

@@ -170,3 +170,5 @@ error.log
 # data/test-heroes.json
 # screenshots/
 # demos/
+# Local Netlify folder
+.netlify

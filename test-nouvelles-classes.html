@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test des Nouvelles Classes - Heroes Arena</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #0f172a; color: white; }
+        .test-section { margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px; }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        button { padding: 10px 20px; margin: 5px; background: #6366f1; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .hero-card { display: inline-block; margin: 10px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test des Nouvelles Classes - Heroes Arena</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Création des classes</h2>
+        <button onclick="testClassCreation()">Tester Création Classes</button>
+        <div id="test1-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Pouvoirs spéciaux</h2>
+        <button onclick="testSpecialPowers()">Tester Pouvoirs</button>
+        <div id="test2-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Configuration et avatars</h2>
+        <button onclick="testConfiguration()">Tester Configuration</button>
+        <div id="test3-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Héros de test créés:</h2>
+        <div id="heroes-display"></div>
+    </div>
+
+    <script type="module">
+        import { createHero, Assassin, Druide } from './js/core/classes.js';
+        import { classInfo, avatarCatalog } from './js/core/config.js';
+        
+        window.testHeroes = [];
+        
+        window.testClassCreation = function() {
+            const resultDiv = document.getElementById('test1-result');
+            let results = [];
+            
+            try {
+                // Test Assassin
+                const assassin = createHero('Shadow', 'rogue1.png', 'Assassin', 30, 40, 15, 15);
+                results.push(`✅ Assassin créé: ${assassin.nom} (${assassin.classe})`);
+                results.push(`   Stats: F:${assassin.force} A:${assassin.agility} M:${assassin.magic} D:${assassin.defense}`);
+                results.push(`   PV: ${assassin.pv}/${assassin.pvMax}`);
+                window.testHeroes.push(assassin);
+                
+                // Test Druide
+                const druide = createHero('Sylvan', 'monk1.png', 'Druide', 25, 25, 25, 25);
+                results.push(`✅ Druide créé: ${druide.nom} (${druide.classe})`);
+                results.push(`   Stats: F:${druide.force} A:${druide.agility} M:${druide.magic} D:${druide.defense}`);
+                results.push(`   PV: ${druide.pv}/${druide.pvMax}`);
+                window.testHeroes.push(druide);
+                
+                // Test classes classiques
+                const guerrier = createHero('Conan', 'warrior1.png', 'Guerrier', 40, 15, 10, 35);
+                results.push(`✅ Guerrier créé: ${guerrier.nom} (${guerrier.classe})`);
+                window.testHeroes.push(guerrier);
+                
+                resultDiv.innerHTML = '<div class="success">' + results.join('<br>') + '</div>';
+                updateHeroesDisplay();
+                
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">❌ Erreur: ' + error.message + '</div>';
+            }
+        };
+        
+        window.testSpecialPowers = function() {
+            const resultDiv = document.getElementById('test2-result');
+            let results = [];
+            
+            try {
+                const assassin = window.testHeroes.find(h => h.classe === 'Assassin');
+                const druide = window.testHeroes.find(h => h.classe === 'Druide');
+                
+                if (assassin) {
+                    // Test pouvoir Assassin
+                    const shadowPower = assassin.activatePower();
+                    results.push(`🗡️ ${assassin.nom}: ${shadowPower.effect}`);
+                    results.push(`   Critique: ${assassin.checkCritical() ? 'OUI' : 'NON'}`);
+                    results.push(`   Esquive: ${assassin.getDodgeChance()}%`);
+                }
+                
+                if (druide) {
+                    // Test pouvoir Druide
+                    const naturePower = druide.activatePower();
+                    results.push(`🌿 ${druide.nom}: ${naturePower.effect}`);
+                    results.push(`   Défense totale: ${druide.getTotalDefense()}`);
+                    
+                    // Test régénération
+                    const oldPv = druide.pv;
+                    druide.pv = Math.floor(druide.pvMax * 0.5); // 50% PV
+                    const regenResult = druide.processSymbiosis();
+                    if (regenResult) {
+                        results.push(`   Régénération: +${regenResult.healed} PV`);
+                    }
+                }
+                
+                resultDiv.innerHTML = '<div class="success">' + results.join('<br>') + '</div>';
+                
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">❌ Erreur: ' + error.message + '</div>';
+            }
+        };
+        
+        window.testConfiguration = function() {
+            const resultDiv = document.getElementById('test3-result');
+            let results = [];
+            
+            try {
+                // Test configuration classes
+                if (classInfo.Assassin) {
+                    results.push(`✅ Config Assassin: ${classInfo.Assassin.title}`);
+                    results.push(`   Pouvoir: ${classInfo.Assassin.power}`);
+                }
+                
+                if (classInfo.Druide) {
+                    results.push(`✅ Config Druide: ${classInfo.Druide.title}`);
+                    results.push(`   Pouvoir: ${classInfo.Druide.power}`);
+                }
+                
+                // Test avatars
+                if (avatarCatalog.assassins) {
+                    results.push(`✅ Avatars Assassins: ${avatarCatalog.assassins.length} disponibles`);
+                }
+                
+                if (avatarCatalog.druides) {
+                    results.push(`✅ Avatars Druides: ${avatarCatalog.druides.length} disponibles`);
+                }
+                
+                resultDiv.innerHTML = '<div class="success">' + results.join('<br>') + '</div>';
+                
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">❌ Erreur: ' + error.message + '</div>';
+            }
+        };
+        
+        window.updateHeroesDisplay = function() {
+            const displayDiv = document.getElementById('heroes-display');
+            if (window.testHeroes.length === 0) {
+                displayDiv.innerHTML = '<p>Aucun héros créé pour le moment.</p>';
+                return;
+            }
+            
+            let html = '';
+            window.testHeroes.forEach(hero => {
+                html += `
+                    <div class="hero-card">
+                        <h4>${hero.nom}</h4>
+                        <p><strong>${hero.classe}</strong></p>
+                        <p>F:${hero.force} A:${hero.agility} M:${hero.magic} D:${hero.defense}</p>
+                        <p>PV: ${hero.pv}/${hero.pvMax}</p>
+                        <p>Avatar: ${hero.avatar}</p>
+                    </div>
+                `;
+            });
+            displayDiv.innerHTML = html;
+        };
+        
+        // Tests automatiques au chargement
+        window.addEventListener('load', () => {
+            console.log('🧪 Tests des nouvelles classes chargés');
+            console.log('📋 Classes disponibles:', Object.keys(classInfo));
+            console.log('🎨 Catégories d\'avatars:', Object.keys(avatarCatalog));
+        });
+    </script>
+</body>
+</html>
