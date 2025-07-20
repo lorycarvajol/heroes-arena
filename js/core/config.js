@@ -29,6 +29,14 @@ export const avatarCatalog = {
         'paladin1.png', 'paladin2.png', 'cleric1.png', 'cleric2.png',
         'priest1.png', 'templar1.png', 'crusader1.png', 'guardian1.png'
     ],
+    assassins: [
+        'rogue1.png', 'warrior3.png', 'scout1.png', 'hunter1.png',
+        'ranger2.png', 'fighter1.png', 'adventurer1.png', 'marksman1.png'
+    ],
+    druides: [
+        'monk1.png', 'cleric1.png', 'priest1.png', 'hero2.png',
+        'mage2.png', 'wizard2.png', 'guardian1.png', 'hero4.png'
+    ],
     generiques: [
         'hero1.png', 'hero2.png', 'hero3.png', 'hero4.png',
         'adventurer1.png', 'fighter1.png', 'rogue1.png', 'monk1.png'
@@ -67,6 +75,22 @@ export const classInfo = {
         powerDesc: 'Régénère des PV pendant 4 tours.',
         bonusStat: 'defense',
         bonusPercent: 20
+    },
+    'Assassin': {
+        title: 'Assassin - Maître de l\'Ombre',
+        desc: 'Bonus de +20% en Agilité. Expert en frappes critiques et esquive.',
+        power: 'Frappe Mortelle',
+        powerDesc: '25% de chance de critique (x2 dégâts) + 15% esquive pendant 3 tours.',
+        bonusStat: 'agility',
+        bonusPercent: 20
+    },
+    'Druide': {
+        title: 'Druide - Gardien de la Nature',
+        desc: 'Bonus de +10% sur toutes les stats. Maître de l\'équilibre et régénération.',
+        power: 'Symbiose Naturelle',
+        powerDesc: 'Régénère 10% PV max/tour pendant 5 tours + 25% défense.',
+        bonusStat: 'all',
+        bonusPercent: 10
     }
 };
 

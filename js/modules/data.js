@@ -1,7 +1,7 @@
 // Gestionnaire de données - Heroes Arena
 
 import { AppState, gameConfig, messages } from '../core/config.js';
-import { Hero } from '../core/classes.js';
+import { Hero, createHero } from '../core/classes.js';
 import { Storage, downloadFile, readFile } from '../core/utils.js';
 
 const STORAGE_KEYS = {
@@ -83,7 +83,7 @@ export class DataManager {
                 return { success: false, error: messages.errors.nameExists };
             }
             
-            const hero = new Hero(
+            const hero = createHero(
                 heroData.nom,
                 heroData.avatar || 'hero1.png',
                 heroData.classe,

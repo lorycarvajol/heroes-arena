@@ -104,6 +104,10 @@ export class CombatSystem {
         
         const { fighter1, fighter2 } = this.currentCombat;
         
+        // Traiter les effets continus des nouvelles classes
+        await this.processOngoingEffects(fighter1);
+        await this.processOngoingEffects(fighter2);
+        
         const f1Speed = fighter1.agility + randomBetween(0, 10);
         const f2Speed = fighter2.agility + randomBetween(0, 10);
         
@@ -274,6 +278,12 @@ export class CombatSystem {
             case 'Paladin':
                 await this.activateLightGuardian(attacker, defender);
                 break;
+            case 'Assassin':
+                await this.activateShadowStrike(attacker, defender);
+                break;
+            case 'Druide':
+                await this.activateNaturalSymbiosis(attacker, defender);
+                break;
             default:
                 await this.normalAttack(attacker, defender);
         }
@@ -432,6 +442,129 @@ export class CombatSystem {
         
         await delay(200);
         this.addLogEntry(`🔆 ${finalDamage} dégâts sacrés et +${healing} PV !`, 'power');
+    }
+    
+    async activateShadowStrike(attacker, defender) {
+        // Activer le pouvoir de l'assassin
+        if (attacker.activatePower) {
+            const powerResult = attacker.activatePower();
+            this.addLogEntry(`🗡️ ${attacker.nom} active ${powerResult.effect}`, 'power');
+            await delay(600);
+        }
+        
+        // Vérifier le critique
+        const isCritical = attacker.checkCritical ? attacker.checkCritical() : Math.random() < 0.25;
+        const baseMultiplier = isCritical ? 2.0 : 1.0;
+        
+        // Vérifier l'esquive du défenseur
+        const defenderDodge = defender.getDodgeChance ? defender.getDodgeChance() : Math.floor(defender.agility / 10);
+        const dodged = Math.random() * 100 < defenderDodge;
+        
+        if (dodged) {
+            this.addLogEntry(`💨 ${defender.nom} esquive l'attaque sournoise !`, 'info');
+            await delay(400);
+            return;
+        }
+        
+        const baseDamage = Math.floor(attacker.force * baseMultiplier);
+        const defense = Math.floor(defender.defense * 0.6); // L'assassin perce la défense
+        const finalDamage = Math.max(1, baseDamage - defense);
+        
+        const oldHp = defender.pv;
+        defender.takeDamage(finalDamage);
+        
+        // Effets visuels
+        const attackerSide = attacker.id === this.currentCombat.fighter1.id ? 'left' : 'right';
+        const defenderSide = defender.id === this.currentCombat.fighter1.id ? 'left' : 'right';
+        
+        if (isCritical) {
+            this.addLogEntry(`⚡ CRITIQUE ! Frappe mortelle dans l'ombre !`, 'power');
+            combatEffects.createAttackEffect(attackerSide, 'critical', finalDamage);
+            await delay(300);
+            combatEffects.showDamageNumber(finalDamage, defenderSide, 'critical');
+        } else {
+            this.addLogEntry(`🗡️ Attaque furtive précise !`, 'power');
+            combatEffects.createAttackEffect(attackerSide, 'special', finalDamage);
+            await delay(300);
+            combatEffects.showDamageNumber(finalDamage, defenderSide, 'special');
+        }
+        
+        combatEffects.animateHealthBar(
+            defenderSide === 'left' ? 'fighter1Display' : 'fighter2Display',
+            oldHp, defender.pv, defender.pvMax
+        );
+        
+        await delay(200);
+        this.addLogEntry(`🎯 ${finalDamage} dégâts ${isCritical ? 'critiques' : 'furtifs'} !`, 'power');
+    }
+    
+    async activateNaturalSymbiosis(attacker, defender) {
+        // Activer le pouvoir du druide
+        if (attacker.activatePower) {
+            const powerResult = attacker.activatePower();
+            this.addLogEntry(`🌿 ${attacker.nom} active ${powerResult.effect}`, 'power');
+            await delay(600);
+        }
+        
+        // Attaque équilibrée avec bonus de défense
+        const balancedDamage = Math.floor((attacker.force + attacker.magic) * 0.8);
+        const totalDefense = attacker.getTotalDefense ? attacker.getTotalDefense() : defender.defense;
+        const finalDamage = Math.max(1, balancedDamage - Math.floor(totalDefense * 0.7));
+        
+        const oldDefenderHp = defender.pv;
+        defender.takeDamage(finalDamage);
+        
+        // Régénération immédiate
+        const oldAttackerHp = attacker.pv;
+        const immediateHealing = Math.floor(attacker.pvMax * 0.15); // 15% immédiat
+        attacker.pv = Math.min(attacker.pvMax, attacker.pv + immediateHealing);
+        
+        // Effets visuels
+        const attackerSide = attacker.id === this.currentCombat.fighter1.id ? 'left' : 'right';
+        const defenderSide = defender.id === this.currentCombat.fighter1.id ? 'left' : 'right';
+        
+        // Attaque naturelle
+        this.addLogEntry(`🌱 Attaque en symbiose avec la nature !`, 'power');
+        combatEffects.createAttackEffect(attackerSide, 'special', finalDamage);
+        await delay(400);
+        
+        combatEffects.showDamageNumber(finalDamage, defenderSide, 'special');
+        combatEffects.animateHealthBar(
+            defenderSide === 'left' ? 'fighter1Display' : 'fighter2Display',
+            oldDefenderHp, defender.pv, defender.pvMax
+        );
+        
+        // Régénération
+        await delay(400);
+        this.addLogEntry(`🍃 Régénération naturelle instantanée !`, 'power');
+        combatEffects.showDamageNumber(immediateHealing, attackerSide, 'heal');
+        combatEffects.animateHealthBar(
+            attackerSide === 'left' ? 'fighter1Display' : 'fighter2Display',
+            oldAttackerHp, attacker.pv, attacker.pvMax
+        );
+        
+        await delay(200);
+        this.addLogEntry(`🌿 ${finalDamage} dégâts naturels et +${immediateHealing} PV !`, 'power');
+    }
+    
+    async processOngoingEffects(fighter) {
+        // Traiter les effets de l'Assassin
+        if (fighter.updateEffects) {
+            fighter.updateEffects();
+        }
+        
+        // Traiter les effets du Druide
+        if (fighter.processSymbiosis) {
+            const symbiosisResult = fighter.processSymbiosis();
+            if (symbiosisResult && symbiosisResult.healed > 0) {
+                this.addLogEntry(`🌿 ${fighter.nom} régénère ${symbiosisResult.healed} PV (${symbiosisResult.turnsLeft} tours restants)`, 'heal');
+                
+                // Mise à jour visuelle
+                const fighterId = fighter.id === this.currentCombat.fighter1.id ? 'fighter1Display' : 'fighter2Display';
+                combatEffects.animateHealthBar(fighterId, fighter.pv - symbiosisResult.healed, fighter.pv, fighter.pvMax);
+                await delay(400);
+            }
+        }
     }
     
     async endCombat(result) {
