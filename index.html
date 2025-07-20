@@ -43,6 +43,9 @@
                     <p>Pas encore de compte ? 
                         <a href="#" onclick="HeroesAuth.showRegister()">Créer un compte</a>
                     </p>
+                    <p style="margin-top: 10px;">
+                        <a href="#" onclick="HeroesAuth.showForgotPassword()">Mot de passe oublié ?</a>
+                    </p>
                 </div>
             </div>
 
@@ -91,19 +94,150 @@
                 </div>
             </div>
 
+            <!-- Formulaire de récupération de mot de passe -->
+            <div id="forgotPasswordForm" class="auth-form">
+                <h2>Récupération de mot de passe</h2>
+                <p class="forgot-description">Entrez votre adresse email pour recevoir un code de récupération</p>
+                
+                <form onsubmit="return HeroesAuth.handleForgotPassword(event)">
+                    <div class="form-group">
+                        <label for="forgotEmail">Email</label>
+                        <input type="email" id="forgotEmail" class="form-input" 
+                               placeholder="Votre adresse email" required>
+                        <div class="error-message" id="forgotEmailError"></div>
+                    </div>
+
+                    <button type="submit" class="btn auth-btn">Envoyer le code</button>
+                </form>
+
+                <div class="auth-switch">
+                    <p>Vous vous souvenez de votre mot de passe ? 
+                        <a href="#" onclick="HeroesAuth.showLogin()">Se connecter</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Formulaire de vérification du code -->
+            <div id="verifyCodeForm" class="auth-form">
+                <h2>Vérification du code</h2>
+                <p class="verify-description">Un code de récupération a été généré. Notez-le bien !</p>
+                
+                <div class="recovery-code-display" id="recoveryCodeDisplay">
+                    <!-- Le code sera affiché ici -->
+                </div>
+
+                <form onsubmit="return HeroesAuth.handleVerifyCode(event)">
+                    <div class="form-group">
+                        <label for="verificationCode">Code de récupération</label>
+                        <input type="text" id="verificationCode" class="form-input" 
+                               placeholder="Entrez le code à 6 chiffres" required maxlength="6">
+                        <div class="error-message" id="verificationCodeError"></div>
+                    </div>
+
+                    <button type="submit" class="btn auth-btn">Vérifier le code</button>
+                </form>
+
+                <div class="auth-switch">
+                    <p>
+                        <a href="#" onclick="HeroesAuth.showLogin()">Retour à la connexion</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Formulaire de nouveau mot de passe -->
+            <div id="resetPasswordForm" class="auth-form">
+                <h2>Nouveau mot de passe</h2>
+                <p class="reset-description">Choisissez un nouveau mot de passe sécurisé</p>
+                
+                <form onsubmit="return HeroesAuth.handleResetPassword(event)">
+                    <div class="form-group">
+                        <label for="newPassword">Nouveau mot de passe</label>
+                        <input type="password" id="newPassword" class="form-input" 
+                               placeholder="Choisissez un nouveau mot de passe" required>
+                        <div class="error-message" id="newPasswordError"></div>
+                        <div class="password-requirements">
+                            <small>Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmNewPassword">Confirmer le nouveau mot de passe</label>
+                        <input type="password" id="confirmNewPassword" class="form-input" 
+                               placeholder="Confirmez votre nouveau mot de passe" required>
+                        <div class="error-message" id="confirmNewPasswordError"></div>
+                    </div>
+
+                    <button type="submit" class="btn auth-btn">Changer le mot de passe</button>
+                </form>
+            </div>
+
             <!-- Messages d'erreur généraux -->
             <div id="authMessages" class="auth-messages"></div>
         </div>
     </div>
 
     <div class="container" id="mainApp" style="display: none;">
+        <!-- Carte utilisateur en haut à droite -->
+        <div class="user-card" id="userCard">
+            <div class="user-card-header" onclick="toggleUserMenu()">
+                <div class="user-avatar">
+                    <span id="userInitials">U</span>
+                </div>
+                <div class="user-basic-info">
+                    <div class="user-name" id="currentUsername">Utilisateur</div>
+                    <div class="user-status">En ligne</div>
+                </div>
+                <div class="dropdown-arrow">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M6 8L2 4h8z"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="user-menu" id="userMenu">
+                <div class="user-details">
+                    <div class="user-detail-item">
+                        <span class="detail-icon">📧</span>
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value" id="userEmail">email@example.com</span>
+                    </div>
+                    <div class="user-detail-item">
+                        <span class="detail-icon">📅</span>
+                        <span class="detail-label">Membre depuis</span>
+                        <span class="detail-value" id="userJoinDate">01/01/2024</span>
+                    </div>
+                    <div class="user-detail-item">
+                        <span class="detail-icon">🦸</span>
+                        <span class="detail-label">Héros créés</span>
+                        <span class="detail-value" id="userHeroCount">0</span>
+                    </div>
+                    <div class="user-detail-item">
+                        <span class="detail-icon">🏆</span>
+                        <span class="detail-label">Victoires totales</span>
+                        <span class="detail-value" id="userTotalWins">0</span>
+                    </div>
+                </div>
+                
+                <div class="user-actions">
+                    <button class="user-action-btn" onclick="showUserProfile()">
+                        <span class="action-icon">👤</span>
+                        Profil
+                    </button>
+                    <button class="user-action-btn" onclick="showUserSettings()">
+                        <span class="action-icon">⚙️</span>
+                        Paramètres
+                    </button>
+                    <button class="user-action-btn logout-btn" onclick="HeroesAuth.logout()">
+                        <span class="action-icon">🚪</span>
+                        Déconnexion
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="header">
             <h1>HEROES ARENA</h1>
             <p>Créez vos héros avec des pouvoirs uniques et regardez-les gravir les échelons</p>
-            <div class="user-info">
-                <span id="userWelcome">Bienvenue, <span id="currentUsername"></span>!</span>
-                <button class="btn btn-secondary" onclick="HeroesAuth.logout()">Déconnexion</button>
-            </div>
             <div id="appStatus" style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8; color: #3b82f6;">
                 Chargement de l'application...
             </div>
@@ -458,6 +592,30 @@
                 console.log('Application non encore chargée');
             }
         };
+
+        // Fonctions pour la carte utilisateur
+        window.toggleUserMenu = function() {
+            const userCard = document.getElementById('userCard');
+            if (userCard) {
+                userCard.classList.toggle('open');
+            }
+        };
+
+        window.showUserProfile = function() {
+            alert('Fonctionnalité de profil à venir !');
+        };
+
+        window.showUserSettings = function() {
+            alert('Fonctionnalité de paramètres à venir !');
+        };
+
+        // Fermer le menu utilisateur en cliquant ailleurs
+        document.addEventListener('click', function(event) {
+            const userCard = document.getElementById('userCard');
+            if (userCard && !userCard.contains(event.target)) {
+                userCard.classList.remove('open');
+            }
+        });
     </script>
 </body>
 </html>

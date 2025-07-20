@@ -5,6 +5,8 @@ class AuthSystem {
     constructor() {
         this.currentUser = null;
         this.users = this.loadUsers();
+        this.recoveryCodes = this.loadRecoveryCodes();
+        this.currentRecoveryEmail = null;
         
         // Expressions régulières pour validation
         this.emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -48,6 +50,51 @@ class AuthSystem {
         } catch (error) {
             console.error('Erreur lors de la sauvegarde des utilisateurs:', error);
             return false;
+        }
+    }
+    
+    // Gestion des codes de récupération
+    loadRecoveryCodes() {
+        try {
+            const codes = localStorage.getItem('heroesArena_recoveryCodes');
+            return codes ? JSON.parse(codes) : {};
+        } catch (error) {
+            console.error('Erreur lors du chargement des codes de récupération:', error);
+            return {};
+        }
+    }
+    
+    saveRecoveryCodes() {
+        try {
+            localStorage.setItem('heroesArena_recoveryCodes', JSON.stringify(this.recoveryCodes));
+            return true;
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde des codes de récupération:', error);
+            return false;
+        }
+    }
+    
+    generateRecoveryCode() {
+        // Génère un code de 6 chiffres
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+    
+    cleanExpiredCodes() {
+        const now = Date.now();
+        const expiredEmails = [];
+        
+        for (const [email, data] of Object.entries(this.recoveryCodes)) {
+            if (now > data.expiresAt) {
+                expiredEmails.push(email);
+            }
+        }
+        
+        expiredEmails.forEach(email => {
+            delete this.recoveryCodes[email];
+        });
+        
+        if (expiredEmails.length > 0) {
+            this.saveRecoveryCodes();
         }
     }
     
@@ -244,6 +291,159 @@ class AuthSystem {
         }
     }
     
+    // Récupération de mot de passe - Étape 1: Génération du code
+    async forgotPassword(email) {
+        try {
+            this.cleanExpiredCodes(); // Nettoyer les codes expirés
+            
+            const emailValidation = this.validateEmail(email);
+            if (!emailValidation.valid) {
+                return { success: false, field: 'email', message: emailValidation.message };
+            }
+            
+            // Vérifier que l'utilisateur existe
+            const user = this.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+            if (!user) {
+                return { success: false, field: 'email', message: 'Aucun compte associé à cette adresse email' };
+            }
+            
+            // Générer un code de récupération
+            const code = this.generateRecoveryCode();
+            const expiresAt = Date.now() + (15 * 60 * 1000); // 15 minutes
+            
+            this.recoveryCodes[email.toLowerCase()] = {
+                code: code,
+                expiresAt: expiresAt,
+                attempts: 0,
+                maxAttempts: 3
+            };
+            
+            this.currentRecoveryEmail = email.toLowerCase();
+            
+            if (!this.saveRecoveryCodes()) {
+                return { success: false, message: 'Erreur lors de la sauvegarde du code' };
+            }
+            
+            return { 
+                success: true, 
+                code: code, // En production, ceci serait envoyé par email
+                expiresAt: expiresAt,
+                message: 'Code de récupération généré avec succès' 
+            };
+            
+        } catch (error) {
+            console.error('Erreur lors de la génération du code:', error);
+            return { success: false, message: 'Erreur technique lors de la génération du code' };
+        }
+    }
+    
+    // Récupération de mot de passe - Étape 2: Vérification du code
+    async verifyRecoveryCode(email, code) {
+        try {
+            this.cleanExpiredCodes();
+            
+            if (!email || !code) {
+                return { success: false, field: 'code', message: 'Email et code requis' };
+            }
+            
+            const recoveryData = this.recoveryCodes[email.toLowerCase()];
+            if (!recoveryData) {
+                return { success: false, field: 'code', message: 'Code de récupération invalide ou expiré' };
+            }
+            
+            // Vérifier l'expiration
+            if (Date.now() > recoveryData.expiresAt) {
+                delete this.recoveryCodes[email.toLowerCase()];
+                this.saveRecoveryCodes();
+                return { success: false, field: 'code', message: 'Le code de récupération a expiré' };
+            }
+            
+            // Vérifier le nombre de tentatives
+            if (recoveryData.attempts >= recoveryData.maxAttempts) {
+                delete this.recoveryCodes[email.toLowerCase()];
+                this.saveRecoveryCodes();
+                return { success: false, field: 'code', message: 'Trop de tentatives. Demandez un nouveau code.' };
+            }
+            
+            // Vérifier le code
+            if (code.trim() !== recoveryData.code) {
+                recoveryData.attempts++;
+                this.saveRecoveryCodes();
+                const attemptsLeft = recoveryData.maxAttempts - recoveryData.attempts;
+                return { 
+                    success: false, 
+                    field: 'code', 
+                    message: `Code incorrect. ${attemptsLeft} tentative(s) restante(s)` 
+                };
+            }
+            
+            // Code valide - marquer comme vérifié
+            recoveryData.verified = true;
+            this.saveRecoveryCodes();
+            
+            return { success: true, message: 'Code vérifié avec succès' };
+            
+        } catch (error) {
+            console.error('Erreur lors de la vérification du code:', error);
+            return { success: false, message: 'Erreur technique lors de la vérification' };
+        }
+    }
+    
+    // Récupération de mot de passe - Étape 3: Changement du mot de passe
+    async resetPassword(email, newPassword, confirmPassword) {
+        try {
+            this.cleanExpiredCodes();
+            
+            const recoveryData = this.recoveryCodes[email.toLowerCase()];
+            if (!recoveryData || !recoveryData.verified) {
+                return { success: false, message: 'Session de récupération invalide. Recommencez le processus.' };
+            }
+            
+            // Vérifier l'expiration
+            if (Date.now() > recoveryData.expiresAt) {
+                delete this.recoveryCodes[email.toLowerCase()];
+                this.saveRecoveryCodes();
+                return { success: false, message: 'Session de récupération expirée. Recommencez le processus.' };
+            }
+            
+            // Validation du mot de passe
+            const passwordValidation = this.validatePassword(newPassword);
+            if (!passwordValidation.valid) {
+                return { success: false, field: 'password', message: passwordValidation.message };
+            }
+            
+            if (newPassword !== confirmPassword) {
+                return { success: false, field: 'confirmPassword', message: 'Les mots de passe ne correspondent pas' };
+            }
+            
+            // Trouver l'utilisateur et changer le mot de passe
+            const userIndex = this.users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+            if (userIndex === -1) {
+                return { success: false, message: 'Utilisateur introuvable' };
+            }
+            
+            // Mettre à jour le mot de passe
+            this.users[userIndex].password = this.hashPassword(newPassword);
+            
+            if (!this.saveUsers()) {
+                return { success: false, message: 'Erreur lors de la sauvegarde du nouveau mot de passe' };
+            }
+            
+            // Nettoyer le code de récupération utilisé
+            delete this.recoveryCodes[email.toLowerCase()];
+            this.saveRecoveryCodes();
+            
+            // Réinitialiser l'email de récupération
+            this.currentRecoveryEmail = null;
+            
+            return { success: true, message: 'Mot de passe changé avec succès' };
+            
+        } catch (error) {
+            console.error('Erreur lors du changement de mot de passe:', error);
+            return { success: false, message: 'Erreur technique lors du changement de mot de passe' };
+        }
+    }
+    
     // Interface utilisateur
     showAuthScreen() {
         const authScreen = document.getElementById('authScreen');
@@ -260,43 +460,139 @@ class AuthSystem {
         if (authScreen) authScreen.style.display = 'none';
         if (mainApp) mainApp.style.display = 'block';
         
-        // Mettre à jour l'affichage utilisateur
+        // Mettre à jour la carte utilisateur
+        this.updateUserCard();
+    }
+    
+    // Mettre à jour la carte utilisateur avec les informations actuelles
+    updateUserCard() {
+        if (!this.currentUser) return;
+        
+        // Nom d'utilisateur
         const usernameElement = document.getElementById('currentUsername');
-        if (usernameElement && this.currentUser) {
+        if (usernameElement) {
             usernameElement.textContent = this.currentUser.username;
+        }
+        
+        // Initiales de l'avatar
+        const userInitials = document.getElementById('userInitials');
+        if (userInitials) {
+            const initials = this.currentUser.username
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase())
+                .join('')
+                .substring(0, 2);
+            userInitials.textContent = initials;
+        }
+        
+        // Email
+        const userEmail = document.getElementById('userEmail');
+        if (userEmail) {
+            userEmail.textContent = this.currentUser.email;
+        }
+        
+        // Date d'inscription
+        const userJoinDate = document.getElementById('userJoinDate');
+        if (userJoinDate && this.currentUser.createdAt) {
+            const date = new Date(this.currentUser.createdAt);
+            userJoinDate.textContent = date.toLocaleDateString('fr-FR');
+        }
+        
+        // Statistiques des héros
+        this.updateUserStats();
+    }
+    
+    // Mettre à jour les statistiques utilisateur
+    updateUserStats() {
+        if (!this.currentUser) return;
+        
+        const userHeroes = this.getUserHeroes();
+        
+        // Nombre de héros
+        const heroCountElement = document.getElementById('userHeroCount');
+        if (heroCountElement) {
+            heroCountElement.textContent = userHeroes.length.toString();
+        }
+        
+        // Calcul des victoires totales
+        const totalWins = userHeroes.reduce((total, hero) => {
+            return total + (hero.victoires || 0);
+        }, 0);
+        
+        const totalWinsElement = document.getElementById('userTotalWins');
+        if (totalWinsElement) {
+            totalWinsElement.textContent = totalWins.toString();
         }
     }
     
+    // Méthode pour rafraîchir les stats après une bataille
+    refreshUserStats() {
+        this.updateUserStats();
+    }
+    
     showLogin() {
+        this.hideAllForms();
         const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        
         if (loginForm) {
             loginForm.classList.add('active');
             loginForm.style.display = 'block';
         }
-        if (registerForm) {
-            registerForm.classList.remove('active');
-            registerForm.style.display = 'none';
-        }
-        
         this.clearAllErrors();
     }
     
     showRegister() {
-        const loginForm = document.getElementById('loginForm');
+        this.hideAllForms();
         const registerForm = document.getElementById('registerForm');
-        
-        if (loginForm) {
-            loginForm.classList.remove('active');
-            loginForm.style.display = 'none';
-        }
         if (registerForm) {
             registerForm.classList.add('active');
             registerForm.style.display = 'block';
         }
-        
         this.clearAllErrors();
+    }
+    
+    showForgotPassword() {
+        this.hideAllForms();
+        const forgotForm = document.getElementById('forgotPasswordForm');
+        if (forgotForm) {
+            forgotForm.classList.add('active');
+            forgotForm.style.display = 'block';
+        }
+        this.clearAllErrors();
+    }
+    
+    showVerifyCode() {
+        this.hideAllForms();
+        const verifyForm = document.getElementById('verifyCodeForm');
+        if (verifyForm) {
+            verifyForm.classList.add('active');
+            verifyForm.style.display = 'block';
+        }
+        this.clearAllErrors();
+    }
+    
+    showResetPassword() {
+        this.hideAllForms();
+        const resetForm = document.getElementById('resetPasswordForm');
+        if (resetForm) {
+            resetForm.classList.add('active');
+            resetForm.style.display = 'block';
+        }
+        this.clearAllErrors();
+    }
+    
+    hideAllForms() {
+        const forms = [
+            'loginForm', 'registerForm', 'forgotPasswordForm', 
+            'verifyCodeForm', 'resetPasswordForm'
+        ];
+        
+        forms.forEach(formId => {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.classList.remove('active');
+                form.style.display = 'none';
+            }
+        });
     }
     
     // Gestion des erreurs d'affichage
@@ -329,7 +625,8 @@ class AuthSystem {
     clearAllErrors() {
         const errorFields = [
             'loginEmail', 'loginPassword',
-            'registerUsername', 'registerEmail', 'registerPassword', 'confirmPassword'
+            'registerUsername', 'registerEmail', 'registerPassword', 'confirmPassword',
+            'forgotEmail', 'verificationCode', 'newPassword', 'confirmNewPassword'
         ];
         
         errorFields.forEach(field => this.clearFieldError(field));
@@ -415,6 +712,112 @@ class AuthSystem {
         return false;
     }
     
+    // Gestionnaires pour la récupération de mot de passe
+    async handleForgotPassword(event) {
+        event.preventDefault();
+        this.clearAllErrors();
+        
+        const email = document.getElementById('forgotEmail').value.trim();
+        
+        const result = await this.forgotPassword(email);
+        
+        if (result.success) {
+            // Afficher le code généré (en production, ceci serait envoyé par email)
+            const codeDisplay = document.getElementById('recoveryCodeDisplay');
+            if (codeDisplay) {
+                codeDisplay.innerHTML = `
+                    <div class="recovery-code-box">
+                        <h4>Code de récupération généré</h4>
+                        <div class="recovery-code">${result.code}</div>
+                        <p class="recovery-note">
+                            <strong>Important :</strong> Notez ce code, il expire dans 15 minutes.<br>
+                            <small>En production, ce code serait envoyé par email.</small>
+                        </p>
+                    </div>
+                `;
+            }
+            
+            this.showGeneralMessage('Code de récupération généré avec succès!', 'success');
+            setTimeout(() => {
+                this.showVerifyCode();
+            }, 2000);
+        } else {
+            if (result.field) {
+                this.showFieldError('forgot' + result.field.charAt(0).toUpperCase() + result.field.slice(1), result.message);
+            } else {
+                this.showGeneralMessage(result.message);
+            }
+        }
+        
+        return false;
+    }
+    
+    async handleVerifyCode(event) {
+        event.preventDefault();
+        this.clearAllErrors();
+        
+        const code = document.getElementById('verificationCode').value.trim();
+        
+        if (!this.currentRecoveryEmail) {
+            this.showGeneralMessage('Session de récupération invalide. Recommencez le processus.');
+            this.showForgotPassword();
+            return false;
+        }
+        
+        const result = await this.verifyRecoveryCode(this.currentRecoveryEmail, code);
+        
+        if (result.success) {
+            this.showGeneralMessage('Code vérifié avec succès!', 'success');
+            setTimeout(() => {
+                this.showResetPassword();
+            }, 1000);
+        } else {
+            if (result.field) {
+                this.showFieldError('verificationCode', result.message);
+            } else {
+                this.showGeneralMessage(result.message);
+            }
+        }
+        
+        return false;
+    }
+    
+    async handleResetPassword(event) {
+        event.preventDefault();
+        this.clearAllErrors();
+        
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+        
+        if (!this.currentRecoveryEmail) {
+            this.showGeneralMessage('Session de récupération invalide. Recommencez le processus.');
+            this.showForgotPassword();
+            return false;
+        }
+        
+        const result = await this.resetPassword(this.currentRecoveryEmail, newPassword, confirmNewPassword);
+        
+        if (result.success) {
+            this.showGeneralMessage('Mot de passe changé avec succès!', 'success');
+            setTimeout(() => {
+                this.showLogin();
+                // Pré-remplir l'email de connexion
+                const loginEmail = document.getElementById('loginEmail');
+                if (loginEmail) {
+                    loginEmail.value = this.currentRecoveryEmail;
+                }
+            }, 2000);
+        } else {
+            if (result.field) {
+                this.showFieldError(result.field === 'password' ? 'newPassword' : 'confirmNewPassword', result.message);
+            } else {
+                this.showGeneralMessage(result.message);
+            }
+        }
+        
+        return false;
+    }
+    
     // Méthodes utilitaires
     isAuthenticated() {
         return this.currentUser !== null;
@@ -429,7 +832,52 @@ class AuthSystem {
         if (!this.currentUser) return [];
         
         const user = this.users.find(u => u.id === this.currentUser.id);
-        return user ? user.heroes || [] : [];
+        const heroesData = user ? user.heroes || [] : [];
+        
+        // Convertir les données en instances de Hero pour restaurer les méthodes
+        return heroesData.map(heroData => {
+            // Dynamically import Hero class to avoid circular dependency
+            if (window.Hero && window.Hero.fromJSON) {
+                return window.Hero.fromJSON(heroData);
+            } else {
+                // Fallback: créer un objet avec les méthodes essentielles
+                return this.createHeroWithMethods(heroData);
+            }
+        });
+    }
+    
+    // Méthode de fallback pour créer un héros avec les méthodes nécessaires
+    createHeroWithMethods(heroData) {
+        const hero = { ...heroData };
+        
+        // Ajouter les méthodes essentielles
+        hero.getBadgeText = function() {
+            const ratio = this.victoires + this.defaites > 0 ? 
+                Math.round((this.victoires / (this.victoires + this.defaites)) * 100) : 0;
+            
+            if (this.victoires >= 50) return '🏆 Légende';
+            if (this.victoires >= 25) return '👑 Champion';
+            if (this.victoires >= 15) return '⭐ Vétéran';
+            if (this.victoires >= 10) return '🥉 Expert';
+            if (this.victoires >= 5) return '🛡️ Guerrier';
+            if (this.victoires >= 1) return '⚔️ Combattant';
+            return '🆕 Novice';
+        };
+        
+        hero.getRatio = function() {
+            if (this.victoires + this.defaites === 0) return 0;
+            return Math.round((this.victoires / (this.victoires + this.defaites)) * 100);
+        };
+        
+        hero.heal = function() {
+            this.pv = this.pvMax;
+        };
+        
+        hero.isValid = function() {
+            return this.nom && this.classe && this.force && this.agility && this.magic && this.defense;
+        };
+        
+        return hero;
     }
     
     saveUserHeroes(heroes) {
@@ -452,13 +900,21 @@ const authSystem = new AuthSystem();
 window.HeroesAuth = {
     showLogin: () => authSystem.showLogin(),
     showRegister: () => authSystem.showRegister(),
+    showForgotPassword: () => authSystem.showForgotPassword(),
+    showVerifyCode: () => authSystem.showVerifyCode(),
+    showResetPassword: () => authSystem.showResetPassword(),
     handleLogin: (event) => authSystem.handleLogin(event),
     handleRegister: (event) => authSystem.handleRegister(event),
+    handleForgotPassword: (event) => authSystem.handleForgotPassword(event),
+    handleVerifyCode: (event) => authSystem.handleVerifyCode(event),
+    handleResetPassword: (event) => authSystem.handleResetPassword(event),
     logout: () => authSystem.logout(),
     isAuthenticated: () => authSystem.isAuthenticated(),
     getCurrentUser: () => authSystem.getCurrentUser(),
     getUserHeroes: () => authSystem.getUserHeroes(),
-    saveUserHeroes: (heroes) => authSystem.saveUserHeroes(heroes)
+    saveUserHeroes: (heroes) => authSystem.saveUserHeroes(heroes),
+    updateUserCard: () => authSystem.updateUserCard(),
+    refreshUserStats: () => authSystem.refreshUserStats()
 };
 
 export { authSystem };

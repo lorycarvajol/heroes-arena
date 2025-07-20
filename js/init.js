@@ -8,10 +8,14 @@ export async function initHeroesArena() {
         
         // Importer les modules
         const { AppState } = await import('./core/config.js');
+        const { Hero } = await import('./core/classes.js');
         const { uiManager } = await import('./modules/ui.js');
         const { dataManager } = await import('./modules/data.js');
         const { combatSystem } = await import('./modules/combat.js');
         const { authSystem } = await import('./modules/auth.js');
+        
+        // Exposer Hero globalement pour le système d'authentification
+        window.Hero = Hero;
         
         // Créer l'application
         const app = {
@@ -88,6 +92,9 @@ export async function initHeroesArena() {
                         // Sauvegarder les héros pour l'utilisateur connecté
                         this.auth.saveUserHeroes(AppState.heroes);
                         
+                        // Mettre à jour les statistiques utilisateur
+                        this.auth.refreshUserStats();
+                        
                         // Réinitialiser le formulaire
                         document.getElementById('heroName').value = '';
                         this.ui.randomStats();
@@ -121,6 +128,9 @@ export async function initHeroesArena() {
                         this.ui.showSuccess('Héros supprimé');
                         this.ui.displayHeroes();
                         this.ui.updateFighterSelectors();
+                        
+                        // Mettre à jour les statistiques utilisateur
+                        this.auth.refreshUserStats();
                     } else {
                         this.ui.showError(result.error);
                     }
@@ -276,6 +286,9 @@ export async function initHeroesArena() {
                         // Mettre à jour l'affichage
                         this.ui.displayHeroes();
                         this.ui.updateFighterDisplay();
+                        
+                        // Mettre à jour les statistiques utilisateur
+                        this.auth.refreshUserStats();
                     } else {
                         this.ui.showError(result.error);
                     }
@@ -342,12 +355,20 @@ export async function initHeroesArena() {
             async loadData() {
                 // Charger les héros de l'utilisateur connecté
                 if (this.auth.isAuthenticated()) {
-                    const userHeroes = this.auth.getUserHeroes();
-                    AppState.heroes = userHeroes || [];
-                    
-                    this.ui.showSuccess(`${AppState.heroes.length} héros chargés`);
-                    this.ui.displayHeroes();
-                    this.ui.updateFighterSelectors();
+                    try {
+                        const userHeroes = this.auth.getUserHeroes();
+                        AppState.heroes = userHeroes || [];
+                        
+                        console.log('✅ Héros chargés avec méthodes:', AppState.heroes);
+                        
+                        this.ui.showSuccess(`${AppState.heroes.length} héros chargés`);
+                        this.ui.displayHeroes();
+                        this.ui.updateFighterSelectors();
+                    } catch (error) {
+                        console.error('❌ Erreur lors du chargement des héros:', error);
+                        AppState.heroes = [];
+                        this.ui.showError('Erreur lors du chargement des héros');
+                    }
                 } else {
                     // Si pas connecté, vider les héros et rediriger vers l'authentification
                     AppState.heroes = [];
