@@ -11,12 +11,14 @@ export async function initHeroesArena() {
         const { uiManager } = await import('./modules/ui.js');
         const { dataManager } = await import('./modules/data.js');
         const { combatSystem } = await import('./modules/combat.js');
+        const { authSystem } = await import('./modules/auth.js');
         
         // Créer l'application
         const app = {
             ui: uiManager,
             data: dataManager,
             combat: combatSystem,
+            auth: authSystem,
             
             // Méthodes d'interface
             showSection(sectionName) {
@@ -50,6 +52,13 @@ export async function initHeroesArena() {
             // Méthodes de gestion des héros
             async createHeroFromForm() {
                 try {
+                    // Vérifier l'authentification
+                    if (!this.auth.isAuthenticated()) {
+                        this.ui.showError('Vous devez être connecté pour créer un héros');
+                        this.auth.showAuthScreen();
+                        return false;
+                    }
+                    
                     const nom = document.getElementById('heroName')?.value?.trim();
                     const classe = document.getElementById('heroClass')?.value;
                     const stats = this.ui.updateStats();
@@ -75,6 +84,9 @@ export async function initHeroesArena() {
                         
                         // Forcer une sauvegarde immédiate
                         await this.data.saveHeroes();
+                        
+                        // Sauvegarder les héros pour l'utilisateur connecté
+                        this.auth.saveUserHeroes(AppState.heroes);
                         
                         // Réinitialiser le formulaire
                         document.getElementById('heroName').value = '';
@@ -328,14 +340,18 @@ export async function initHeroesArena() {
             },
             
             async loadData() {
-                const result = await this.data.loadHeroes();
-                
-                if (result.success) {
-                    this.ui.showSuccess(`${result.count} héros chargés`);
+                // Charger les héros de l'utilisateur connecté
+                if (this.auth.isAuthenticated()) {
+                    const userHeroes = this.auth.getUserHeroes();
+                    AppState.heroes = userHeroes || [];
+                    
+                    this.ui.showSuccess(`${AppState.heroes.length} héros chargés`);
                     this.ui.displayHeroes();
                     this.ui.updateFighterSelectors();
                 } else {
-                    this.ui.showError(result.error);
+                    // Si pas connecté, vider les héros et rediriger vers l'authentification
+                    AppState.heroes = [];
+                    this.auth.showAuthScreen();
                 }
             },
             
@@ -391,9 +407,16 @@ export async function initHeroesArena() {
         };
         
         // Initialiser l'application
-        console.log('🔄 Chargement des héros...');
-        const loadResult = await app.data.loadHeroes();
-        console.log('📊 Héros chargés:', loadResult);
+        console.log('🔄 Vérification de l\'authentification...');
+        
+        // Charger les héros de l'utilisateur connecté si authentifié
+        if (app.auth.isAuthenticated()) {
+            console.log('✅ Utilisateur connecté, chargement des héros...');
+            await app.loadData();
+        } else {
+            console.log('🔐 Aucun utilisateur connecté, affichage de l\'écran d\'authentification');
+            AppState.heroes = [];
+        }
         
         await app.ui.initialize();
         
@@ -426,8 +449,13 @@ export async function initHeroesArena() {
         // Créer des fonctions globales simples pour les actions des héros
         window.showHeroDetailsNow = function(index) {
             console.log('🔍 showHeroDetailsNow appelé avec index:', index);
+            console.log('🔍 app disponible:', !!app);
+            console.log('🔍 app.showHeroDetails disponible:', !!(app && app.showHeroDetails));
+            console.log('🔍 AppState.heroes length:', AppState.heroes?.length || 0);
+            
             try {
                 if (app && app.showHeroDetails) {
+                    console.log('✅ Utilisation de app.showHeroDetails');
                     app.showHeroDetails(index);
                 } else {
                     console.log('📱 Utilisation de la méthode de fallback');
@@ -435,6 +463,7 @@ export async function initHeroesArena() {
                 }
             } catch (error) {
                 console.error('❌ Erreur dans showHeroDetailsNow:', error);
+                console.log('🔄 Tentative avec fallback après erreur');
                 showHeroDetailsFallback(index);
             }
         };
@@ -455,7 +484,7 @@ export async function initHeroesArena() {
         };
         
         // Fonction de fallback pour afficher les détails
-        async function showHeroDetailsFallback(index) {
+        function showHeroDetailsFallback(index) {
             // Utiliser AppState déjà importé
             const hero = AppState.heroes[index];
             if (!hero) {

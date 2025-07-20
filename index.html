@@ -4,15 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heroes Arena - Ultimate Edition</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="background"></div>
 
-    <div class="container">
+    <!-- Écran d'authentification -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>HEROES ARENA</h1>
+                <p>Connectez-vous pour créer vos héros légendaires</p>
+            </div>
+
+            <!-- Formulaire de Connexion -->
+            <div id="loginForm" class="auth-form active">
+                <h2>Connexion</h2>
+                <form onsubmit="return HeroesAuth.handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" class="form-input" 
+                               placeholder="Votre adresse email" required>
+                        <div class="error-message" id="loginEmailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Mot de passe</label>
+                        <input type="password" id="loginPassword" class="form-input" 
+                               placeholder="Votre mot de passe" required>
+                        <div class="error-message" id="loginPasswordError"></div>
+                    </div>
+
+                    <button type="submit" class="btn auth-btn">Se connecter</button>
+                </form>
+
+                <div class="auth-switch">
+                    <p>Pas encore de compte ? 
+                        <a href="#" onclick="HeroesAuth.showRegister()">Créer un compte</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Formulaire d'Inscription -->
+            <div id="registerForm" class="auth-form">
+                <h2>Créer un compte</h2>
+                <form onsubmit="return HeroesAuth.handleRegister(event)">
+                    <div class="form-group">
+                        <label for="registerUsername">Nom d'utilisateur</label>
+                        <input type="text" id="registerUsername" class="form-input" 
+                               placeholder="Votre nom d'utilisateur" required>
+                        <div class="error-message" id="registerUsernameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" class="form-input" 
+                               placeholder="Votre adresse email" required>
+                        <div class="error-message" id="registerEmailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerPassword">Mot de passe</label>
+                        <input type="password" id="registerPassword" class="form-input" 
+                               placeholder="Choisissez un mot de passe" required>
+                        <div class="error-message" id="registerPasswordError"></div>
+                        <div class="password-requirements">
+                            <small>Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmer le mot de passe</label>
+                        <input type="password" id="confirmPassword" class="form-input" 
+                               placeholder="Confirmez votre mot de passe" required>
+                        <div class="error-message" id="confirmPasswordError"></div>
+                    </div>
+
+                    <button type="submit" class="btn auth-btn">Créer mon compte</button>
+                </form>
+
+                <div class="auth-switch">
+                    <p>Déjà un compte ? 
+                        <a href="#" onclick="HeroesAuth.showLogin()">Se connecter</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Messages d'erreur généraux -->
+            <div id="authMessages" class="auth-messages"></div>
+        </div>
+    </div>
+
+    <div class="container" id="mainApp" style="display: none;">
         <div class="header">
             <h1>HEROES ARENA</h1>
             <p>Créez vos héros avec des pouvoirs uniques et regardez-les gravir les échelons</p>
+            <div class="user-info">
+                <span id="userWelcome">Bienvenue, <span id="currentUsername"></span>!</span>
+                <button class="btn btn-secondary" onclick="HeroesAuth.logout()">Déconnexion</button>
+            </div>
             <div id="appStatus" style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8; color: #3b82f6;">
                 Chargement de l'application...
             </div>
