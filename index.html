@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arène de Héros - Ultimate Edition</title>
+    <title>Heroes Arena - Ultimate Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div class="background"></div>
 
@@ -15,6 +13,9 @@
         <div class="header">
             <h1>HEROES ARENA</h1>
             <p>Créez vos héros avec des pouvoirs uniques et regardez-les gravir les échelons</p>
+            <div id="appStatus" style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8; color: #3b82f6;">
+                Chargement de l'application...
+            </div>
         </div>
 
         <div class="nav">
@@ -26,8 +27,7 @@
         <div class="content">
             <!-- Section Création -->
             <div class="section active" id="create">
-                <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 30px; color: #e2e8f0;">Créer un Nouveau
-                    Héros</h2>
+                <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 30px; color: #e2e8f0;">Créer un Nouveau Héros</h2>
 
                 <div class="form-grid">
                     <div>
@@ -153,25 +153,26 @@
                     <h2>🦸‍♂️ Mes Héros</h2>
                     <p>Cliquez sur un héros pour voir ses détails complets</p>
                 </div>
-            
+
                 <!-- Gestion des fichiers -->
                 <div class="file-management-section">
                     <h3>💾 Gestion des Sauvegardes</h3>
                     <div class="file-buttons">
-                        <button class="file-button save" onclick="HeroesArena.saveHeroesToFileHandler()">
-                            📁 Sauvegarder vers Fichier
+                        <button class="file-button save" onclick="HeroesArena.exportData()">
+                            📁 Exporter vers Fichier
                         </button>
-                        <button class="file-button load" onclick="HeroesArena.loadHeroesFromFileHandler()">
-                            📂 Charger depuis Fichier
+                        <button class="file-button load" onclick="document.getElementById('importFile').click()">
+                            📂 Importer depuis Fichier
                         </button>
-                        <button class="file-button load" onclick="HeroesArena.loadHeroesFromLocalStorageHandler()">
-                            💾 Charger Sauvegarde Locale
+                        <input type="file" id="importFile" accept=".json" style="display: none" onchange="handleFileImport(this)">
+                        <button class="file-button load" onclick="HeroesArena.loadData()">
+                            💾 Recharger Données
                         </button>
-                        <button class="file-button export" onclick="HeroesArena.exportStatsHandler()">
-                            📊 Exporter Statistiques
-                        </button>
-                        <button class="file-button danger" onclick="HeroesArena.clearAllHeroesHandler()">
+                        <button class="file-button danger" onclick="HeroesArena.clearAllData()">
                             🗑️ Supprimer Tous
+                        </button>
+                        <button class="file-button" onclick="HeroesArena.createDemoHeroes()">
+                            🎭 Héros de Démo
                         </button>
                     </div>
                 </div>
@@ -183,14 +184,13 @@
                         <button class="filter-btn" onclick="HeroesArena.filterHeroes('Guerrier')">Guerriers</button>
                         <button class="filter-btn" onclick="HeroesArena.filterHeroes('Mage')">Mages</button>
                         <button class="filter-btn" onclick="HeroesArena.filterHeroes('Archer')">Archers</button>
-                        <button class="filter-btn" onclick="HeroesArena.filterHeroes('Assassin')">Assassins</button>
                         <button class="filter-btn" onclick="HeroesArena.filterHeroes('Paladin')">Paladins</button>
                     </div>
                 </div>
 
-                <!-- Liste des héros (affichage simplifié) -->
+                <!-- Liste des héros -->
                 <div id="heroesList" class="heroes-grid">
-                    <!-- Les héros seront affichés ici avec le nouveau design simplifié -->
+                    <!-- Les héros seront affichés ici -->
                 </div>
             </div>
 
@@ -253,6 +253,7 @@
                         <button class="btn" onclick="HeroesArena.startCombat()" id="fightBtn" disabled
                             style="margin-right: 16px;">Commencer le Combat</button>
                         <button class="btn btn-secondary" onclick="HeroesArena.resetArena()">Réinitialiser</button>
+                        <button class="btn btn-secondary" onclick="HeroesArena.stopCombat()">Arrêter Combat</button>
                     </div>
 
                     <div class="combat-log" id="combatLog">
@@ -264,51 +265,108 @@
         </div>
     </div>
 
-    <!-- Scripts modularisés -->
+    <!-- Application simplifiée -->
     <script type="module">
-        // Cache-busting pour éviter les problèmes de cache
-        const timestamp = Date.now();
-        import(`./js/main.js?v=${timestamp}`).catch(error => {
-            console.error('Erreur lors du chargement de main.js:', error);
-            document.getElementById('moduleStatus')?.textContent = 
-                'Erreur de chargement des modules. Rechargez la page.';
-        });
-    </script>
-<!-- Script de fallback pour s'assurer que HeroesArena est défini -->
-<script>
-    // Vérification que HeroesArena est bien défini
-    document.addEventListener('DOMContentLoaded', function () {
-        // Attendre un peu que les modules se chargent
-        setTimeout(function () {
-            if (typeof window.HeroesArena === 'undefined') {
-                console.error('❌ HeroesArena n\'est pas défini. Vérifiez vos modules.');
+        // Objet temporaire pour éviter les erreurs
+        window.HeroesArena = {
+            showSection: () => console.log('Chargement...'),
+            showAvatarCategory: () => console.log('Chargement...'),
+            updateClassInfo: () => console.log('Chargement...'),
+            updateStats: () => console.log('Chargement...'),
+            randomStats: () => console.log('Chargement...'),
+            updateFighters: () => console.log('Chargement...'),
+            createHeroFromForm: () => console.log('Chargement...'),
+            filterHeroes: () => console.log('Chargement...'),
+            exportData: () => console.log('Chargement...'),
+            loadData: () => console.log('Chargement...'),
+            clearAllData: () => console.log('Chargement...'),
+            createDemoHeroes: () => console.log('Chargement...'),
+            startCombat: () => console.log('Chargement...'),
+            resetArena: () => console.log('Chargement...'),
+            stopCombat: () => console.log('Chargement...'),
+            showHeroDetails: () => console.log('Chargement...'),
+            healHero: () => console.log('Chargement...'),
+            deleteHero: () => console.log('Chargement...'),
+            ui: { selectAvatar: () => console.log('Chargement...') }
+        };
 
-                // Créer un objet minimal de fallback
-                window.HeroesArena = {
-                    showSection: function () { console.log('Fonction showSection non disponible'); },
-                    updateStats: function () { console.log('Fonction updateStats non disponible'); },
-                    // Ajouter d'autres fonctions de base si nécessaire
-                };
-
-                alert('Erreur de chargement des modules. Rechargez la page.');
-            } else {
-                console.log('✅ HeroesArena correctement défini');
+        (async () => {
+            try {
+                // Initialiser l'application
+                const { initHeroesArena } = await import('./js/init.js');
+                const app = await initHeroesArena();
+                
+                // L'objet HeroesArena est déjà défini dans init.js
+                // Vérifier que c'est bien fait
+                if (window.HeroesArena && window.HeroesArena.showHeroDetails) {
+                    console.log('✅ HeroesArena correctement exposé');
+                } else {
+                    console.warn('⚠️ HeroesArena non correctement exposé, correction...');
+                    window.HeroesArena = app;
+                }
+                
+                // Mettre à jour le statut
+                const statusElement = document.getElementById('appStatus');
+                if (statusElement) {
+                    statusElement.textContent = '✅ Application chargée avec succès';
+                    statusElement.style.color = '#10b981';
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du chargement:', error);
+                
+                const statusElement = document.getElementById('appStatus');
+                if (statusElement) {
+                    statusElement.textContent = `❌ Erreur: ${error.message}`;
+                    statusElement.style.color = '#ef4444';
+                }
+                
+                // Message d'erreur détaillé
+                const errorDiv = document.createElement('div');
+                errorDiv.innerHTML = `
+                    <div style="background: #fee2e2; border: 1px solid #ef4444; border-radius: 8px; padding: 16px; margin: 20px; color: #991b1b;">
+                        <h3>🚨 Erreur de chargement</h3>
+                        <p>L'application n'a pas pu se charger correctement.</p>
+                        <details>
+                            <summary>Détails techniques</summary>
+                            <pre style="background: #f8f8f8; padding: 10px; border-radius: 4px; overflow-x: auto;">${error.stack || error.message}</pre>
+                        </details>
+                        <button onclick="location.reload()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Recharger la page</button>
+                    </div>
+                `;
+                document.querySelector('.content').prepend(errorDiv);
             }
-        }, 100);
-    });
+        })();
+    </script>
 
-    // Fonction de debug pour vérifier l'état
-    function debugHeroesArena() {
-        console.log('HeroesArena:', window.HeroesArena);
-        console.log('Fonctions disponibles:', Object.keys(window.HeroesArena || {}));
-    }
+    <!-- Gestionnaire pour l'import de fichiers -->
+    <script>
+        async function handleFileImport(input) {
+            const file = input.files[0];
+            if (file && window.HeroesArena && window.HeroesArena.importData) {
+                try {
+                    const result = await window.HeroesArena.importData(file);
+                    if (result.success) {
+                        console.log('Import réussi:', result);
+                    } else {
+                        console.error('Erreur d\'import:', result.error);
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de l\'import:', error);
+                }
+            }
+            // Réinitialiser l'input pour permettre la re-sélection du même fichier
+            input.value = '';
+        }
 
-    // Rendre la fonction de debug accessible
-    window.debugHeroesArena = debugHeroesArena;
-</script>
-<script type="module">
-    import './js/cloud-storage.js';
-</script>
+        // Debug global
+        window.debugApp = function() {
+            if (window.app) {
+                window.app.debug();
+            } else {
+                console.log('Application non encore chargée');
+            }
+        };
+    </script>
 </body>
-
 </html>
