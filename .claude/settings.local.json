@@ -8,7 +8,15 @@
       "Bash(ls:*)",
       "Bash(git push:*)",
       "Bash(git commit:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(wc:*)",
+      "Bash(npm run sass:build:*)",
+      "Bash(timeout 5s npm run sass:dev)",
+      "Bash(grep:*)",
+      "Bash(npm run sass:*)",
+      "Bash(npm run:*)",
+      "Bash(dir:*)",
+      "Bash(npx sass:*)"
     ],
     "deny": []
   }
