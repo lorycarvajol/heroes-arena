@@ -516,59 +516,146 @@ export class UIManager {
         
         if (draw) {
             modal.innerHTML = `
-                <div class="modal-content combat-result-content">
-                    <div class="combat-result-header draw">
-                        <h2>🤝 MATCH NUL !</h2>
-                        <p>Un combat épique qui restera dans les annales !</p>
+                <div class="modal-content combat-result-content draw-result">
+                    <div class="victory-effects draw-effects">
+                        <div class="sparkle-overlay"></div>
+                        <div class="celebration-particles"></div>
                     </div>
-                    <div class="combat-result-body">
-                        <div class="result-message">
-                            <p>Les deux héros ont montré une bravoure exceptionnelle et méritent le respect.</p>
+                    <div class="combat-result-header draw enhanced">
+                        <div class="result-crown">⚖️</div>
+                        <h2 class="victory-title animated">MATCH NUL ÉPIQUE !</h2>
+                        <div class="victory-subtitle">Un combat légendaire digne des plus grands héros</div>
+                        <div class="battle-decorations">
+                            <div class="decoration-line"></div>
+                            <span class="battle-emblem">⚔️</span>
+                            <div class="decoration-line"></div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn" onclick="this.closest('.modal-overlay').remove()">Continuer</button>
+                    <div class="combat-result-body draw-body">
+                        <div class="draw-heroes-display">
+                            <div class="hero-draw-card">
+                                <div class="hero-avatar-result-enhanced">
+                                    <img src="images/${originalWinner.avatar}" alt="${originalWinner.nom}">
+                                    <div class="hero-glow draw-glow"></div>
+                                </div>
+                                <h3 class="hero-draw-name">${originalWinner.nom}</h3>
+                                <div class="hero-draw-class">${originalWinner.classe}</div>
+                            </div>
+                            <div class="draw-vs-symbol">
+                                <div class="vs-text">VS</div>
+                                <div class="equality-symbol">=</div>
+                            </div>
+                            <div class="hero-draw-card">
+                                <div class="hero-avatar-result-enhanced">
+                                    <img src="images/${originalLoser.avatar}" alt="${originalLoser.nom}">
+                                    <div class="hero-glow draw-glow"></div>
+                                </div>
+                                <h3 class="hero-draw-name">${originalLoser.nom}</h3>
+                                <div class="hero-draw-class">${originalLoser.classe}</div>
+                            </div>
+                        </div>
+                        <div class="draw-message">
+                            <div class="honor-text">
+                                <p class="main-honor">🏛️ Honneur aux Deux Combattants 🏛️</p>
+                                <p class="sub-honor">Ce combat restera gravé dans l'histoire de l'arène</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer enhanced">
+                        <button class="btn victory-continue-btn" onclick="this.closest('.modal-overlay').remove()">
+                            <span class="btn-text">Retour à l'Arène</span>
+                            <span class="btn-icon">⚔️</span>
+                        </button>
                     </div>
                 </div>
             `;
         } else {
             modal.innerHTML = `
-                <div class="modal-content combat-result-content">
-                    <div class="combat-result-header victory">
-                        <h2>🏆 VICTOIRE !</h2>
-                        <p>${originalWinner.nom} remporte le combat !</p>
+                <div class="modal-content combat-result-content victory-result">
+                    <div class="victory-effects">
+                        <div class="golden-sparkles"></div>
+                        <div class="victory-rays"></div>
+                        <div class="celebration-confetti"></div>
                     </div>
-                    <div class="combat-result-body">
-                        <div class="winner-section">
-                            <div class="result-hero-card winner">
-                                <div class="hero-avatar-result">
-                                    <img src="images/${originalWinner.avatar}" alt="${originalWinner.nom}">
+                    <div class="combat-result-header victory enhanced">
+                        <div class="victory-crown-container">
+                            <div class="crown-glow"></div>
+                            <div class="result-crown winner-crown">👑</div>
+                        </div>
+                        <h2 class="victory-title animated">VICTOIRE GLORIEUSE !</h2>
+                        <div class="victory-subtitle">${originalWinner.nom} triomphe dans l'arène !</div>
+                        <div class="battle-decorations gold">
+                            <div class="decoration-line gold"></div>
+                            <span class="battle-emblem winner">🏆</span>
+                            <div class="decoration-line gold"></div>
+                        </div>
+                    </div>
+                    <div class="combat-result-body victory-body">
+                        <div class="battle-showcase">
+                            <div class="winner-section enhanced">
+                                <div class="champion-banner">🏆 CHAMPION 🏆</div>
+                                <div class="result-hero-card winner enhanced">
+                                    <div class="hero-avatar-result-enhanced winner">
+                                        <img src="images/${originalWinner.avatar}" alt="${originalWinner.nom}">
+                                        <div class="hero-glow winner-glow"></div>
+                                        <div class="victory-aura"></div>
+                                    </div>
+                                    <h3 class="hero-winner-name">${originalWinner.nom}</h3>
+                                    <div class="hero-class winner-class">${originalWinner.classe}</div>
+                                    <div class="badge-display winner-badge">${originalWinner.getBadgeText()}</div>
+                                    <div class="victory-stats">
+                                        <div class="stat-item">
+                                            <span class="stat-icon">🏆</span>
+                                            <span class="stat-text">${originalWinner.victoires} Victoires</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-icon">⚔️</span>
+                                            <span class="stat-text">${originalWinner.getRatio()}% Ratio</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h3>${originalWinner.nom}</h3>
-                                <div class="hero-class">${originalWinner.classe}</div>
-                                <div class="badge-display">${originalWinner.getBadgeText()}</div>
-                                <div class="stats-display">
-                                    ${originalWinner.victoires}V / ${originalWinner.defaites}D (${originalWinner.getRatio()}%)
+                            </div>
+                            <div class="vs-divider enhanced">
+                                <div class="vs-background">
+                                    <div class="vs-text">VS</div>
+                                    <div class="battle-clash">⚔️</div>
+                                </div>
+                            </div>
+                            <div class="loser-section enhanced">
+                                <div class="honor-banner">🛡️ HONNEUR AU VAILLANT 🛡️</div>
+                                <div class="result-hero-card loser enhanced">
+                                    <div class="hero-avatar-result-enhanced loser">
+                                        <img src="images/${originalLoser.avatar}" alt="${originalLoser.nom}">
+                                        <div class="hero-glow loser-glow"></div>
+                                    </div>
+                                    <h3 class="hero-loser-name">${originalLoser.nom}</h3>
+                                    <div class="hero-class loser-class">${originalLoser.classe}</div>
+                                    <div class="badge-display loser-badge">${originalLoser.getBadgeText()}</div>
+                                    <div class="defeat-stats">
+                                        <div class="stat-item">
+                                            <span class="stat-icon">💪</span>
+                                            <span class="stat-text">Combat Vaillant</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-icon">🔄</span>
+                                            <span class="stat-text">Revanche Possible</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="vs-divider">VS</div>
-                        <div class="loser-section">
-                            <div class="result-hero-card loser">
-                                <div class="hero-avatar-result">
-                                    <img src="images/${originalLoser.avatar}" alt="${originalLoser.nom}">
-                                </div>
-                                <h3>${originalLoser.nom}</h3>
-                                <div class="hero-class">${originalLoser.classe}</div>
-                                <div class="badge-display">${originalLoser.getBadgeText()}</div>
-                                <div class="stats-display">
-                                    ${originalLoser.victoires}V / ${originalLoser.defaites}D (${originalLoser.getRatio()}%)
-                                </div>
+                        <div class="victory-message">
+                            <div class="victory-proclamation">
+                                <p class="main-victory">🎉 Gloire au Vainqueur ! 🎉</p>
+                                <p class="sub-victory">Un combat mémorable pour l'histoire de l'arène</p>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn" onclick="this.closest('.modal-overlay').remove()">Continuer</button>
+                    <div class="modal-footer enhanced victory-footer">
+                        <button class="btn victory-continue-btn champion" onclick="this.closest('.modal-overlay').remove()">
+                            <span class="btn-text">Célébrer la Victoire</span>
+                            <span class="btn-icon">🏆</span>
+                        </button>
                     </div>
                 </div>
             `;
