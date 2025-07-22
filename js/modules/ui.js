@@ -542,8 +542,7 @@ export class UIManager {
                         <div class="winner-section">
                             <div class="result-hero-card winner">
                                 <div class="hero-avatar-result">
-                                    <img src="images/${originalWinner.avatar}" alt="${originalWinner.nom}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="avatar-fallback" style="display: none;">👤</div>
+                                    <img src="images/${originalWinner.avatar}" alt="${originalWinner.nom}">
                                 </div>
                                 <h3>${originalWinner.nom}</h3>
                                 <div class="hero-class">${originalWinner.classe}</div>
@@ -557,8 +556,7 @@ export class UIManager {
                         <div class="loser-section">
                             <div class="result-hero-card loser">
                                 <div class="hero-avatar-result">
-                                    <img src="images/${originalLoser.avatar}" alt="${originalLoser.nom}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="avatar-fallback" style="display: none;">👤</div>
+                                    <img src="images/${originalLoser.avatar}" alt="${originalLoser.nom}">
                                 </div>
                                 <h3>${originalLoser.nom}</h3>
                                 <div class="hero-class">${originalLoser.classe}</div>

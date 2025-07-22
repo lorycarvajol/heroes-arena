@@ -396,46 +396,43 @@
     border-radius: get($border-radius, lg);
     border: 1px solid rgba($primary-gold, 0.2);
 
-    // Taille appropriée pour l'image de détail
+    // Taille réduite pour l'image de détail
     .hero-avatar-large {
-        width: 120px;
-        height: 120px;
+        width: 100px !important;
+        height: 100px !important;
+        min-width: 100px !important;
+        min-height: 100px !important;
+        max-width: 100px !important;
+        max-height: 100px !important;
         border-radius: get($border-radius, lg);
         background: $bg-glass;
-        @include flex-center;
         border: 3px solid $primary-bronze;
         position: relative;
         overflow: hidden;
+        flex-shrink: 0;
+        flex-grow: 0;
         box-shadow: 
             0 8px 16px rgba(0, 0, 0, 0.4),
             inset 0 1px 0 rgba($primary-gold, 0.3);
 
         img {
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
             object-fit: cover;
             object-position: center;
             border-radius: calc(#{get($border-radius, lg)} - 3px);
         }
 
-        .avatar-fallback {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: $primary-gradient;
-            border-radius: calc(#{get($border-radius, lg)} - 3px);
-            @include flex-center;
-            color: #1a0e0a;
-            font-weight: get($font-weights, bold);
-            font-size: get($font-sizes, 2xl);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-        }
-
         @include mobile {
-            width: 100px;
-            height: 100px;
+            width: 80px !important;
+            height: 80px !important;
+            min-width: 80px !important;
+            min-height: 80px !important;
+            max-width: 80px !important;
+            max-height: 80px !important;
         }
     }
 
@@ -602,5 +599,96 @@
 
     .hero-modal-left {
         padding: get($spacings, md);
+    }
+}
+
+// Combat Result Modal - Winner announcement styles
+.combat-result-content {
+    .combat-result-header {
+        text-align: center;
+        padding: get($spacings, lg);
+        border-bottom: 1px solid rgba($primary-bronze, 0.3);
+        
+        h2 {
+            margin: 0;
+            font-size: get($font-sizes, 2xl);
+            font-weight: get($font-weights, bold);
+            color: $primary-gold;
+            text-shadow: 0 0 15px rgba($primary-gold, 0.5);
+            margin-bottom: get($spacings, sm);
+        }
+        
+        p {
+            color: $text-primary;
+            font-size: get($font-sizes, lg);
+            font-weight: get($font-weights, medium);
+            margin: 0;
+        }
+    }
+    
+    .combat-result-body {
+        padding: get($spacings, lg);
+        
+        .winner-section {
+            display: flex;
+            justify-content: center;
+            
+            .result-hero-card {
+                @include flex-column;
+                align-items: center;
+                gap: get($spacings, md);
+                padding: get($spacings, lg);
+                background: rgba($primary-gold, 0.1);
+                border: 2px solid $primary-gold;
+                border-radius: get($border-radius, lg);
+                box-shadow: 0 8px 24px rgba($primary-gold, 0.3);
+                
+                .hero-avatar-result {
+                    width: 80px !important;
+                    height: 80px !important;
+                    min-width: 80px !important;
+                    min-height: 80px !important;
+                    max-width: 80px !important;
+                    max-height: 80px !important;
+                    border-radius: get($border-radius, md);
+                    border: 2px solid $primary-bronze;
+                    background: $bg-glass;
+                    overflow: hidden;
+                    position: relative;
+                    flex-shrink: 0;
+                    flex-grow: 0;
+                    box-shadow: 
+                        0 4px 12px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba($primary-gold, 0.3);
+                    
+                    img {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100% !important;
+                        height: 100% !important;
+                        object-fit: cover;
+                        object-position: center;
+                        border-radius: calc(#{get($border-radius, md)} - 2px);
+                    }
+                }
+                
+                .hero-info {
+                    text-align: center;
+                    
+                    .hero-name {
+                        font-size: get($font-sizes, lg);
+                        font-weight: get($font-weights, bold);
+                        color: $text-primary;
+                        margin-bottom: get($spacings, xs);
+                    }
+                    
+                    .hero-level {
+                        color: $primary-gold;
+                        font-weight: get($font-weights, semibold);
+                    }
+                }
+            }
+        }
     }
 }

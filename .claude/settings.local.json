@@ -16,7 +16,11 @@
       "Bash(npm run sass:*)",
       "Bash(npm run:*)",
       "Bash(dir:*)",
-      "Bash(npx sass:*)"
+      "Bash(npx sass:*)",
+      "Bash(npm install:*)",
+      "Bash(netlify dev:*)",
+      "Bash(npx netlify dev:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": []
   }

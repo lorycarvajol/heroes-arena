@@ -238,8 +238,7 @@ export async function initHeroesArena() {
                         <div class="modal-header">
                             <div class="hero-details-header">
                                 <div class="hero-avatar-large">
-                                    <img src="images/${hero.avatar}" alt="${hero.nom}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="avatar-fallback" style="display: none;">👤</div>
+                                    <img src="images/${hero.avatar}" alt="${hero.nom}">
                                 </div>
                                 <div class="hero-details-title">
                                     <h2>${hero.nom}</h2>
