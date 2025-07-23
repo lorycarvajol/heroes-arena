@@ -1,3 +1,6 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
 // ========== ANIMATIONS : base/_animations.scss ==========
 // Animations de combat
 @keyframes defendShake {

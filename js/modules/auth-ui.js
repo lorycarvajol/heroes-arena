@@ -68,8 +68,32 @@ export class AuthUI {
         const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value;
 
-        if (!username || !password) {
-            this.showError('login', 'Veuillez remplir tous les champs');
+        // Validation des champs vides
+        if (!username) {
+            this.showError('login', 'Le nom d\'utilisateur est requis');
+            this.focusField('loginUsername');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
+        if (!password) {
+            this.showError('login', 'Le mot de passe est requis');
+            this.focusField('loginPassword');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
+        // Validation de la longueur minimale
+        if (username.length < 3) {
+            this.showError('login', 'Le nom d\'utilisateur doit contenir au moins 3 caractères');
+            this.focusField('loginUsername');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
+        if (password.length < 6) {
+            this.showError('login', 'Le mot de passe doit contenir au moins 6 caractères');
+            this.focusField('loginPassword');
             if (window.saveFormValues) window.saveFormValues();
             return;
         }
@@ -93,7 +117,23 @@ export class AuthUI {
                 if (window.clearSavedFormData) window.clearSavedFormData();
             }
         } catch (error) {
-            this.showError('login', error.message || 'Erreur de connexion');
+            let errorMessage = 'Erreur de connexion';
+            
+            // Gestion spécifique des erreurs
+            if (error.message) {
+                if (error.message.includes('Invalid credentials')) {
+                    errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect';
+                } else if (error.message.includes('Network')) {
+                    errorMessage = 'Erreur de réseau. Vérifiez votre connexion internet';
+                } else if (error.message.includes('Server')) {
+                    errorMessage = 'Erreur du serveur. Veuillez réessayer plus tard';
+                } else {
+                    errorMessage = error.message;
+                }
+            }
+            
+            this.showError('login', errorMessage);
+            this.shakeForm('loginForm');
             // Sauvegarder les valeurs en cas d'erreur
             if (window.saveFormValues) window.saveFormValues();
         } finally {
@@ -107,20 +147,76 @@ export class AuthUI {
         const password = document.getElementById('registerPassword').value;
         const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
 
-        if (!username || !password) {
-            this.showError('register', 'Nom d\'utilisateur et mot de passe requis');
+        // Validation du nom d'utilisateur
+        if (!username) {
+            this.showError('register', 'Le nom d\'utilisateur est requis');
+            this.focusField('registerUsername');
             if (window.saveFormValues) window.saveFormValues();
             return;
         }
-
-        if (password !== passwordConfirm) {
-            this.showError('register', 'Les mots de passe ne correspondent pas');
+        
+        if (username.length < 3) {
+            this.showError('register', 'Le nom d\'utilisateur doit contenir au moins 3 caractères');
+            this.focusField('registerUsername');
             if (window.saveFormValues) window.saveFormValues();
             return;
         }
-
+        
+        if (username.length > 20) {
+            this.showError('register', 'Le nom d\'utilisateur ne peut pas dépasser 20 caractères');
+            this.focusField('registerUsername');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
+        if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+            this.showError('register', 'Le nom d\'utilisateur ne peut contenir que des lettres, chiffres, tirets et underscores');
+            this.focusField('registerUsername');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
+        // Validation de l'email (si fourni)
+        if (email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+            this.showError('register', 'Format d\'email invalide');
+            this.focusField('registerEmail');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
+        // Validation du mot de passe
+        if (!password) {
+            this.showError('register', 'Le mot de passe est requis');
+            this.focusField('registerPassword');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
         if (password.length < 6) {
             this.showError('register', 'Le mot de passe doit contenir au moins 6 caractères');
+            this.focusField('registerPassword');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+            this.showError('register', 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre');
+            this.focusField('registerPassword');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
+        // Validation de la confirmation
+        if (!passwordConfirm) {
+            this.showError('register', 'Veuillez confirmer le mot de passe');
+            this.focusField('registerPasswordConfirm');
+            if (window.saveFormValues) window.saveFormValues();
+            return;
+        }
+        
+        if (password !== passwordConfirm) {
+            this.showError('register', 'Les mots de passe ne correspondent pas');
+            this.focusField('registerPasswordConfirm');
             if (window.saveFormValues) window.saveFormValues();
             return;
         }
@@ -142,7 +238,25 @@ export class AuthUI {
                 }, 2000);
             }
         } catch (error) {
-            this.showError('register', error.message || 'Erreur lors de l\'inscription');
+            let errorMessage = 'Erreur lors de l\'inscription';
+            
+            // Gestion spécifique des erreurs
+            if (error.message) {
+                if (error.message.includes('Username already exists')) {
+                    errorMessage = 'Ce nom d\'utilisateur est déjà pris';
+                } else if (error.message.includes('Email already exists')) {
+                    errorMessage = 'Cette adresse email est déjà utilisée';
+                } else if (error.message.includes('Network')) {
+                    errorMessage = 'Erreur de réseau. Vérifiez votre connexion internet';
+                } else if (error.message.includes('Server')) {
+                    errorMessage = 'Erreur du serveur. Veuillez réessayer plus tard';
+                } else {
+                    errorMessage = error.message;
+                }
+            }
+            
+            this.showError('register', errorMessage);
+            this.shakeForm('registerForm');
             // Sauvegarder les valeurs en cas d'erreur
             if (window.saveFormValues) window.saveFormValues();
         } finally {
@@ -201,6 +315,25 @@ export class AuthUI {
         const errorEl = document.getElementById(`${form}Error`);
         errorEl.textContent = message;
         errorEl.style.display = 'block';
+        
+        // Animation d'apparition
+        errorEl.style.opacity = '0';
+        errorEl.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+            errorEl.style.transition = 'all 0.3s ease';
+            errorEl.style.opacity = '1';
+            errorEl.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // Auto-masquage après 10 secondes
+        setTimeout(() => {
+            if (errorEl.style.display === 'block') {
+                errorEl.style.opacity = '0';
+                setTimeout(() => {
+                    errorEl.style.display = 'none';
+                }, 300);
+            }
+        }, 10000);
     }
 
     showSuccess(form, message) {
@@ -213,8 +346,33 @@ export class AuthUI {
 
     clearMessages() {
         document.querySelectorAll('.error-message, .success-message').forEach(el => {
-            el.style.display = 'none';
+            el.style.opacity = '0';
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 200);
         });
+    }
+    
+    // Nouvelle méthode pour mettre le focus sur un champ
+    focusField(fieldId) {
+        setTimeout(() => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.focus();
+                field.select();
+            }
+        }, 100);
+    }
+    
+    // Nouvelle méthode pour animer les erreurs
+    shakeForm(formId) {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.style.animation = 'shake 0.5s ease-in-out';
+            setTimeout(() => {
+                form.style.animation = '';
+            }, 500);
+        }
     }
 
     setLoading(form, loading) {

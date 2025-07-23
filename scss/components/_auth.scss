@@ -1,3 +1,6 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
 // ========== COMPOSANT AUTHENTIFICATION : components/_auth.scss ==========
 
 /* Interface d'authentification - Contrastes WCAG optimisés */
@@ -481,7 +484,7 @@
     border-radius: get($border-radius, xl);
     box-shadow: get($shadows, xl);
     border: 1px solid rgba(255, 255, 255, 0.1);
-
+background: linear-gradient(135deg, $bg-primary, $bg-secondary);
     @include mobile {
         margin: get($spacings, lg);
         padding: get($spacings, xl) get($spacings, lg);

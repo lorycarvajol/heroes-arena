@@ -1,3 +1,6 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
 // ========== UTILITAIRES : utilities/_helpers.scss ==========
 // Classes utilitaires pour les espacements
 @each $name,

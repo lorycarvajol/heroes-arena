@@ -21,7 +21,14 @@
       "Bash(netlify dev:*)",
       "Bash(npx netlify dev:*)",
       "Bash(taskkill:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(find:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"Processing $file\")",
+      "Bash(if ! grep -q \"@use.*variables\" \"$file\")",
+      "Bash(then sed -i '1i@use '\"''\"'../abstracts/variables'\"''\"' as *;\\n@use '\"''\"'../abstracts/mixins'\"''\"' as *;\\n' \"$file\")",
+      "Bash(fi)",
+      "Bash(done)"
     ],
     "deny": []
   }

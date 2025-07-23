@@ -1,3 +1,6 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
 // ========== COMPOSANT USER CARD : components/_user-card.scss ==========
 
 .user-card {
