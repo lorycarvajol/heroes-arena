@@ -105,7 +105,8 @@ export const gameConfig = {
     damageAnimationDelay: 600, // Délai pour afficher les dégâts
     effectsDelay: 1200,       // Délai pour les effets visuels
     maxCombatRounds: 20,
-    autoSaveInterval: 30000
+    autoSaveInterval: 30000,
+    clearArenaDelay: 5000     // Délai avant vidage automatique de l'arène (5 secondes)
 };
 
 export const messages = {

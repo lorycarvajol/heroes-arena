@@ -8,12 +8,12 @@
 
 body {
   font-family: "Cinzel", "Trajan Pro", "Times New Roman", serif;
-  background: #2d1810;
+  background: transparent;
   color: #f4e4bc;
   min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.6;
-  background-image: radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.1) 0%, transparent 70%), radial-gradient(circle at 75% 75%, rgba(160, 82, 45, 0.1) 0%, transparent 70%);
+  position: relative;
 }
 
 *::-webkit-scrollbar {
@@ -244,10 +244,17 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at 30% 40%, rgba(139, 69, 19, 0.4) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(205, 127, 50, 0.3) 0%, transparent 50%), radial-gradient(ellipse at 20% 80%, rgba(160, 82, 45, 0.3) 0%, transparent 40%), linear-gradient(135deg, #2d1810 0%, #1a0e0a 50%, #3e2723 100%), repeating-linear-gradient(45deg, transparent, transparent 100px, rgba(212, 175, 55, 0.03) 100px, rgba(212, 175, 55, 0.03) 102px);
+  width: 100vw;
+  height: 100vh;
   z-index: -1;
+  background-color: #2d1810;
+  min-width: 100%;
+  min-height: 100%;
+  background: radial-gradient(ellipse at 30% 40%, rgba(139, 69, 19, 0.6) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(205, 127, 50, 0.5) 0%, transparent 50%), radial-gradient(ellipse at 20% 80%, rgba(160, 82, 45, 0.4) 0%, transparent 40%), radial-gradient(ellipse at 50% 10%, rgba(212, 175, 55, 0.2) 0%, transparent 30%), linear-gradient(135deg, #2d1810 0%, #1a0e0a 30%, #3e2723 70%, #2d1810 100%), repeating-linear-gradient(45deg, transparent, transparent 80px, rgba(212, 175, 55, 0.08) 80px, rgba(212, 175, 55, 0.08) 82px), repeating-linear-gradient(-45deg, transparent, transparent 120px, rgba(160, 82, 45, 0.05) 120px, rgba(160, 82, 45, 0.05) 122px);
+  pointer-events: none;
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .container {
@@ -5078,5 +5085,3 @@ button[onclick*=startCombat]::before {
     margin: 24px;
   }
 }
-
-/*# sourceMappingURL=style.css.map */

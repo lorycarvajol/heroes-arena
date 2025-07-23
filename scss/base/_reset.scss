@@ -12,15 +12,12 @@
 
 body {
     font-family: $font-family-primary;
-    background: $bg-primary;
+    background: transparent; // Laisser le background à l'élément .background
     color: $text-primary;
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.6;
-    // Texture papyrus subtile
-    background-image: 
-        radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.1) 0%, transparent 70%),
-        radial-gradient(circle at 75% 75%, rgba(160, 82, 45, 0.1) 0%, transparent 70%);
+    position: relative; // Pour que le z-index fonctionne correctement
 }
 
 // Scrollbar globale avec style romain
