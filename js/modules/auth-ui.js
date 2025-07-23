@@ -70,7 +70,6 @@ export class AuthUI {
 
         if (!username || !password) {
             this.showError('login', 'Veuillez remplir tous les champs');
-            // Sauvegarder les valeurs avant de retourner
             if (window.saveFormValues) window.saveFormValues();
             return;
         }
@@ -110,21 +109,18 @@ export class AuthUI {
 
         if (!username || !password) {
             this.showError('register', 'Nom d\'utilisateur et mot de passe requis');
-            // Sauvegarder les valeurs avant de retourner
             if (window.saveFormValues) window.saveFormValues();
             return;
         }
 
         if (password !== passwordConfirm) {
             this.showError('register', 'Les mots de passe ne correspondent pas');
-            // Sauvegarder les valeurs avant de retourner
             if (window.saveFormValues) window.saveFormValues();
             return;
         }
 
         if (password.length < 6) {
             this.showError('register', 'Le mot de passe doit contenir au moins 6 caractères');
-            // Sauvegarder les valeurs avant de retourner
             if (window.saveFormValues) window.saveFormValues();
             return;
         }

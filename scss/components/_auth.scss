@@ -16,12 +16,12 @@
 }
 
 .auth-modal {
-    background: #1e293b;
+    background: #ffffff;
     border-radius: get($border-radius, xl);
-    border: 2px solid #334155;
+    border: 1px solid #e2e8f0;
     box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.6),
-        0 10px 25px rgba(0, 0, 0, 0.4);
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 10px 25px rgba(0, 0, 0, 0.1);
     padding: get($spacings, 2xl);
     width: 100%;
     max-width: 450px;
@@ -47,13 +47,13 @@
     h2 {
         font-size: get($font-sizes, 4xl);
         font-weight: get($font-weights, bold);
-        color: #ffffff;
+        color: #1e293b;
         margin-bottom: get($spacings, sm);
         letter-spacing: -0.02em;
     }
 
     p {
-        color: #cbd5e1;
+        color: #64748b;
         font-size: get($font-sizes, lg);
         font-weight: get($font-weights, medium);
         margin: 0;
@@ -62,18 +62,18 @@
 
 .auth-tabs {
     display: flex;
-    background: #0f172a;
+    background: #f8fafc;
     border-radius: get($border-radius, lg);
     padding: 4px;
     margin-bottom: get($spacings, xl);
-    border: 2px solid #334155;
+    border: 1px solid #e2e8f0;
 }
 
 .auth-tab {
     flex: 1;
     padding: get($spacings, md) get($spacings, lg);
     background: transparent;
-    color: #cbd5e1;
+    color: #64748b;
     border: none;
     border-radius: get($border-radius, md);
     cursor: pointer;
@@ -82,8 +82,8 @@
     transition: all 0.2s ease;
     
     &:hover:not(.active) {
-        color: #e2e8f0;
-        background: #1e293b;
+        color: #1e293b;
+        background: #ffffff;
     }
 
     &.active {
@@ -109,38 +109,47 @@
         display: block;
         margin-bottom: get($spacings, sm);
         font-weight: get($font-weights, semibold);
-        color: #f8fafc;
+        color: #1e293b;
         font-size: get($font-sizes, base);
+        
+        &.required::after {
+            content: ' *';
+            color: #dc2626;
+        }
     }
 
     input {
         width: 100%;
         padding: get($spacings, lg);
-        background: #0f172a;
-        border: 2px solid #475569;
+        background: #ffffff;
+        border: 2px solid #cbd5e1;
         border-radius: get($border-radius, md);
-        color: #ffffff;
+        color: #1e293b;
         font-size: get($font-sizes, base);
         font-weight: get($font-weights, medium);
         transition: all 0.2s ease;
 
         &::placeholder {
-            color: #e2e8f0;
+            color: #9ca3af;
         }
 
         &:hover {
-            border-color: #64748b;
+            border-color: #94a3b8;
         }
 
         &:focus {
             outline: none;
             border-color: #3b82f6;
-            background: #1e293b;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        &:invalid {
-            border-color: #ef4444;
+        &.error {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        &:invalid:not(:focus) {
+            border-color: #dc2626;
         }
     }
 }
@@ -157,18 +166,23 @@
         right: 12px;
         top: 50%;
         transform: translateY(-50%);
-        background: #475569;
-        border: 1px solid #64748b;
-        color: #f8fafc;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        color: #64748b;
         cursor: pointer;
         padding: 6px;
         border-radius: get($border-radius, sm);
         transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
 
         &:hover {
-            background: #64748b;
+            background: #e2e8f0;
             border-color: #94a3b8;
-            color: #ffffff;
+            color: #1e293b;
         }
 
         .password-icon {
@@ -215,30 +229,30 @@
 .auth-offline {
     text-align: center;
     padding: get($spacings, lg);
-    background: #0f172a;
-    border: 2px solid #334155;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-radius: get($border-radius, md);
     margin-top: get($spacings, lg);
 
     p {
-        color: #e2e8f0;
+        color: #64748b;
         margin-bottom: get($spacings, sm);
         
         strong {
-            color: #ffffff;
+            color: #1e293b;
         }
     }
 
     p:last-of-type {
-        color: #e2e8f0;
+        color: #64748b;
         font-size: get($font-sizes, sm);
         margin-bottom: get($spacings, md);
     }
 
     button {
-        background: #475569;
-        color: #f8fafc;
-        border: 2px solid #64748b;
+        background: #6b7280;
+        color: #ffffff;
+        border: 1px solid #6b7280;
         padding: get($spacings, md) get($spacings, lg);
         border-radius: get($border-radius, md);
         cursor: pointer;
@@ -246,22 +260,22 @@
         transition: all 0.2s ease;
 
         &:hover {
-            background: #64748b;
-            border-color: #94a3b8;
-            color: #ffffff;
+            background: #4b5563;
+            border-color: #4b5563;
         }
     }
 }
 
 .error-message {
-    background: #7f1d1d;
-    border: 2px solid #dc2626;
-    color: #fecaca;
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
     padding: get($spacings, md);
     border-radius: get($border-radius, md);
     margin-bottom: get($spacings, md);
-    font-size: get($font-sizes, base);
-    font-weight: get($font-weights, semibold);
+    font-size: get($font-sizes, sm);
+    font-weight: get($font-weights, medium);
+    display: none;
     
     &::before {
         content: '⚠️ ';
@@ -270,14 +284,15 @@
 }
 
 .success-message {
-    background: #14532d;
-    border: 2px solid #16a34a;
-    color: #bbf7d0;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #16a34a;
     padding: get($spacings, md);
     border-radius: get($border-radius, md);
     margin-bottom: get($spacings, md);
-    font-size: get($font-sizes, base);
-    font-weight: get($font-weights, semibold);
+    font-size: get($font-sizes, sm);
+    font-weight: get($font-weights, medium);
+    display: none;
     
     &::before {
         content: '✅ ';
@@ -385,6 +400,18 @@
         opacity: 0.5;
     }
 }
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
 // Responsive pour le modal auth
 @include mobile {
