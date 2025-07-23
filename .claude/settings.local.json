@@ -20,7 +20,8 @@
       "Bash(npm install:*)",
       "Bash(netlify dev:*)",
       "Bash(npx netlify dev:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }
