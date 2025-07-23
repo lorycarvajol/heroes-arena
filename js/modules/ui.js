@@ -303,6 +303,46 @@ export class UIManager {
         this.updateSingleFighterDisplay('fighter2Display', AppState.fighter2);
     }
     
+    clearArena() {
+        // Réinitialiser les combattants dans l'AppState
+        AppState.fighter1 = null;
+        AppState.fighter2 = null;
+        AppState.combatEnCours = false;
+        
+        // Mettre à jour l'affichage des combattants
+        this.updateFighterDisplay();
+        
+        // Nettoyer les effets visuels résiduels
+        this.clearVisualEffects();
+        
+        console.log('🧹 Arène vidée après la fin du combat');
+    }
+    
+    clearVisualEffects() {
+        // Supprimer les éléments de dégâts résiduels
+        const arena = document.querySelector('#arena .arena');
+        if (arena) {
+            const damageElements = arena.querySelectorAll('.damage-number, .damage-float');
+            damageElements.forEach(el => el.remove());
+            
+            // Réinitialiser les transformations
+            arena.style.transform = '';
+        }
+        
+        // Réinitialiser les effets sur les displays des combattants
+        const fighter1Display = document.getElementById('fighter1Display');
+        const fighter2Display = document.getElementById('fighter2Display');
+        
+        [fighter1Display, fighter2Display].forEach(display => {
+            if (display) {
+                display.classList.remove('victory', 'defeat', 'winner', 'loser');
+                display.style.transform = '';
+                display.style.filter = '';
+                display.style.animation = '';
+            }
+        });
+    }
+
     updateSingleFighterDisplay(displayId, fighter) {
         const display = document.getElementById(displayId);
         if (!display) return;

@@ -650,6 +650,12 @@ export class CombatSystem {
             }
         }, 2000);
         
+        // Vider l'arène après un délai supplémentaire pour laisser le temps à l'utilisateur de voir le résultat
+        const clearArenaDelay = gameConfig.clearArenaDelay || 5000; // Par défaut 5 secondes
+        setTimeout(() => {
+            uiManager.clearArena();
+        }, clearArenaDelay);
+        
         return combatResult;
     }
     
@@ -734,6 +740,14 @@ export class CombatSystem {
     
     clearCombatLog() {
         this.combatLog = [];
+    }
+    
+    stopCombat() {
+        if (this.isRunning) {
+            this.isRunning = false;
+            this.addLogEntry('⏹️ Combat interrompu', 'info');
+            console.log('🛑 Combat arrêté manuellement');
+        }
     }
     
     generateCombatId() {

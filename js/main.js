@@ -88,15 +88,13 @@ class HeroesArena {
             if (select) select.value = '';
         });
         
-        // Réinitialiser l'état
-        AppState.fighter1 = null;
-        AppState.fighter2 = null;
-        
         // Arrêter le combat en cours
         this.combat.stopCombat();
         
-        // Mettre à jour l'affichage
-        this.ui.updateFighters();
+        // Utiliser la nouvelle fonction clearArena qui nettoie tout proprement
+        this.ui.clearArena();
+        
+        console.log('🏛️ Arène réinitialisée manuellement');
         this.ui.clearCombatLog();
         
         // Ajouter un message de bienvenue
