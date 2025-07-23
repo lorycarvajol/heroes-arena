@@ -547,184 +547,165 @@ export class UIManager {
         });
     }
     
-    // Modal de fin de combat
-    showCombatEndModal(result) {
+    // ========== MODAL DE VICTOIRE CLASSIQUE ==========
+    showCombatEndModalSpectacular(result) {
         const { winner, loser, draw, originalWinner, originalLoser } = result;
         
         const modal = document.createElement('div');
         modal.className = 'modal-overlay combat-end-modal';
+        modal.style.opacity = '0';
+        modal.style.transition = 'opacity 0.3s ease';
         
         if (draw) {
-            modal.innerHTML = `
-                <div class="modal-content combat-result-content draw-result">
-                    <div class="victory-effects draw-effects">
-                        <div class="sparkle-overlay"></div>
-                        <div class="celebration-particles"></div>
-                    </div>
-                    <div class="combat-result-header draw enhanced">
-                        <div class="result-crown">⚖️</div>
-                        <h2 class="victory-title animated">MATCH NUL ÉPIQUE !</h2>
-                        <div class="victory-subtitle">Un combat légendaire digne des plus grands héros</div>
-                        <div class="battle-decorations">
-                            <div class="decoration-line"></div>
-                            <span class="battle-emblem">⚔️</span>
-                            <div class="decoration-line"></div>
-                        </div>
-                    </div>
-                    <div class="combat-result-body draw-body">
-                        <div class="draw-heroes-display">
-                            <div class="hero-draw-card">
-                                <div class="hero-avatar-result-enhanced">
-                                    <img src="images/${originalWinner.avatar}" alt="${originalWinner.nom}">
-                                    <div class="hero-glow draw-glow"></div>
-                                </div>
-                                <h3 class="hero-draw-name">${originalWinner.nom}</h3>
-                                <div class="hero-draw-class">${originalWinner.classe}</div>
-                            </div>
-                            <div class="draw-vs-symbol">
-                                <div class="vs-text">VS</div>
-                                <div class="equality-symbol">=</div>
-                            </div>
-                            <div class="hero-draw-card">
-                                <div class="hero-avatar-result-enhanced">
-                                    <img src="images/${originalLoser.avatar}" alt="${originalLoser.nom}">
-                                    <div class="hero-glow draw-glow"></div>
-                                </div>
-                                <h3 class="hero-draw-name">${originalLoser.nom}</h3>
-                                <div class="hero-draw-class">${originalLoser.classe}</div>
-                            </div>
-                        </div>
-                        <div class="draw-message">
-                            <div class="honor-text">
-                                <p class="main-honor">🏛️ Honneur aux Deux Combattants 🏛️</p>
-                                <p class="sub-honor">Ce combat restera gravé dans l'histoire de l'arène</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer enhanced">
-                        <button class="btn victory-continue-btn" onclick="this.closest('.modal-overlay').remove()">
-                            <span class="btn-text">Retour à l'Arène</span>
-                            <span class="btn-icon">⚔️</span>
-                        </button>
-                    </div>
-                </div>
-            `;
+            modal.innerHTML = this.generateSimpleDrawContent(originalWinner, originalLoser);
         } else {
-            modal.innerHTML = `
-                <div class="modal-content combat-result-content victory-result">
-                    <div class="victory-effects">
-                        <div class="golden-sparkles"></div>
-                        <div class="victory-rays"></div>
-                        <div class="celebration-confetti"></div>
-                    </div>
-                    <div class="combat-result-header victory enhanced">
-                        <div class="victory-crown-container">
-                            <div class="crown-glow"></div>
-                            <div class="result-crown winner-crown">👑</div>
-                        </div>
-                        <h2 class="victory-title animated">VICTOIRE GLORIEUSE !</h2>
-                        <div class="victory-subtitle">${originalWinner.nom} triomphe dans l'arène !</div>
-                        <div class="battle-decorations gold">
-                            <div class="decoration-line gold"></div>
-                            <span class="battle-emblem winner">🏆</span>
-                            <div class="decoration-line gold"></div>
-                        </div>
-                    </div>
-                    <div class="combat-result-body victory-body">
-                        <div class="battle-showcase">
-                            <div class="winner-section enhanced">
-                                <div class="champion-banner">🏆 CHAMPION 🏆</div>
-                                <div class="result-hero-card winner enhanced">
-                                    <div class="hero-avatar-result-enhanced winner">
-                                        <img src="images/${originalWinner.avatar}" alt="${originalWinner.nom}">
-                                        <div class="hero-glow winner-glow"></div>
-                                        <div class="victory-aura"></div>
-                                    </div>
-                                    <h3 class="hero-winner-name">${originalWinner.nom}</h3>
-                                    <div class="hero-class winner-class">${originalWinner.classe}</div>
-                                    <div class="badge-display winner-badge">${originalWinner.getBadgeText()}</div>
-                                    <div class="victory-stats">
-                                        <div class="stat-item">
-                                            <span class="stat-icon">🏆</span>
-                                            <span class="stat-text">${originalWinner.victoires} Victoires</span>
-                                        </div>
-                                        <div class="stat-item">
-                                            <span class="stat-icon">⚔️</span>
-                                            <span class="stat-text">${originalWinner.getRatio()}% Ratio</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="vs-divider enhanced">
-                                <div class="vs-background">
-                                    <div class="vs-text">VS</div>
-                                    <div class="battle-clash">⚔️</div>
-                                </div>
-                            </div>
-                            <div class="loser-section enhanced">
-                                <div class="honor-banner">🛡️ HONNEUR AU VAILLANT 🛡️</div>
-                                <div class="result-hero-card loser enhanced">
-                                    <div class="hero-avatar-result-enhanced loser">
-                                        <img src="images/${originalLoser.avatar}" alt="${originalLoser.nom}">
-                                        <div class="hero-glow loser-glow"></div>
-                                    </div>
-                                    <h3 class="hero-loser-name">${originalLoser.nom}</h3>
-                                    <div class="hero-class loser-class">${originalLoser.classe}</div>
-                                    <div class="badge-display loser-badge">${originalLoser.getBadgeText()}</div>
-                                    <div class="defeat-stats">
-                                        <div class="stat-item">
-                                            <span class="stat-icon">💪</span>
-                                            <span class="stat-text">Combat Vaillant</span>
-                                        </div>
-                                        <div class="stat-item">
-                                            <span class="stat-icon">🔄</span>
-                                            <span class="stat-text">Revanche Possible</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="victory-message">
-                            <div class="victory-proclamation">
-                                <p class="main-victory">🎉 Gloire au Vainqueur ! 🎉</p>
-                                <p class="sub-victory">Un combat mémorable pour l'histoire de l'arène</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer enhanced victory-footer">
-                        <button class="btn victory-continue-btn champion" onclick="this.closest('.modal-overlay').remove()">
-                            <span class="btn-text">Célébrer la Victoire</span>
-                            <span class="btn-icon">🏆</span>
-                        </button>
-                    </div>
-                </div>
-            `;
+            modal.innerHTML = this.generateSimpleVictoryContent(originalWinner, originalLoser);
         }
         
         document.body.appendChild(modal);
         
-        // Animation d'entrée
+        // Animation d'entrée simple
         setTimeout(() => {
             modal.style.opacity = '1';
-        }, 100);
+        }, 50);
         
-        // Fermer en cliquant à l'extérieur
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.remove();
-                // Forcer la mise à jour de l'affichage après fermeture
-                this.displayHeroes();
-            }
-        });
-        
-        // Ajouter un gestionnaire de fermeture pour forcer la mise à jour
-        modal.addEventListener('remove', () => {
-            this.displayHeroes();
-        });
+        // Gestionnaire de fermeture
+        this.setupSimpleModalHandlers(modal);
         
         return modal;
     }
-    
+
+    // Génération du contenu simple pour une victoire
+    generateSimpleVictoryContent(winner, loser) {
+        return `
+            <div class="modal-content victory-modal">
+                <div class="modal-header">
+                    <h2 class="victory-title">🏆 Victoire !</h2>
+                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="combat-result">
+                        <div class="winner-section">
+                            <div class="hero-result winner">
+                                <div class="hero-avatar">
+                                    <img src="images/${winner.avatar}" alt="${winner.nom}">
+                                </div>
+                                <h3 class="hero-name">${winner.nom}</h3>
+                                <div class="hero-class">${winner.classe}</div>
+                                <div class="hero-record">
+                                    <span class="victories">${winner.victoires} Victoires</span>
+                                    <span class="ratio">${winner.getRatio()}% de réussite</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="vs-divider">
+                            <span class="vs-text">VS</span>
+                        </div>
+                        
+                        <div class="loser-section">
+                            <div class="hero-result loser">
+                                <div class="hero-avatar">
+                                    <img src="images/${loser.avatar}" alt="${loser.nom}">
+                                </div>
+                                <h3 class="hero-name">${loser.nom}</h3>
+                                <div class="hero-class">${loser.classe}</div>
+                                <div class="hero-record">
+                                    <span class="defeats">${loser.defaites} Défaites</span>
+                                    <span class="ratio">${loser.getRatio()}% de réussite</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="victory-message">
+                        <p><strong>${winner.nom}</strong> remporte la victoire avec brio !</p>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn modal-close-btn" onclick="this.closest('.modal-overlay').remove()">
+                        Continuer
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Génération du contenu simple pour un match nul  
+    generateSimpleDrawContent(fighter1, fighter2) {
+        return `
+            <div class="modal-content draw-modal">
+                <div class="modal-header">
+                    <h2 class="draw-title">⚖️ Match Nul</h2>
+                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="combat-result">
+                        <div class="fighter-section">
+                            <div class="hero-result draw">
+                                <div class="hero-avatar">
+                                    <img src="images/${fighter1.avatar}" alt="${fighter1.nom}">
+                                </div>
+                                <h3 class="hero-name">${fighter1.nom}</h3>
+                                <div class="hero-class">${fighter1.classe}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="vs-divider">
+                            <span class="vs-text">=</span>
+                        </div>
+                        
+                        <div class="fighter-section">
+                            <div class="hero-result draw">
+                                <div class="hero-avatar">
+                                    <img src="images/${fighter2.avatar}" alt="${fighter2.nom}">
+                                </div>
+                                <h3 class="hero-name">${fighter2.nom}</h3>
+                                <div class="hero-class">${fighter2.classe}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="draw-message">
+                        <p>Combat équilibré ! Les deux héros ont fait preuve d'une égale bravoure.</p>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn modal-close-btn" onclick="this.closest('.modal-overlay').remove()">
+                        Continuer
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Gestionnaire simple pour le modal
+    setupSimpleModalHandlers(modal) {
+        // Fermeture en cliquant à l'extérieur
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+        
+        // Échap pour fermer
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                modal.remove();
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
+        
+        // Nettoyer après fermeture
+        modal.addEventListener('remove', () => {
+            this.displayHeroes();
+        });
+    }
     
     // Méthode pour forcer la mise à jour complète de l'interface
     forceUpdate() {

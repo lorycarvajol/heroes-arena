@@ -730,7 +730,7 @@ export async function initHeroesArena() {
         
         // Configurer la fin de combat
         app.combat.onCombatEnd = (result) => {
-            app.ui.showCombatEndModal(result);
+            app.ui.showCombatEndModalSpectacular(result);
             // Forcer la mise à jour de l'affichage des héros
             setTimeout(() => {
                 app.ui.forceUpdate();
@@ -748,6 +748,24 @@ export async function initHeroesArena() {
         // Exposer l'objet app globalement immédiatement
         window.HeroesArena = app;
         window.app = app; // Pour debug
+        
+        // Fonction de test pour le modal de victoire
+        window.testVictoryModal = function() {
+            console.log('🎉 Test du modal de victoire...');
+            const mockResult = {
+                winner: AppState.heroes[0] || { nom: 'Test Hero', classe: 'Guerrier', avatar: 'warrior1.png', victoires: 5, defaites: 2, niveau: 3, getRatio: () => 71, getBadgeText: () => 'Guerrier Expérimenté' },
+                loser: AppState.heroes[1] || { nom: 'Test Opponent', classe: 'Mage', avatar: 'mage1.png', victoires: 2, defaites: 3, niveau: 2, getRatio: () => 40, getBadgeText: () => 'Mage Novice' },
+                draw: false,
+                originalWinner: AppState.heroes[0] || { nom: 'Test Hero', classe: 'Guerrier', avatar: 'warrior1.png', victoires: 5, defaites: 2, niveau: 3, getRatio: () => 71, getBadgeText: () => 'Guerrier Expérimenté' },
+                originalLoser: AppState.heroes[1] || { nom: 'Test Opponent', classe: 'Mage', avatar: 'mage1.png', victoires: 2, defaites: 3, niveau: 2, getRatio: () => 40, getBadgeText: () => 'Mage Novice' }
+            };
+            try {
+                app.ui.showCombatEndModalSpectacular(mockResult);
+                console.log('✅ Modal de victoire lancé avec succès');
+            } catch (error) {
+                console.error('❌ Erreur lors du lancement du modal:', error);
+            }
+        };
         
         // Créer des fonctions globales simples pour les actions des héros
         window.showHeroDetailsNow = function(index) {

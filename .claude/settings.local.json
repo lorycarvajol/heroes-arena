@@ -29,7 +29,8 @@
       "Bash(then sed -i '1i@use '\"''\"'../abstracts/variables'\"''\"' as *;\\n@use '\"''\"'../abstracts/mixins'\"''\"' as *;\\n' \"$file\")",
       "Bash(fi)",
       "Bash(done)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(start http://localhost:8080)"
     ],
     "deny": []
   }
