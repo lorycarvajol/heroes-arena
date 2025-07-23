@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heroes Arena - Ultimate Edition</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css?v=1.1">
 </head>
 <body>
     <div class="background"></div>
@@ -43,7 +43,7 @@
                     <p>Pas encore de compte ? 
                         <a href="#" onclick="HeroesAuth.showRegister()">Créer un compte</a>
                     </p>
-                    <p style="margin-top: 10px;">
+                    <p class="forgot-link">
                         <a href="#" onclick="HeroesAuth.showForgotPassword()">Mot de passe oublié ?</a>
                     </p>
                 </div>
@@ -238,7 +238,7 @@
         <div class="header">
             <h1>HEROES ARENA</h1>
             <p>Créez vos héros avec des pouvoirs uniques et regardez-les gravir les échelons</p>
-            <div id="appStatus" style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8; color: #3b82f6;">
+            <div id="appStatus" class="app-loading-status">
                 Chargement de l'application...
             </div>
         </div>
@@ -252,7 +252,7 @@
         <div class="content">
             <!-- Section Création -->
             <div class="section active" id="create">
-                <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 30px; color: #e2e8f0;">Créer un Nouveau Héros</h2>
+                <h2 class="create-hero-title">Créer un Nouveau Héros</h2>
 
                 <div class="form-grid">
                     <div>
@@ -313,7 +313,7 @@
 
                     <div>
                         <div class="stats-container">
-                            <h3 style="color: #e2e8f0; margin-bottom: 24px; font-weight: 700;">Caractéristiques</h3>
+                            <h3>Caractéristiques</h3>
 
                             <div class="stat-group">
                                 <div class="stat-header">
@@ -368,7 +368,7 @@
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 16px; margin-top: 30px;">
+                        <div class="form-actions">
                             <button class="btn" onclick="HeroesArena.createHeroFromForm()" id="createBtn">Créer le
                                 Héros</button>
                             <button class="btn btn-secondary" onclick="HeroesArena.randomStats()">Stats
@@ -381,7 +381,7 @@
             <!-- Section Héros -->
             <div id="heroes" class="section">
                 <div class="section-header">
-                    <h2>🦸‍♂️ Mes Héros</h2>
+                    <h2>Mes Héros</h2>
                     <p>Cliquez sur un héros pour voir ses détails complets</p>
                 </div>
 
@@ -395,7 +395,7 @@
                         <button class="file-button load" onclick="document.getElementById('importFile').click()">
                             📂 Importer depuis Fichier
                         </button>
-                        <input type="file" id="importFile" accept=".json" style="display: none" onchange="handleFileImport(this)">
+                        <input type="file" id="importFile" accept=".json" class="hidden-file-input" onchange="handleFileImport(this)">
                         <button class="file-button load" onclick="HeroesArena.loadData()">
                             💾 Recharger Données
                         </button>
@@ -430,7 +430,7 @@
                 <div class="arena">
                     <div class="arena-header">
                         <h3>ARÈNE DE COMBAT</h3>
-                        <p style="color: #94a3b8; font-size: 1.1rem;">Sélectionnez deux héros et regardez-les
+                        <p class="arena-subtitle">Sélectionnez deux héros et regardez-les
                             s'affronter pour la gloire</p>
                     </div>
 
@@ -455,10 +455,10 @@
                     <div class="fighters-display">
                         <div class="fighter-display" id="fighter1Display">
                             <div class="fighter-avatar-large">
-                                <span style="color: #64748b; font-size: 2rem;">?</span>
+                                <span class="fighter-placeholder">?</span>
                             </div>
                             <div class="fighter-name">En attente...</div>
-                            <div class="hero-class" style="background: rgba(255, 255, 255, 0.1);">Non sélectionné</div>
+                            <div class="hero-class hero-class-empty">Non sélectionné</div>
                             <div class="health-bar">
                                 <div class="health-fill" style="width: 0%"></div>
                                 <div class="health-text">0/0</div>
@@ -469,10 +469,10 @@
 
                         <div class="fighter-display" id="fighter2Display">
                             <div class="fighter-avatar-large">
-                                <span style="color: #64748b; font-size: 2rem;">?</span>
+                                <span class="fighter-placeholder">?</span>
                             </div>
                             <div class="fighter-name">En attente...</div>
-                            <div class="hero-class" style="background: rgba(255, 255, 255, 0.1);">Non sélectionné</div>
+                            <div class="hero-class hero-class-empty">Non sélectionné</div>
                             <div class="health-bar">
                                 <div class="health-fill" style="width: 0%"></div>
                                 <div class="health-text">0/0</div>
@@ -480,9 +480,8 @@
                         </div>
                     </div>
 
-                    <div style="margin: 30px 0;">
-                        <button class="btn" onclick="HeroesArena.startCombat()" id="fightBtn" disabled
-                            style="margin-right: 16px;">Commencer le Combat</button>
+                    <div class="arena-actions">
+                        <button class="btn fight-btn" onclick="HeroesArena.startCombat()" id="fightBtn" disabled>Commencer le Combat</button>
                         <button class="btn btn-secondary" onclick="HeroesArena.resetArena()">Réinitialiser</button>
                         <button class="btn btn-secondary" onclick="HeroesArena.stopCombat()">Arrêter Combat</button>
                     </div>

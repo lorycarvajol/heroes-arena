@@ -530,6 +530,21 @@ class AuthSystem {
         this.updateUserStats();
     }
     
+    // Nouvelle méthode pour mettre en évidence les erreurs de formulaire
+    highlightFormErrors() {
+        const errorInputs = document.querySelectorAll('.error');
+        errorInputs.forEach(input => {
+            input.style.borderColor = '#ff4757';
+            input.style.boxShadow = '0 0 5px rgba(255, 71, 87, 0.3)';
+            
+            // Enlever l'effet après 3 secondes
+            setTimeout(() => {
+                input.style.borderColor = '';
+                input.style.boxShadow = '';
+            }, 3000);
+        });
+    }
+    
     showLogin() {
         this.hideAllForms();
         const loginForm = document.getElementById('loginForm');
@@ -601,11 +616,36 @@ class AuthSystem {
         if (errorElement) {
             errorElement.textContent = message;
             errorElement.style.display = 'block';
+            
+            // Animation d'apparition
+            errorElement.style.opacity = '0';
+            errorElement.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                errorElement.style.transition = 'all 0.3s ease';
+                errorElement.style.opacity = '1';
+                errorElement.style.transform = 'translateY(0)';
+            }, 10);
+            
+            // Auto-masquage après 15 secondes
+            setTimeout(() => {
+                if (errorElement.style.display === 'block') {
+                    errorElement.style.opacity = '0';
+                    setTimeout(() => {
+                        errorElement.style.display = 'none';
+                        this.clearFieldError(fieldId);
+                    }, 300);
+                }
+            }, 15000);
         }
         
         const inputElement = document.getElementById(fieldId);
         if (inputElement) {
             inputElement.classList.add('error');
+            // Focus sur le champ en erreur
+            setTimeout(() => {
+                inputElement.focus();
+                inputElement.select();
+            }, 100);
         }
     }
     
@@ -633,7 +673,36 @@ class AuthSystem {
         
         const authMessages = document.getElementById('authMessages');
         if (authMessages) {
-            authMessages.innerHTML = '';
+            const messageEl = authMessages.querySelector('.message');
+            if (messageEl) {
+                messageEl.style.opacity = '0';
+                setTimeout(() => {
+                    authMessages.innerHTML = '';
+                }, 300);
+            } else {
+                authMessages.innerHTML = '';
+            }
+        }
+    }
+    
+    // Nouvelle méthode pour animer les erreurs
+    shakeActiveForm() {
+        const forms = [
+            'loginForm', 'registerForm', 'forgotPasswordForm', 
+            'verifyCodeForm', 'resetPasswordForm'
+        ];
+        
+        const activeForm = forms.find(formId => {
+            const form = document.getElementById(formId);
+            return form && (form.classList.contains('active') || form.style.display === 'block');
+        });
+        
+        if (activeForm) {
+            const form = document.getElementById(activeForm);
+            form.style.animation = 'shake 0.5s ease-in-out';
+            setTimeout(() => {
+                form.style.animation = '';
+            }, 500);
         }
     }
     
@@ -642,10 +711,32 @@ class AuthSystem {
         if (authMessages) {
             authMessages.innerHTML = `<div class="message ${type}">${message}</div>`;
             
-            // Effacer le message après 5 secondes
+            // Animation d'entrée
+            const messageEl = authMessages.querySelector('.message');
+            if (messageEl) {
+                messageEl.style.opacity = '0';
+                messageEl.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    messageEl.style.transition = 'all 0.3s ease';
+                    messageEl.style.opacity = '1';
+                    messageEl.style.transform = 'translateY(0)';
+                }, 10);
+            }
+            
+            // Effet de secousse pour les erreurs
+            if (type === 'error') {
+                this.shakeActiveForm();
+            }
+            
+            // Effacer le message après 8 secondes
             setTimeout(() => {
-                authMessages.innerHTML = '';
-            }, 5000);
+                if (messageEl) {
+                    messageEl.style.opacity = '0';
+                    setTimeout(() => {
+                        authMessages.innerHTML = '';
+                    }, 300);
+                }
+            }, 8000);
         }
     }
     
@@ -672,8 +763,11 @@ class AuthSystem {
             if (result.field) {
                 this.showFieldError('login' + result.field.charAt(0).toUpperCase() + result.field.slice(1), result.message);
             } else {
-                this.showGeneralMessage(result.message);
+                this.showGeneralMessage(result.message, 'error');
             }
+            
+            // Effet visuel supplémentaire pour les échecs de connexion
+            this.highlightFormErrors();
         }
         
         return false;
@@ -705,8 +799,11 @@ class AuthSystem {
             if (result.field) {
                 this.showFieldError('register' + result.field.charAt(0).toUpperCase() + result.field.slice(1), result.message);
             } else {
-                this.showGeneralMessage(result.message);
+                this.showGeneralMessage(result.message, 'error');
             }
+            
+            // Effet visuel supplémentaire pour les échecs d'inscription
+            this.highlightFormErrors();
         }
         
         return false;
@@ -745,7 +842,7 @@ class AuthSystem {
             if (result.field) {
                 this.showFieldError('forgot' + result.field.charAt(0).toUpperCase() + result.field.slice(1), result.message);
             } else {
-                this.showGeneralMessage(result.message);
+                this.showGeneralMessage(result.message, 'error');
             }
         }
         
@@ -775,7 +872,7 @@ class AuthSystem {
             if (result.field) {
                 this.showFieldError('verificationCode', result.message);
             } else {
-                this.showGeneralMessage(result.message);
+                this.showGeneralMessage(result.message, 'error');
             }
         }
         
@@ -811,7 +908,7 @@ class AuthSystem {
             if (result.field) {
                 this.showFieldError(result.field === 'password' ? 'newPassword' : 'confirmNewPassword', result.message);
             } else {
-                this.showGeneralMessage(result.message);
+                this.showGeneralMessage(result.message, 'error');
             }
         }
         

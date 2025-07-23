@@ -237,84 +237,158 @@ export async function initHeroesArena() {
                     <div class="modal-content hero-details-content">
                         <div class="modal-header">
                             <div class="hero-details-header">
-                                <div class="hero-avatar-large">
-                                    <img src="images/${hero.avatar}" alt="${hero.nom}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="avatar-fallback" style="display: none;">👤</div>
+                                <div class="hero-avatar-large-container">
+                                    <div class="hero-avatar-large">
+                                        <img src="images/${hero.avatar}" alt="${hero.nom}">
+                                        <div class="avatar-border-glow"></div>
+                                    </div>
+                                    <div class="avatar-decorations">
+                                        <div class="level-crown">★ ${hero.niveau} ★</div>
+                                        <div class="hero-badge-ornate">${hero.getBadgeText()}</div>
+                                    </div>
                                 </div>
                                 <div class="hero-details-title">
-                                    <h2>${hero.nom}</h2>
-                                    <div class="hero-class-badge">${hero.classe}</div>
-                                    <div class="hero-level-display">Niveau ${hero.niveau}</div>
-                                    <div class="hero-badge-display">${hero.getBadgeText()}</div>
+                                    <h2 class="hero-name-title">${hero.nom}</h2>
+                                    <div class="hero-class-badge-enhanced">${hero.classe}</div>
+                                    <div class="hero-title-decorations">
+                                        <div class="victory-laurels">🏆 ${hero.victoires > 0 ? 'Vainqueur' : 'Apprenti'}</div>
+                                        <div class="combat-record">${hero.victoires}V - ${hero.defaites}D</div>
+                                    </div>
                                 </div>
                             </div>
-                            <button class="modal-close" data-action="close">×</button>
+                            <button class="modal-close enhanced-close" data-action="close">✕</button>
                         </div>
                         
                         <div class="modal-body">
                             <div class="hero-details-grid">
-                                <div class="stats-section">
-                                    <h3>Caractéristiques</h3>
-                                    <div class="stat-detail">
-                                        <span class="stat-icon">⚔️</span>
-                                        <span class="stat-name">Force</span>
-                                        <span class="stat-value">${hero.force}</span>
+                                <div class="stats-section enhanced">
+                                    <h3 class="section-title">⚡ Attributs du Héros</h3>
+                                    <div class="stats-grid">
+                                        <div class="stat-detail enhanced">
+                                            <div class="stat-header">
+                                                <span class="stat-icon force-icon">⚔️</span>
+                                                <span class="stat-name">Force</span>
+                                            </div>
+                                            <div class="stat-bar-container">
+                                                <div class="stat-bar">
+                                                    <div class="stat-bar-fill force-fill" style="width: ${(hero.force / 20) * 100}%"></div>
+                                                </div>
+                                                <span class="stat-value">${hero.force}/20</span>
+                                            </div>
+                                        </div>
+                                        <div class="stat-detail enhanced">
+                                            <div class="stat-header">
+                                                <span class="stat-icon agility-icon">🏃</span>
+                                                <span class="stat-name">Agilité</span>
+                                            </div>
+                                            <div class="stat-bar-container">
+                                                <div class="stat-bar">
+                                                    <div class="stat-bar-fill agility-fill" style="width: ${(hero.agility / 20) * 100}%"></div>
+                                                </div>
+                                                <span class="stat-value">${hero.agility}/20</span>
+                                            </div>
+                                        </div>
+                                        <div class="stat-detail enhanced">
+                                            <div class="stat-header">
+                                                <span class="stat-icon magic-icon">🔮</span>
+                                                <span class="stat-name">Magie</span>
+                                            </div>
+                                            <div class="stat-bar-container">
+                                                <div class="stat-bar">
+                                                    <div class="stat-bar-fill magic-fill" style="width: ${(hero.magic / 20) * 100}%"></div>
+                                                </div>
+                                                <span class="stat-value">${hero.magic}/20</span>
+                                            </div>
+                                        </div>
+                                        <div class="stat-detail enhanced">
+                                            <div class="stat-header">
+                                                <span class="stat-icon defense-icon">🛡️</span>
+                                                <span class="stat-name">Défense</span>
+                                            </div>
+                                            <div class="stat-bar-container">
+                                                <div class="stat-bar">
+                                                    <div class="stat-bar-fill defense-fill" style="width: ${(hero.defense / 20) * 100}%"></div>
+                                                </div>
+                                                <span class="stat-value">${hero.defense}/20</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="stat-detail">
-                                        <span class="stat-icon">🏃</span>
-                                        <span class="stat-name">Agilité</span>
-                                        <span class="stat-value">${hero.agility}</span>
-                                    </div>
-                                    <div class="stat-detail">
-                                        <span class="stat-icon">🔮</span>
-                                        <span class="stat-name">Magie</span>
-                                        <span class="stat-value">${hero.magic}</span>
-                                    </div>
-                                    <div class="stat-detail">
-                                        <span class="stat-icon">🛡️</span>
-                                        <span class="stat-name">Défense</span>
-                                        <span class="stat-value">${hero.defense}</span>
+                                    <div class="total-power">
+                                        <span class="power-label">Puissance Totale:</span>
+                                        <span class="power-value">${hero.force + hero.agility + hero.magic + hero.defense}/80</span>
                                     </div>
                                 </div>
                                 
-                                <div class="progress-section">
-                                    <h3>Progression</h3>
-                                    <div class="xp-section">
-                                        <div class="xp-header">
-                                            <span>Expérience</span>
-                                            <span class="xp-values">${hero.xp} XP</span>
+                                <div class="progress-section enhanced">
+                                    <h3 class="section-title">📈 Évolution & État</h3>
+                                    <div class="vitals-container">
+                                        <div class="health-section enhanced">
+                                            <div class="vital-header">
+                                                <span class="vital-icon">💖</span>
+                                                <span class="vital-name">Points de Vie</span>
+                                                <span class="vital-status ${healthPercent > 75 ? 'excellent' : healthPercent > 50 ? 'good' : healthPercent > 25 ? 'warning' : 'critical'}">
+                                                    ${healthPercent > 90 ? 'Excellent' : healthPercent > 75 ? 'Bon' : healthPercent > 50 ? 'Affaibli' : healthPercent > 25 ? 'Blessé' : 'Critique'}
+                                                </span>
+                                            </div>
+                                            <div class="health-bar-detail enhanced">
+                                                <div class="health-fill animated" style="width: ${healthPercent}%; background-color: ${healthColor}"></div>
+                                                <div class="health-text">${hero.pv}/${hero.pvMax}</div>
+                                            </div>
                                         </div>
-                                        <div class="xp-bar">
-                                            <div class="xp-fill" style="width: ${((hero.xp % 100) / 100) * 100}%"></div>
-                                            <div class="xp-text">${hero.xp % 100}/100 XP</div>
-                                        </div>
-                                        <div class="level-info">
-                                            <small>Niveau ${hero.niveau} • ${100 - (hero.xp % 100)} XP pour niveau ${hero.niveau + 1}</small>
-                                        </div>
-                                    </div>
-                                    <div class="health-section">
-                                        <span>Points de vie</span>
-                                        <div class="health-bar-detail">
-                                            <div class="health-fill" style="width: ${healthPercent}%; background-color: ${healthColor}"></div>
-                                            <div class="health-text">${hero.pv}/${hero.pvMax}</div>
+                                        <div class="xp-section enhanced">
+                                            <div class="vital-header">
+                                                <span class="vital-icon">⭐</span>
+                                                <span class="vital-name">Expérience</span>
+                                                <span class="level-badge">Niv. ${hero.niveau}</span>
+                                            </div>
+                                            <div class="xp-bar enhanced">
+                                                <div class="xp-fill animated" style="width: ${((hero.xp % 100) / 100) * 100}%"></div>
+                                                <div class="xp-text">${hero.xp % 100}/100 XP</div>
+                                            </div>
+                                            <div class="level-progress">
+                                                <div class="next-level">
+                                                    <span>Prochain niveau: ${100 - (hero.xp % 100)} XP</span>
+                                                    <div class="xp-total">Total: ${hero.xp} XP</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="combat-section">
-                                    <h3>Palmarès</h3>
-                                    <div class="combat-stats">
-                                        <div class="combat-stat victories">
-                                            <span class="label">Victoires</span>
-                                            <span class="value">${hero.victoires}</span>
+                                <div class="combat-section enhanced">
+                                    <h3 class="section-title">🏆 Palmarès de Combat</h3>
+                                    <div class="combat-overview">
+                                        <div class="combat-trophy">
+                                            <div class="trophy-icon">${hero.victoires > hero.defaites ? '👑' : hero.victoires === hero.defaites ? '⚖️' : '🛡️'}</div>
+                                            <div class="trophy-title">${hero.victoires > hero.defaites ? 'Champion' : hero.victoires === hero.defaites ? 'Équilibré' : 'Challenger'}</div>
                                         </div>
-                                        <div class="combat-stat defeats">
-                                            <span class="label">Défaites</span>
-                                            <span class="value">${hero.defaites}</span>
+                                        <div class="winrate-display">
+                                            <div class="winrate-circle" style="background: conic-gradient(#10b981 ${hero.getRatio() * 3.6}deg, #374151 0deg)">
+                                                <div class="winrate-text">${hero.getRatio()}%</div>
+                                            </div>
                                         </div>
-                                        <div class="combat-stat ratio">
-                                            <span class="label">Ratio</span>
-                                            <span class="value">${hero.getRatio()}%</span>
+                                    </div>
+                                    <div class="combat-stats enhanced">
+                                        <div class="combat-stat victories enhanced">
+                                            <div class="stat-icon">🏆</div>
+                                            <div class="stat-content">
+                                                <span class="label">Victoires</span>
+                                                <span class="value">${hero.victoires}</span>
+                                            </div>
+                                        </div>
+                                        <div class="combat-stat defeats enhanced">
+                                            <div class="stat-icon">💀</div>
+                                            <div class="stat-content">
+                                                <span class="label">Défaites</span>
+                                                <span class="value">${hero.defaites}</span>
+                                            </div>
+                                        </div>
+                                        <div class="combat-stat total enhanced">
+                                            <div class="stat-icon">⚔️</div>
+                                            <div class="stat-content">
+                                                <span class="label">Total</span>
+                                                <span class="value">${hero.victoires + hero.defaites}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

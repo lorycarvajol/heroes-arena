@@ -1,0 +1,156 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// ========== UTILITAIRES : utilities/_helpers.scss ==========
+// Classes utilitaires pour les espacements
+@each $name,
+$size in $spacings {
+    .m-#{$name} {
+        margin: $size;
+    }
+
+    .mt-#{$name} {
+        margin-top: $size;
+    }
+
+    .mr-#{$name} {
+        margin-right: $size;
+    }
+
+    .mb-#{$name} {
+        margin-bottom: $size;
+    }
+
+    .ml-#{$name} {
+        margin-left: $size;
+    }
+
+    .mx-#{$name} {
+        margin-left: $size;
+        margin-right: $size;
+    }
+
+    .my-#{$name} {
+        margin-top: $size;
+        margin-bottom: $size;
+    }
+
+    .p-#{$name} {
+        padding: $size;
+    }
+
+    .pt-#{$name} {
+        padding-top: $size;
+    }
+
+    .pr-#{$name} {
+        padding-right: $size;
+    }
+
+    .pb-#{$name} {
+        padding-bottom: $size;
+    }
+
+    .pl-#{$name} {
+        padding-left: $size;
+    }
+
+    .px-#{$name} {
+        padding-left: $size;
+        padding-right: $size;
+    }
+
+    .py-#{$name} {
+        padding-top: $size;
+        padding-bottom: $size;
+    }
+}
+
+// Classes utilitaires pour les couleurs de texte
+.text-primary {
+    color: $text-primary;
+}
+
+.text-secondary {
+    color: $text-secondary;
+}
+
+.text-muted {
+    color: $text-muted;
+}
+
+.text-success {
+    color: $success;
+}
+
+.text-warning {
+    color: $warning;
+}
+
+.text-error {
+    color: $error;
+}
+
+.text-info {
+    color: $info;
+}
+
+// Classes utilitaires pour les tailles de police
+@each $name,
+$size in $font-sizes {
+    .text-#{$name} {
+        font-size: $size;
+    }
+}
+
+// Classes utilitaires pour les poids de police
+@each $name,
+$weight in $font-weights {
+    .font-#{$name} {
+        font-weight: $weight;
+    }
+}
+
+// Classes utilitaires pour flexbox
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    @include flex-center;
+}
+
+.flex-between {
+    @include flex-between;
+}
+
+.flex-column {
+    @include flex-column;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+// Classes utilitaires pour grid
+.grid {
+    display: grid;
+}
+
+.grid-center {
+    place-items: center;
+}
+
+// Classes d'animation
+.animate-fade-in {
+    @include fade-in;
+}
+
+.animate-glow {
+    @include glow-effect;
+}
+
+// Global scrollbar styles
+* {
+    @include custom-scrollbar;
+}

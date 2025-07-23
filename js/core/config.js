@@ -19,7 +19,7 @@ export const avatarCatalog = {
     ],
     mages: [
         'mage1.png', 'mage2.png', 'wizard1.png', 'wizard2.png',
-        'sorcerer1.png', 'necromancer1.png', 'witch1.png', 'warlock1.png'
+        'sorcerer1.png', 'necromancer1.png', 'witch1.png', 'warlock1.png','azward.png','unknown.png'
     ],
     archers: [
         'archer1.png', 'archer2.png', 'ranger1.png', 'ranger2.png',

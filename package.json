@@ -8,13 +8,17 @@
     "dev": "netlify dev",
     "build": "echo 'Build complete - static files ready'",
     "test": "node js/test-simple.js",
-    "deploy": "netlify deploy --prod"
+    "deploy": "netlify deploy --prod",
+    "sass:watch": "sass --watch scss/main.scss:css/style.css --style expanded",
+    "sass:build": "sass scss/main.scss:css/style.css --style compressed",
+    "sass:dev": "sass --watch scss/main.scss:css/style.css --style expanded --source-map"
   },
   "dependencies": {
     "@netlify/functions": "^2.4.0"
   },
   "devDependencies": {
-    "netlify-cli": "^17.0.0"
+    "netlify-cli": "^17.0.0",
+    "sass": "^1.89.2"
   },
   "keywords": [
     "game",
