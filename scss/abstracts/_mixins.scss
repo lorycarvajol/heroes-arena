@@ -19,7 +19,13 @@
     border: 1px solid rgba(255, 255, 255, $opacity * 2);
 }
 
-// ========== MIXINS DE RESPONSIVE ==========
+// ========== MIXINS DE RESPONSIVE - DARK SOULS ==========
+@mixin xs {
+    @media (max-width: #{$breakpoint-xs}) {
+        @content;
+    }
+}
+
 @mixin mobile {
     @media (max-width: #{$breakpoint-mobile}) {
         @content;
@@ -34,6 +40,37 @@
 
 @mixin desktop {
     @media (min-width: #{$breakpoint-desktop}) {
+        @content;
+    }
+}
+
+@mixin wide {
+    @media (min-width: #{$breakpoint-wide}) {
+        @content;
+    }
+}
+
+@mixin ultrawide {
+    @media (min-width: #{$breakpoint-ultrawide}) {
+        @content;
+    }
+}
+
+// Mixins pour les rangées
+@mixin mobile-only {
+    @media (max-width: #{$breakpoint-mobile}) and (min-width: #{$breakpoint-xs + 1px}) {
+        @content;
+    }
+}
+
+@mixin tablet-only {
+    @media (max-width: #{$breakpoint-tablet}) and (min-width: #{$breakpoint-mobile + 1px}) {
+        @content;
+    }
+}
+
+@mixin desktop-only {
+    @media (max-width: #{$breakpoint-wide - 1px}) and (min-width: #{$breakpoint-desktop}) {
         @content;
     }
 }

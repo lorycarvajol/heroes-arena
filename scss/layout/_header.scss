@@ -1,51 +1,83 @@
 @use '../abstracts/variables' as *;
 @use '../abstracts/mixins' as *;
 
-// ========== LAYOUT HEADER ROMAIN : layout/_header.scss ==========
+// ========== DARK AGE CLASSIC HEADER : layout/_header.scss ==========
 
 .header {
     text-align: center;
     padding: get($spacings, 3xl) 0 get($spacings, 2xl) 0;
     background: 
-        linear-gradient(180deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%),
-        linear-gradient(135deg, rgba(78, 52, 46, 0.8) 0%, rgba(45, 24, 16, 0.9) 100%);
+        linear-gradient(180deg, rgba(15, 15, 15, 0.03) 0%, transparent 100%),
+        linear-gradient(135deg, rgba(8, 8, 8, 0.98) 0%, rgba(5, 5, 5, 1) 100%);
     border-radius: get($border-radius, lg);
-    border: 2px solid $primary-gold;
+    border: 2px solid $blood-black;
     box-shadow: 
-        get($shadows, lg),
-        inset 0 1px 0 rgba(212, 175, 55, 0.3),
-        0 0 30px rgba(212, 175, 55, 0.2);
+        get($shadows, xl),
+        inset 0 1px 0 rgba(20, 20, 20, 0.05),
+        get($shadows, void);
     margin-bottom: get($spacings, xl);
     position: relative;
 
-    // Décorations romaines
+    // Ultra dark border with minimal glow
     &::before {
         content: '';
         position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        background: linear-gradient(45deg, $primary-gold, $primary-bronze, $primary-gold);
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        background: linear-gradient(45deg, $blood-black, $crimson-shadow, $rust-red, $blood-black);
         border-radius: get($border-radius, lg);
         z-index: -1;
+        animation: darkGlow 12s ease-in-out infinite;
     }
 
     h1 {
         font-family: $font-family-secondary;
         font-size: get($font-sizes, 5xl);
         font-weight: get($font-weights, bold);
-        background: linear-gradient(135deg, $primary-gold 0%, #fff8e1 50%, $primary-gold 100%);
+        background: linear-gradient(135deg, $text-secondary 0%, $text-primary 40%, $text-muted 80%, $text-secondary 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         margin-bottom: get($spacings, sm);
-        letter-spacing: 0.1em;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        letter-spacing: 0.15em;
+        text-shadow: 
+            0 0 8px rgba(0, 0, 0, 1),
+            0 2px 4px rgba(0, 0, 0, 1),
+            0 0 15px rgba(40, 40, 40, 0.2);
         text-transform: uppercase;
+        filter: drop-shadow(0 0 10px rgba(0, 0, 0, 1));
+        position: relative;
+        
+        // Dark gothic symbols
+        &::before {
+            content: '⚫ ';
+            color: $text-muted;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 1));
+        }
+        
+        &::after {
+            content: ' ⚫';
+            color: $text-muted;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 1));
+        }
+
+        @include tablet {
+            font-size: get($font-sizes, 4xl);
+            letter-spacing: 0.15em;
+        }
 
         @include mobile {
-            font-size: get($font-sizes, 4xl);
+            font-size: get($font-sizes, 3xl);
+            letter-spacing: 0.1em;
+        }
+
+        @include xs {
+            font-size: get($font-sizes, 2xl);
+            letter-spacing: 0.05em;
         }
     }
 
@@ -56,9 +88,29 @@
         font-weight: get($font-weights, normal);
         font-style: italic;
         letter-spacing: 0.05em;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
 
         @include mobile {
             font-size: get($font-sizes, lg);
         }
+    }
+}
+
+@keyframes darkGlow {
+    0%, 100% { 
+        background: linear-gradient(45deg, $blood-black, $crimson-shadow, $rust-red, $blood-black);
+        opacity: 0.2;
+    }
+    25% { 
+        background: linear-gradient(45deg, $crimson-shadow, $rust-red, $blood-black, $crimson-shadow);
+        opacity: 0.15;
+    }
+    50% { 
+        background: linear-gradient(45deg, $rust-red, $blood-black, $crimson-shadow, $rust-red);
+        opacity: 0.25;
+    }
+    75% { 
+        background: linear-gradient(45deg, $blood-black, $crimson-shadow, $rust-red, $blood-black);
+        opacity: 0.18;
     }
 }

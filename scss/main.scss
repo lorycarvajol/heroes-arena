@@ -5,9 +5,10 @@
 @use 'abstracts/variables' as *;
 @use 'abstracts/mixins' as *;
 
-// 2. Base (reset, typography, animations)
+// 2. Base (reset, typography, animations, background)
 @use 'base/reset';
 @use 'base/animations';
+@use 'base/background';
 
 // 3. Layout (header, navigation, main structure)
 @use 'layout/main';

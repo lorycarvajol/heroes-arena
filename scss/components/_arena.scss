@@ -6,6 +6,54 @@
     padding: get($spacings, 2xl);
     text-align: center;
     border-radius: get($border-radius, xl);
+    background: 
+        linear-gradient(135deg, rgba(26, 5, 5, 0.95) 0%, $bg-primary 100%),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 40px,
+            rgba(74, 0, 0, 0.1) 40px,
+            rgba(74, 0, 0, 0.1) 42px
+        );
+    border: 4px solid $crimson-shadow;
+    box-shadow: 
+        get($shadows, xl),
+        get($shadows, void),
+        get($shadows, blood),
+        inset 0 1px 0 rgba(204, 102, 0, 0.15);
+    position: relative;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        background: linear-gradient(45deg, $crimson-shadow, $gore-red, $text-fire, $rust-red, $crimson-shadow);
+        border-radius: get($border-radius, xl);
+        z-index: -1;
+        opacity: 0.8;
+        animation: goreArenaGlow 6s ease-in-out infinite;
+    }
+
+    @include tablet {
+        padding: get($spacings, xl);
+        border-width: 3px;
+        border-radius: get($border-radius, lg);
+    }
+
+    @include mobile {
+        padding: get($spacings, lg);
+        border-width: 2px;
+        border-radius: get($border-radius, md);
+    }
+
+    @include xs {
+        padding: get($spacings, md);
+        border-width: 2px;
+        border-radius: get($border-radius, sm);
+    }
 }
 
 .arena-header {
@@ -14,13 +62,57 @@
     h3 {
         font-size: get($font-sizes, 3xl);
         font-weight: get($font-weights, bold);
-        @include gradient-text;
+        background: linear-gradient(135deg, $text-secondary 0%, $text-primary 40%, $text-muted 80%, $text-secondary 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         margin-bottom: get($spacings, md);
+        text-shadow: 0 0 25px rgba(204, 102, 0, 1.2), 0 0 40px rgba(139, 0, 0, 0.8);
+        filter: drop-shadow(0 0 15px rgba(74, 0, 0, 1));
+        font-family: $font-family-secondary;
+        letter-spacing: 0.15em;
+
+        @include tablet {
+            font-size: get($font-sizes, 2xl);
+            letter-spacing: 0.1em;
+        }
+
+        @include mobile {
+            font-size: get($font-sizes, xl);
+            letter-spacing: 0.08em;
+            margin-bottom: get($spacings, sm);
+        }
+
+        @include xs {
+            font-size: get($font-sizes, lg);
+            letter-spacing: 0.05em;
+        }
     }
 
     .arena-subtitle {
         color: $text-muted;
         font-size: get($font-sizes, lg);
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+
+        @include mobile {
+            font-size: get($font-sizes, base);
+        }
+
+        @include xs {
+            font-size: get($font-sizes, sm);
+        }
+    }
+
+    @include tablet {
+        margin-bottom: get($spacings, xl);
+    }
+
+    @include mobile {
+        margin-bottom: get($spacings, lg);
+    }
+
+    @include xs {
+        margin-bottom: get($spacings, md);
     }
 }
 
@@ -34,6 +126,17 @@
     @include tablet {
         grid-template-columns: 1fr;
         gap: get($spacings, lg);
+        margin-bottom: get($spacings, xl);
+    }
+
+    @include mobile {
+        gap: get($spacings, md);
+        margin-bottom: get($spacings, lg);
+    }
+
+    @include xs {
+        gap: get($spacings, sm);
+        margin-bottom: get($spacings, md);
     }
 }
 
@@ -46,6 +149,17 @@
         font-weight: get($font-weights, semibold);
         text-transform: uppercase;
         letter-spacing: 0.05em;
+
+        @include mobile {
+            font-size: get($font-sizes, sm);
+            margin-bottom: get($spacings, sm);
+            letter-spacing: 0.03em;
+        }
+
+        @include xs {
+            font-size: get($font-sizes, xs);
+            margin-bottom: get($spacings, xs);
+        }
     }
 }
 
@@ -59,23 +173,56 @@
     cursor: pointer;
     transition: all get($transitions, normal);
     width: 100%;
+    min-height: 44px; // Touch-friendly
+
+    @include mobile {
+        padding: get($spacings, sm) get($spacings, md);
+        font-size: get($font-sizes, sm);
+        min-height: 48px;
+        border-radius: get($border-radius, sm);
+    }
+
+    @include xs {
+        padding: get($spacings, xs) get($spacings, sm);
+        font-size: get($font-sizes, xs);
+        min-height: 44px;
+    }
 
     &:focus {
         outline: none;
         border-color: $primary-gold;
         box-shadow: 0 0 0 4px rgba($primary-gold, 0.2);
+
+        @include mobile {
+            box-shadow: 0 0 0 3px rgba($primary-gold, 0.3);
+        }
     }
 }
 
 .vs-divider {
     font-size: get($font-sizes, 5xl);
     font-weight: get($font-weights, black);
-    @include gradient-text;
-    @include text-shadow-glow(rgba(0, 0, 0, 0.3));
+    background: linear-gradient(135deg, $text-secondary 0%, $text-muted 50%, $text-secondary 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 35px rgba(204, 102, 0, 1.5), 0 0 50px rgba(139, 0, 0, 1);
+    filter: drop-shadow(0 0 20px rgba(74, 0, 0, 1.2));
+    font-family: $font-family-secondary;
 
     @include tablet {
         transform: rotate(90deg);
         font-size: get($font-sizes, 3xl);
+    }
+
+    @include mobile {
+        transform: rotate(90deg);
+        font-size: get($font-sizes, 2xl);
+    }
+
+    @include xs {
+        transform: rotate(90deg);
+        font-size: get($font-sizes, xl);
     }
 }
 
@@ -89,24 +236,57 @@
     @include tablet {
         grid-template-columns: 1fr;
         gap: get($spacings, lg);
+        margin: get($spacings, xl) 0;
+    }
+
+    @include mobile {
+        gap: get($spacings, md);
+        margin: get($spacings, lg) 0;
+    }
+
+    @include xs {
+        gap: get($spacings, sm);
+        margin: get($spacings, md) 0;
     }
 }
 
 .fighter-display {
     text-align: center;
     padding: get($spacings, lg);
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, rgba(13, 13, 13, 0.9) 0%, rgba(5, 5, 5, 1) 100%);
     border-radius: get($border-radius, lg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 3px solid rgba(26, 26, 26, 0.6);
     transition: all get($transitions, normal);
     position: relative;
+    box-shadow: 
+        get($shadows, lg),
+        inset 0 1px 0 rgba(212, 98, 26, 0.05);
 
-    // États de combat - effets plus subtils
+    @include tablet {
+        padding: get($spacings, md);
+        border-width: 2px;
+        border-radius: get($border-radius, md);
+    }
+
+    @include mobile {
+        padding: get($spacings, sm);
+        border-width: 2px;
+        border-radius: get($border-radius, sm);
+    }
+
+    @include xs {
+        padding: get($spacings, xs);
+        border-width: 1px;
+    }
+
+    // Dark Souls combat states
     &.attacking {
         box-shadow: 
-            0 0 25px rgba($error, 0.5),
-            0 0 40px rgba($error, 0.3);
-        border-color: $error;
+            0 0 25px rgba(212, 98, 26, 0.8),
+            0 0 40px rgba(255, 107, 0, 0.6),
+            get($shadows, fire);
+        border-color: $text-muted;
+        background: linear-gradient(135deg, rgba(212, 98, 26, 0.15) 0%, rgba(5, 5, 5, 1) 100%);
     }
 
     &.defending {
@@ -115,7 +295,8 @@
 
     &.victory {
         animation: victoryGlow 1.5s ease-in-out;
-        border-color: $success;
+        border-color: $text-secondary;
+        background: linear-gradient(135deg, rgba(212, 98, 26, 0.1) 0%, rgba(5, 5, 5, 1) 100%);
     }
 
     &.defeat {
@@ -133,6 +314,27 @@
     border: 2px solid rgba(255, 255, 255, 0.2);
     position: relative;
     overflow: hidden;
+
+    @include tablet {
+        width: 70px;
+        height: 70px;
+        margin-bottom: get($spacings, sm);
+    }
+
+    @include mobile {
+        width: 60px;
+        height: 60px;
+        margin-bottom: get($spacings, sm);
+        border-radius: get($border-radius, md);
+    }
+
+    @include xs {
+        width: 50px;
+        height: 50px;
+        margin-bottom: get($spacings, xs);
+        border-radius: get($border-radius, sm);
+        border-width: 1px;
+    }
 
     img {
         width: 100%;
@@ -153,6 +355,21 @@
         font-weight: get($font-weights, bold);
         font-size: get($font-sizes, 2xl);
         letter-spacing: 1px;
+
+        @include tablet {
+            font-size: get($font-sizes, xl);
+            border-radius: get($border-radius, md) - 2px;
+        }
+
+        @include mobile {
+            font-size: get($font-sizes, lg);
+            border-radius: get($border-radius, sm) - 1px;
+        }
+
+        @include xs {
+            font-size: get($font-sizes, base);
+            border-radius: get($border-radius, sm) - 1px;
+        }
     }
 }
 
@@ -161,15 +378,46 @@
     font-weight: get($font-weights, bold);
     color: $text-primary;
     margin-bottom: get($spacings, sm);
+
+    @include tablet {
+        font-size: get($font-sizes, lg);
+    }
+
+    @include mobile {
+        font-size: get($font-sizes, base);
+        margin-bottom: get($spacings, xs);
+    }
+
+    @include xs {
+        font-size: get($font-sizes, sm);
+    }
 }
 
 .health-bar {
-    background: $bg-glass;
+    background: linear-gradient(135deg, rgba(5, 5, 5, 0.9), rgba(13, 13, 13, 1));
     height: 24px;
     border-radius: get($border-radius, md);
     overflow: hidden;
     position: relative;
     margin-top: get($spacings, md);
+    border: 2px solid rgba(26, 26, 26, 0.8);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.95);
+
+    @include tablet {
+        height: 20px;
+        margin-top: get($spacings, sm);
+        border-radius: get($border-radius, sm);
+    }
+
+    @include mobile {
+        height: 18px;
+        border-width: 1px;
+    }
+
+    @include xs {
+        height: 16px;
+        margin-top: get($spacings, xs);
+    }
 
     &::after {
         content: '';
@@ -178,16 +426,17 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        animation: healthGlint 2s infinite;
+        background: linear-gradient(90deg, transparent, rgba(212, 98, 26, 0.3), transparent);
+        animation: healthGlint 4s infinite;
     }
 }
 
 .health-fill {
-    background: linear-gradient(90deg, $success, darken($success, 10%));
+    background: linear-gradient(90deg, $heal-color, #0f1f0f);
     height: 100%;
     border-radius: get($border-radius, md);
     transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(26, 58, 26, 0.8);
 }
 
 .health-text {
@@ -199,6 +448,14 @@
     color: $text-white;
     font-size: get($font-sizes, sm);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+
+    @include mobile {
+        font-size: get($font-sizes, xs);
+    }
+
+    @include xs {
+        font-size: 10px;
+    }
 }
 
 // Additional arena classes
@@ -306,4 +563,27 @@
 @keyframes healthGlint {
     0% { left: -100%; }
     100% { left: 100%; }
+}
+
+@keyframes goreArenaGlow {
+    0%, 100% { 
+        background: linear-gradient(45deg, $crimson-shadow, $gore-red, $text-fire, $rust-red, $crimson-shadow);
+        opacity: 0.8;
+        filter: brightness(1.0);
+    }
+    25% { 
+        background: linear-gradient(45deg, $gore-red, $text-fire, $rust-red, $dried-blood, $gore-red);
+        opacity: 0.6;
+        filter: brightness(1.3);
+    }
+    50% { 
+        background: linear-gradient(45deg, $text-fire, $rust-red, $crimson-shadow, $gore-red, $text-fire);
+        opacity: 1.0;
+        filter: brightness(0.8);
+    }
+    75% { 
+        background: linear-gradient(45deg, $rust-red, $crimson-shadow, $gore-red, $text-fire, $rust-red);
+        opacity: 0.7;
+        filter: brightness(1.1);
+    }
 }

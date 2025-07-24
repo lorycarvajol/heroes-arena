@@ -1,7 +1,7 @@
 @use '../abstracts/variables' as *;
 @use '../abstracts/mixins' as *;
 
-// ========== DÉCORATIONS ROMAINES : components/_roman-decorations.scss ==========
+// ========== DÉCORATIONS MÉDIÉVALES : components/_roman-decorations.scss ==========
 
 // Bordure décorative romaine
 .roman-border {
@@ -148,4 +148,161 @@
 
 .golden-glow {
     animation: golden-glow 2s ease-in-out infinite;
+}
+
+// ========== NOUVELLES DÉCORATIONS MÉDIÉVALES ==========
+
+// Cadre manuscrit enluminé
+.illuminated-manuscript {
+    position: relative;
+    background: 
+        linear-gradient(135deg, rgba(44, 36, 22, 0.95) 0%, rgba(26, 22, 18, 0.98) 100%);
+    border: 3px solid $noble-gold;
+    border-radius: get($border-radius, md);
+    padding: get($spacings, lg);
+    
+    // Coins enluminés
+    &::before {
+        content: '❦ ❦ ❦ ❦';
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: $bg-secondary;
+        color: $noble-gold;
+        padding: 0 get($spacings, sm);
+        font-size: get($font-sizes, xs);
+        letter-spacing: get($spacings, sm);
+    }
+    
+    // Bordure décorative
+    &::after {
+        content: '';
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        right: 6px;
+        bottom: 6px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: get($border-radius, sm);
+        pointer-events: none;
+    }
+}
+
+// Écusson héraldique
+.heraldic-shield {
+    position: relative;
+    background: 
+        linear-gradient(135deg, $castle-grey 0%, $dark-stone 100%);
+    border: 2px solid $medieval-copper;
+    clip-path: polygon(20% 0%, 80% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    padding: get($spacings, md);
+    
+    &::before {
+        content: '⚔';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: get($font-sizes, xl);
+        color: $noble-gold;
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+    }
+}
+
+// Bannière médiévale
+.medieval-banner {
+    position: relative;
+    background: 
+        linear-gradient(180deg, $castle-grey 0%, $dark-stone 100%);
+    border: 2px solid $noble-gold;
+    border-radius: get($border-radius, sm) get($border-radius, sm) 0 0;
+    padding: get($spacings, md);
+    margin-bottom: get($spacings, md);
+    
+    // Franges de bannière
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        right: 0;
+        height: 8px;
+        background: 
+            repeating-linear-gradient(
+                90deg,
+                $noble-gold 0px,
+                $noble-gold 4px,
+                transparent 4px,
+                transparent 8px
+            );
+        clip-path: polygon(0 0, 8% 100%, 16% 0, 24% 100%, 32% 0, 40% 100%, 48% 0, 56% 100%, 64% 0, 72% 100%, 80% 0, 88% 100%, 96% 0, 100% 100%, 100% 0);
+    }
+}
+
+// Gargoyle corner decorations
+.gargoyle-corners {
+    position: relative;
+    
+    &::before,
+    &::after {
+        content: '👹';
+        position: absolute;
+        font-size: get($font-sizes, sm);
+        opacity: 0.6;
+        color: $medieval-copper;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+    }
+    
+    &::before {
+        top: -5px;
+        left: -5px;
+    }
+    
+    &::after {
+        bottom: -5px;
+        right: -5px;
+        transform: rotate(180deg);
+    }
+}
+
+// Texture de parchemin ancien
+.ancient-parchment {
+    background: 
+        // Taches d'âge
+        radial-gradient(circle at 15% 15%, rgba(139, 69, 19, 0.1) 0%, transparent 30%),
+        radial-gradient(circle at 85% 85%, rgba(160, 82, 45, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 50% 70%, rgba(101, 67, 33, 0.06) 0%, transparent 40%),
+        // Base parchemin
+        linear-gradient(135deg, #f4e4bc 0%, #e8d5b7 50%, #dcc9a4 100%);
+    color: #3e2723;
+    box-shadow: 
+        inset 0 0 20px rgba(139, 69, 19, 0.15),
+        0 4px 8px rgba(0, 0, 0, 0.2);
+    
+    // Texture fibreuse
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 1px,
+                rgba(139, 69, 19, 0.03) 1px,
+                rgba(139, 69, 19, 0.03) 2px
+            ),
+            repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 1px,
+                rgba(139, 69, 19, 0.02) 1px,
+                rgba(139, 69, 19, 0.02) 2px
+            );
+        pointer-events: none;
+    }
 }

@@ -1,0 +1,195 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+// ========== DARK AGE BACKGROUND PATTERNS ==========
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    
+    // Dark Age Gore Background
+    background: 
+        // Blood-stained darkness with texture
+        radial-gradient(ellipse at top, rgba(26, 5, 5, 0.7) 0%, $bg-primary 80%),
+        radial-gradient(ellipse at bottom right, rgba(139, 0, 0, 0.15) 0%, transparent 60%),
+        // Stone texture with blood stains
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 80px,
+            rgba(45, 10, 10, 0.2) 80px,
+            rgba(45, 10, 10, 0.2) 82px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 120px,
+            rgba(31, 26, 23, 0.15) 120px,
+            rgba(31, 26, 23, 0.15) 122px
+        ),
+        // Flickering fire glow
+        radial-gradient(circle at 20% 30%, rgba(204, 102, 0, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 69, 19, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 50% 20%, rgba(74, 0, 0, 0.12) 0%, transparent 60%),
+        // Dark blood base
+        $bg-primary;
+    
+    // Gore flickering effect
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 15% 25%, rgba(204, 102, 0, 0.12) 0%, transparent 40%),
+            radial-gradient(circle at 85% 75%, rgba(139, 0, 0, 0.08) 0%, transparent 35%),
+            radial-gradient(circle at 50% 50%, rgba(74, 42, 42, 0.06) 0%, transparent 50%);
+        animation: goreFlicker 8s ease-in-out infinite;
+        pointer-events: none;
+    }
+}
+
+// Ultra dark container styling
+.container {
+    position: relative;
+    z-index: 2;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: get($spacings, xl);
+    
+    // Barely visible dark border
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba(20, 20, 20, 0.05);
+        border-radius: get($border-radius, lg);
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    @include tablet {
+        padding: get($spacings, lg);
+    }
+    
+    @include mobile {
+        padding: get($spacings, md);
+    }
+}
+
+@keyframes goreFlicker {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+        filter: brightness(1.0);
+    }
+    25% {
+        opacity: 0.6;
+        transform: scale(1.01);
+        filter: brightness(1.2);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(0.99);
+        filter: brightness(0.8);
+    }
+    75% {
+        opacity: 0.5;
+        transform: scale(1.005);
+        filter: brightness(1.1);
+    }
+}
+
+// Minimal dark corner effects
+@keyframes darkCornerFlicker {
+    0%, 100% {
+        box-shadow: 
+            -10px -10px 30px rgba(15, 15, 15, 0.08),
+            10px 10px 30px rgba(12, 12, 12, 0.05);
+    }
+    50% {
+        box-shadow: 
+            -8px -8px 25px rgba(18, 18, 18, 0.06),
+            8px 8px 25px rgba(10, 10, 10, 0.04);
+    }
+}
+
+// Add minimal dark effects to body
+body {
+    &::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 5;
+        // Minimal corner darkness
+        box-shadow: 
+            -30px -30px 60px rgba(8, 8, 8, 0.03),
+            30px -30px 60px rgba(6, 6, 6, 0.02),
+            -30px 30px 60px rgba(5, 5, 5, 0.02),
+            30px 30px 60px rgba(7, 7, 7, 0.025);
+        animation: darkCornerFlicker 15s ease-in-out infinite;
+        border-radius: 50%;
+        transform: scale(2);
+        opacity: 0.3;
+    }
+}
+
+// Ultra dark sections
+.section {
+    position: relative;
+    background: 
+        linear-gradient(135deg, rgba(8, 8, 8, 0.98) 0%, rgba(5, 5, 5, 1) 100%);
+    border: 1px solid $crimson-shadow;
+    border-radius: get($border-radius, lg);
+    padding: get($spacings, xl);
+    margin-bottom: get($spacings, xl);
+    box-shadow: 
+        get($shadows, lg),
+        inset 0 1px 0 rgba(20, 20, 20, 0.05);
+    
+    // Ultra dark corners
+    &::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, $blood-black, $crimson-shadow, $blood-black);
+        border-radius: get($border-radius, lg);
+        z-index: -1;
+        opacity: 0.3;
+    }
+    
+    // Minimal dark accent
+    &::after {
+        content: '⬥';
+        position: absolute;
+        top: get($spacings, sm);
+        right: get($spacings, sm);
+        color: rgba(40, 40, 40, 0.15);
+        font-size: get($font-sizes, sm);
+        font-family: $font-family-secondary;
+    }
+    
+    @include tablet {
+        padding: get($spacings, lg);
+    }
+    
+    @include mobile {
+        padding: get($spacings, md);
+    }
+}

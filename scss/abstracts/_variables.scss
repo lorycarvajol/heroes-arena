@@ -1,40 +1,46 @@
-// ========== COULEURS ROME ANTIQUE ==========
-// Couleurs primaires - Or et bronze romain
-$primary-gold: #d4af37;
-$primary-bronze: #cd7f32;
-$primary-gradient: linear-gradient(135deg, $primary-gold, $primary-bronze);
-$secondary-gradient: linear-gradient(135deg, #8b4513, #a0522d);
+// ========== DARK AGE GORE PALETTE ==========
+// Primary Dark Age Colors - Blood & Death
+$blood-black: #0d0000;        // Dried blood black
+$crimson-shadow: #1a0505;     // Dark crimson shadow
+$rust-red: #2a0a0a;           // Rusty blood
+$bone-grey: #1f1a17;          // Old bone color
+$decay-brown: #1a1209;        // Decay and rot
+$primary-gradient: linear-gradient(135deg, $blood-black, $crimson-shadow, $rust-red);
+$secondary-gradient: linear-gradient(135deg, $bone-grey, $decay-brown);
 
-// Couleurs de base - Pierre, marbre et terre
-$bg-primary: #2d1810;          // Terre sombre
-$bg-secondary: #3e2723;        // Pierre brune
-$bg-tertiary: #1a0e0a;         // Terre très sombre
-$bg-card: rgba(78, 52, 46, 0.9);     // Pierre avec transparence
-$bg-glass: rgba(212, 175, 55, 0.15); // Reflet doré
+// Gore Base Colors - Death & Decay
+$bg-primary: #080202;         // Blood-stained darkness
+$bg-secondary: #0f0505;       // Deep crimson void
+$bg-tertiary: #0a0303;        // Dark blood pool
+$bg-card: rgba(15, 5, 5, 0.95);      // Blood-stained card
+$bg-glass: rgba(45, 15, 15, 0.08);   // Blood-tinted glass
 
-// Couleurs de texte - Inspirées des inscriptions romaines
-$text-primary: #f4e4bc;        // Parchemin antique
-$text-secondary: #d4af37;      // Or romain
-$text-muted: #8d6e63;          // Bronze terni
-$text-white: #fff8e1;          // Blanc cassé antique
+// Text Colors - Weathered & Brutal
+$text-primary: #8b6f47;       // Weathered bronze
+$text-secondary: #a67c52;     // Tarnished gold
+$text-muted: #5a4a3a;         // Dark leather
+$text-white: #c4a484;         // Aged parchment
+$text-fire: #cc6600;          // Forge fire
+$text-blood: #8b0000;         // Dark blood red
 
-// Couleurs d'état - Thème gladiateur
-$success: #4a7c59;             // Vert laurier de victoire
-$warning: #d4af37;             // Or d'avertissement
-$error: #8b0000;               // Rouge sang de l'arène
-$info: #6b5b95;                // Pourpre impérial
+// State Colors - Medieval Brutality
+$success: #2d4a2d;            // Dark moss green
+$warning: #4a3d1a;            // Dark amber
+$error: #4a1a1a;              // Deep blood red
+$info: #2a2a3d;               // Dark steel blue
 
-// Couleurs de combat - Arène de gladiateurs
-$damage-normal: #cd5c5c;       // Rouge fer de lance
-$damage-special: #b8860b;      // Bronze sombre
-$damage-power: #ff4500;        // Rouge feu des dieux
-$damage-critical: #ffd700;     // Or pur des héros
-$heal-color: #228b22;          // Vert herbes médicinales
+// Combat Colors - Visceral Warfare
+$damage-normal: #555555;      // Weathered steel
+$damage-special: #6a4c93;     // Dark purple magic
+$damage-power: #8b0000;       // Fresh blood
+$damage-critical: #cc6600;    // Molten metal
+$heal-color: #2d4a2d;         // Dark healing herbs
+$poison-color: #4a6a2d;       // Toxic green
 
-// Couleurs de badges - Métaux antiques
-$badge-bronze: linear-gradient(135deg, #cd7f32, #8b4513);
-$badge-silver: linear-gradient(135deg, #c0c0c0, #708090);
-$badge-gold: linear-gradient(135deg, #ffd700, #daa520);
+// Badge Colors - Dark Age Ranks
+$badge-bronze: linear-gradient(135deg, $decay-brown, $bone-grey);
+$badge-silver: linear-gradient(135deg, #4a453f, #332e29);
+$badge-gold: linear-gradient(135deg, $text-fire, $text-secondary);
 
 // ========== ESPACEMENTS ==========
 $spacing-xs: 4px;
@@ -52,21 +58,29 @@ $border-radius-lg: 16px;
 $border-radius-xl: 20px;
 $border-radius-round: 50%;
 
-// ========== OMBRES ANTIQUES ==========
-$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-$shadow-glow: 0 0 20px rgba(212, 175, 55, 0.6); // Lueur dorée
+// ========== DARK AGE GORE SHADOWS ==========
+$shadow-sm: 0 2px 8px rgba(13, 0, 0, 0.9);
+$shadow-md: 0 4px 16px rgba(26, 5, 5, 0.95);
+$shadow-lg: 0 8px 24px rgba(15, 5, 5, 1);
+$shadow-glow: 0 0 20px rgba(204, 102, 0, 0.3); // Fire glow
+$shadow-fire: 0 0 15px rgba(204, 102, 0, 0.5); // Forge fire
+$shadow-void: 0 0 40px rgba(13, 0, 0, 1); // Blood void
+$shadow-blood: 0 0 25px rgba(139, 0, 0, 0.6); // Blood red glow
 
-// ========== TYPOGRAPHIE ROMAINE ==========
+// ========== DARK AGE CLASSIC TYPOGRAPHY ==========
 $font-family-primary: 'Cinzel',
+'IM Fell DW Pica',
 'Trajan Pro',
 'Times New Roman',
 serif;
-$font-family-secondary: 'Cinzel Decorative',
-'Optima',
-'Times New Roman',
+$font-family-secondary: 'MedievalSharp',
+'Uncial Antiqua',
+'Celtic Hand',
+'Old English Text MT',
 serif;
+$font-family-accent: 'Almendra',
+'Cinzel',
+'serif';
 $font-family-mono: 'Courier New',
 monospace;
 
@@ -86,11 +100,13 @@ $font-weight-bold: 700;
 $font-weight-extrabold: 800;
 $font-weight-black: 900;
 
-// ========== BREAKPOINTS ==========
-$breakpoint-mobile: 480px;
-$breakpoint-tablet: 768px;
-$breakpoint-desktop: 1024px;
-$breakpoint-wide: 1400px;
+// ========== BREAKPOINTS - DARK SOULS RESPONSIVE ==========
+$breakpoint-xs: 360px;         // Très petits mobiles
+$breakpoint-mobile: 480px;     // Mobiles standard
+$breakpoint-tablet: 768px;     // Tablettes portrait
+$breakpoint-desktop: 1024px;   // Desktop small
+$breakpoint-wide: 1400px;      // Desktop large
+$breakpoint-ultrawide: 1920px; // Ultra-wide screens
 
 // ========== TRANSITIONS ==========
 $transition-fast: 0.2s ease;
@@ -141,6 +157,7 @@ $font-weights: (
 
 // Border radius map
 $border-radius: (
+    xs: 4px,
     sm: $border-radius-sm,
     md: $border-radius-md,
     lg: $border-radius-lg,
@@ -154,8 +171,11 @@ $shadows: (
     sm: $shadow-sm,
     md: $shadow-md,
     lg: $shadow-lg,
-    xl: 0 25px 50px rgba(0, 0, 0, 0.5),
-    glow: $shadow-glow
+    xl: 0 25px 50px rgba(0, 0, 0, 1),
+    glow: $shadow-glow,
+    fire: $shadow-fire,
+    void: $shadow-void,
+    crimson: $shadow-fire
 );
 
 // Transitions map
@@ -176,19 +196,33 @@ $z-indexes: (
 
 // Breakpoints map
 $breakpoints: (
+    xs: $breakpoint-xs,
     mobile: $breakpoint-mobile,
     tablet: $breakpoint-tablet,
     desktop: $breakpoint-desktop,
-    wide: $breakpoint-wide
+    wide: $breakpoint-wide,
+    ultrawide: $breakpoint-ultrawide
 );
+
+// Dark Age Gore Variables
+$gore-red: #4a0000;           // Fresh gore
+$dried-blood: #2a0000;        // Dried blood
+$flesh-tone: #4a2a2a;         // Dark flesh
+$bone-white: #e6ddd4;         // Aged bone
+$rust-orange: #8b4513;        // Rusty metal
+$plague-green: #3d4a1a;       // Plague/disease
 
 // Additional variables used in components
 $secondary-blue: $info;
+$primary-bronze: $bone-grey; // Dark bone bronze
+$primary-crimson: $crimson-shadow; // Dark crimson
+$primary-mystic: $blood-black; // Blood magic
+$primary-gold: $text-fire; // Forge gold
 
 // Badge colors for animations
-$silver-primary: #c0c0c0;
-$gold-primary: #ffd700;
-$gold-secondary: #ff1493;
+$silver-primary: #3a3a3a;
+$gold-primary: $text-secondary;
+$gold-secondary: $text-muted;
 
 // Badge colors map
 $badge-colors: (

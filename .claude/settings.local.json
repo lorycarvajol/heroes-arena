@@ -30,7 +30,8 @@
       "Bash(fi)",
       "Bash(done)",
       "Bash(node:*)",
-      "Bash(start http://localhost:8080)"
+      "Bash(start http://localhost:8080)",
+      "Bash(sass:*)"
     ],
     "deny": []
   }

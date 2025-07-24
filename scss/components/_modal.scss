@@ -17,25 +17,95 @@
     overflow-y: auto;
     opacity: 0;
     animation: modalFadeIn 0.3s ease forwards;
+
+    @include tablet {
+        padding: get($spacings, md);
+    }
+
+    @include mobile {
+        padding: get($spacings, sm);
+        align-items: center;
+    }
+
+    @include xs {
+        padding: get($spacings, xs);
+    }
 }
 
 .modal-content {
-    background: linear-gradient(135deg, rgba($bg-secondary, 0.95), rgba(15, 23, 42, 0.95));
+    background: linear-gradient(135deg, rgba(26, 5, 5, 0.95), $bg-primary),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 30px,
+                    rgba(74, 0, 0, 0.08) 30px,
+                    rgba(74, 0, 0, 0.08) 32px
+                );
     border-radius: get($border-radius, lg);
-    border: 1px solid $bg-glass;
-    box-shadow: get($shadows, xl);
+    border: 4px solid $rust-red;
+    box-shadow: 
+        get($shadows, xl),
+        get($shadows, blood),
+        get($shadows, fire),
+        inset 0 1px 0 rgba(204, 102, 0, 0.2);
     backdrop-filter: blur(20px);
     max-width: 800px;
     width: 100%;
     margin: get($spacings, 2xl) auto;
     transform: translateY(get($spacings, lg));
     animation: modalSlideIn 0.3s ease forwards;
+    position: relative;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        background: linear-gradient(45deg, $rust-red, $gore-red, $text-fire, $dried-blood, $rust-red);
+        border-radius: get($border-radius, lg);
+        z-index: -1;
+        opacity: 0.4;
+    }
+
+    @include tablet {
+        max-width: 600px;
+        margin: get($spacings, xl) auto;
+        border-width: 3px;
+    }
+
+    @include mobile {
+        max-width: none;
+        margin: get($spacings, lg) auto;
+        border-width: 2px;
+        border-radius: get($border-radius, md);
+        backdrop-filter: blur(15px);
+    }
+
+    @include xs {
+        margin: get($spacings, md) auto;
+        border-radius: get($border-radius, sm);
+        backdrop-filter: blur(10px);
+    }
 }
 
 .modal-header {
     position: relative;
     padding: get($spacings, lg) 50px get($spacings, lg) get($spacings, lg);
     border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+
+    @include tablet {
+        padding: get($spacings, md) 45px get($spacings, md) get($spacings, md);
+    }
+
+    @include mobile {
+        padding: get($spacings, md) 40px get($spacings, md) get($spacings, md);
+    }
+
+    @include xs {
+        padding: get($spacings, sm) 35px get($spacings, sm) get($spacings, sm);
+    }
 }
 
 .modal-close {
@@ -55,11 +125,43 @@
     transition: all get($transitions, normal);
     z-index: 10;
     line-height: 1;
+    min-height: 44px; // Touch-friendly
+    min-width: 44px;
+
+    @include tablet {
+        width: 30px;
+        height: 30px;
+        min-height: 42px;
+        min-width: 42px;
+        font-size: 16px;
+    }
+
+    @include mobile {
+        width: 28px;
+        height: 28px;
+        min-height: 48px; // Larger touch target on mobile
+        min-width: 48px;
+        font-size: 16px;
+        top: get($spacings, sm);
+        right: get($spacings, sm);
+    }
+
+    @include xs {
+        width: 26px;
+        height: 26px;
+        min-height: 44px;
+        min-width: 44px;
+        font-size: 14px;
+    }
 
     &:hover {
         background: $error;
         transform: scale(1.1);
         box-shadow: 0 4px 12px rgba($error, 0.3);
+
+        @include mobile {
+            transform: scale(1.05); // Less aggressive on mobile
+        }
     }
 
     &:active {
@@ -100,6 +202,15 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: get($spacings, sm);
+
+    @include tablet {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    @include mobile {
+        grid-template-columns: 1fr;
+        gap: get($spacings, sm);
+    }
 }
 
 .action-btn {
@@ -113,11 +224,25 @@
     cursor: pointer;
     transition: all get($transitions, normal);
     text-align: left;
+    min-height: 44px; // Touch-friendly
+
+    @include tablet {
+        padding: get($spacings, sm) get($spacings, md);
+    }
+
+    @include mobile {
+        padding: get($spacings, sm);
+        min-height: 48px; // Larger touch target on mobile
+    }
 
     &:hover {
         transform: translateY(-2px);
         border-color: rgba(255, 255, 255, 0.2);
         box-shadow: get($shadows, lg);
+
+        @include mobile {
+            transform: translateY(-1px); // Less aggressive on mobile
+        }
     }
 
     .action-icon {
@@ -125,6 +250,12 @@
         margin-right: get($spacings, sm);
         min-width: 32px;
         text-align: center;
+
+        @include mobile {
+            font-size: get($font-sizes, lg);
+            margin-right: get($spacings, sm);
+            min-width: 28px;
+        }
     }
 
     .action-text {
@@ -132,15 +263,28 @@
         @include flex-column;
         gap: 2px;
 
+        @include mobile {
+            width: auto;
+            flex: 1;
+        }
+
         strong {
             margin: 1px;
             font-weight: get($font-weights, semibold);
             font-size: 0.95rem;
+
+            @include mobile {
+                font-size: 0.9rem;
+            }
         }
 
         small {
             color: $text-secondary;
             font-size: get($font-sizes, sm);
+
+            @include mobile {
+                font-size: get($font-sizes, xs);
+            }
         }
     }
 
@@ -346,18 +490,53 @@
 }
 
 .hero-modal {
-    background: linear-gradient(135deg, rgba($bg-secondary, 0.95), rgba(15, 23, 42, 0.95));
-    border: 2px solid $primary-bronze;
+    background: linear-gradient(135deg, rgba(26, 22, 37, 0.95), rgba(15, 10, 26, 0.98));
+    border: 3px solid $primary-crimson;
     border-radius: get($border-radius, lg);
     box-shadow: 
         get($shadows, xl),
-        0 0 30px rgba($primary-gold, 0.2);
+        get($shadows, crimson),
+        0 0 30px rgba(199, 166, 21, 0.3);
     backdrop-filter: blur(20px);
     max-width: 900px;
     width: 90%;
     max-height: 85vh;
     overflow-y: auto;
     position: relative;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        background: linear-gradient(45deg, $primary-crimson, $primary-mystic, $primary-gold);
+        border-radius: get($border-radius, lg);
+        z-index: -1;
+        opacity: 0.3;
+    }
+
+    @include tablet {
+        max-width: 700px;
+        width: 95%;
+        max-height: 90vh;
+        border-width: 2px;
+    }
+
+    @include mobile {
+        width: 95%;
+        max-height: 90vh;
+        border-radius: get($border-radius, md);
+        backdrop-filter: blur(15px);
+    }
+
+    @include xs {
+        width: 98%;
+        max-height: 95vh;
+        border-radius: get($border-radius, sm);
+        backdrop-filter: blur(10px);
+    }
 }
 
 .hero-modal-header {
@@ -367,6 +546,17 @@
     padding: get($spacings, lg);
     border-bottom: 1px solid rgba($primary-bronze, 0.3);
 
+    @include tablet {
+        padding: get($spacings, md);
+    }
+
+    @include mobile {
+        padding: get($spacings, sm) get($spacings, md);
+        flex-direction: column;
+        gap: get($spacings, sm);
+        text-align: center;
+    }
+
     h2 {
         margin: 0;
         font-size: get($font-sizes, 3xl);
@@ -375,6 +565,20 @@
         font-family: $font-family-secondary;
         text-transform: uppercase;
         letter-spacing: 0.1em;
+
+        @include tablet {
+            font-size: get($font-sizes, 2xl);
+        }
+
+        @include mobile {
+            font-size: get($font-sizes, xl);
+            letter-spacing: 0.08em;
+        }
+
+        @include xs {
+            font-size: get($font-sizes, lg);
+            letter-spacing: 0.05em;
+        }
     }
 }
 
@@ -387,6 +591,17 @@
     @include tablet {
         grid-template-columns: 1fr;
         gap: get($spacings, lg);
+        padding: get($spacings, md);
+    }
+
+    @include mobile {
+        gap: get($spacings, md);
+        padding: get($spacings, sm) get($spacings, md);
+    }
+
+    @include xs {
+        gap: get($spacings, sm);
+        padding: get($spacings, xs) get($spacings, sm);
     }
 }
 
@@ -395,9 +610,26 @@
     align-items: center;
     gap: get($spacings, lg);
     padding: get($spacings, lg);
-    background: rgba($primary-bronze, 0.1);
+    background: rgba(139, 21, 56, 0.15);
     border-radius: get($border-radius, lg);
-    border: 1px solid rgba($primary-gold, 0.2);
+    border: 1px solid rgba(199, 166, 21, 0.3);
+    box-shadow: inset 0 1px 0 rgba(199, 166, 21, 0.1);
+
+    @include tablet {
+        padding: get($spacings, md);
+        gap: get($spacings, md);
+    }
+
+    @include mobile {
+        padding: get($spacings, sm) get($spacings, md);
+        gap: get($spacings, sm);
+        border-radius: get($border-radius, md);
+    }
+
+    @include xs {
+        padding: get($spacings, xs) get($spacings, sm);
+        border-radius: get($border-radius, sm);
+    }
 
     // Taille réduite pour l'image de détail
     .hero-avatar-large {
@@ -429,6 +661,15 @@
             border-radius: calc(#{get($border-radius, lg)} - 3px);
         }
 
+        @include tablet {
+            width: 90px !important;
+            height: 90px !important;
+            min-width: 90px !important;
+            min-height: 90px !important;
+            max-width: 90px !important;
+            max-height: 90px !important;
+        }
+
         @include mobile {
             width: 80px !important;
             height: 80px !important;
@@ -436,6 +677,15 @@
             min-height: 80px !important;
             max-width: 80px !important;
             max-height: 80px !important;
+        }
+
+        @include xs {
+            width: 70px !important;
+            height: 70px !important;
+            min-width: 70px !important;
+            min-height: 70px !important;
+            max-width: 70px !important;
+            max-height: 70px !important;
         }
     }
 
@@ -449,6 +699,17 @@
         letter-spacing: 0.05em;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+        @include mobile {
+            padding: get($spacings, xs) get($spacings, md);
+            font-size: get($font-sizes, sm);
+            letter-spacing: 0.03em;
+        }
+
+        @include xs {
+            padding: get($spacings, xs) get($spacings, sm);
+            font-size: get($font-sizes, xs);
+        }
     }
 
     .hero-level {
@@ -456,6 +717,14 @@
         font-size: get($font-sizes, xl);
         font-weight: get($font-weights, bold);
         text-shadow: 0 0 10px rgba($primary-gold, 0.3);
+
+        @include mobile {
+            font-size: get($font-sizes, lg);
+        }
+
+        @include xs {
+            font-size: get($font-sizes, base);
+        }
     }
 }
 
@@ -473,6 +742,16 @@
         letter-spacing: 0.05em;
         border-bottom: 1px solid rgba($primary-bronze, 0.3);
         padding-bottom: get($spacings, sm);
+
+        @include mobile {
+            font-size: get($font-sizes, lg);
+            letter-spacing: 0.03em;
+        }
+
+        @include xs {
+            font-size: get($font-sizes, base);
+            letter-spacing: 0.02em;
+        }
     }
 
     .hero-stats-grid {
@@ -480,8 +759,16 @@
         grid-template-columns: repeat(2, 1fr);
         gap: get($spacings, md);
 
+        @include tablet {
+            gap: get($spacings, sm);
+        }
+
         @include mobile {
             grid-template-columns: 1fr;
+        }
+
+        @include xs {
+            gap: get($spacings, xs);
         }
     }
 
@@ -492,15 +779,39 @@
         border: 1px solid rgba($primary-bronze, 0.2);
         @include flex-between;
 
+        @include mobile {
+            padding: get($spacings, sm);
+        }
+
+        @include xs {
+            padding: get($spacings, xs) get($spacings, sm);
+        }
+
         .stat-name {
             color: $text-secondary;
             font-weight: get($font-weights, medium);
+
+            @include mobile {
+                font-size: get($font-sizes, sm);
+            }
+
+            @include xs {
+                font-size: get($font-sizes, xs);
+            }
         }
 
         .stat-value {
             color: $text-primary;
             font-weight: get($font-weights, bold);
             font-size: get($font-sizes, lg);
+
+            @include mobile {
+                font-size: get($font-sizes, base);
+            }
+
+            @include xs {
+                font-size: get($font-sizes, sm);
+            }
         }
     }
 

@@ -1,29 +1,81 @@
 @use '../abstracts/variables' as *;
 @use '../abstracts/mixins' as *;
 
-// ========== COMPOSANT BUTTONS ROMAINS : components/_buttons.scss ==========
+// ========== DARK SOULS BUTTONS : components/_buttons.scss ==========
 
 .btn {
-    // Style bouton romain sculpté
+    // Dark Age Gore brutal button
     background: 
-        linear-gradient(135deg, $primary-gold 0%, $primary-bronze 50%, $primary-gold 100%);
+        // Blood-stained texture
+        repeating-linear-gradient(
+            45deg,
+            $blood-black 0px,
+            $blood-black 2px,
+            $crimson-shadow 2px,
+            $crimson-shadow 4px
+        ),
+        linear-gradient(135deg, $decay-brown 0%, $bone-grey 30%, $rust-red 70%, $blood-black 100%);
     padding: get($spacings, md) get($spacings, xl);
     border-radius: get($border-radius, sm);
-    border: 2px solid #a0522d;
+    border: 2px solid $rust-red;
     font-family: $font-family-primary;
     font-size: get($font-sizes, base);
     font-weight: get($font-weights, bold);
-    color: #1a0e0a;
+    color: $text-primary;
     cursor: pointer;
     transition: all get($transitions, normal);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+    text-shadow: 
+        0 0 10px rgba(74, 0, 0, 1.2),
+        0 1px 0 rgba(204, 102, 0, 0.3);
     box-shadow: 
-        0 4px 8px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 248, 225, 0.4),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+        0 4px 8px rgba(13, 0, 0, 1),
+        get($shadows, blood),
+        inset 0 1px 0 rgba(204, 102, 0, 0.15),
+        inset 0 -1px 0 rgba(26, 5, 5, 1);
     position: relative;
+    min-height: 44px; // Touch-friendly minimum height
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    // Gore accent symbol
+    &::after {
+        content: '💀';
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        font-size: 8px;
+        color: rgba(139, 0, 0, 0.4);
+        opacity: 0.6;
+        text-shadow: 0 0 4px rgba(204, 102, 0, 0.3);
+        animation: skulllGlow 3s ease-in-out infinite;
+    }
+
+    @include tablet {
+        padding: get($spacings, sm) get($spacings, lg);
+        font-size: get($font-sizes, sm);
+        letter-spacing: 0.08em;
+        min-height: 42px;
+    }
+
+    @include mobile {
+        padding: get($spacings, sm) get($spacings, md);
+        font-size: get($font-sizes, sm);
+        letter-spacing: 0.05em;
+        min-height: 48px; // Larger touch target on mobile
+        border-width: 2px;
+    }
+
+    @include xs {
+        padding: get($spacings, xs) get($spacings, sm);
+        font-size: get($font-sizes, xs);
+        letter-spacing: 0.03em;
+        min-height: 44px;
+        border-width: 2px;
+        border-radius: get($border-radius, xs);
+    }
 
     &::before {
         content: '';
@@ -32,51 +84,130 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        background: linear-gradient(90deg, transparent, rgba(204, 102, 0, 0.2), transparent);
         transform: translateY(-50%);
-        transition: left 0.6s ease;
+        transition: left 0.8s ease;
     }
 
     &:hover {
-        border-color: $primary-gold;
+        border-color: $text-fire;
         box-shadow: 
-            0 6px 16px rgba(0, 0, 0, 0.4),
-            0 0 20px rgba(212, 175, 55, 0.3),
-            inset 0 1px 0 rgba(255, 248, 225, 0.5);
+            0 6px 16px rgba(74, 0, 0, 1),
+            get($shadows, blood),
+            get($shadows, fire),
+            inset 0 1px 0 rgba(204, 102, 0, 0.3);
         background: 
-            linear-gradient(135deg, #e6c15f 0%, #d4af37 50%, #e6c15f 100%);
+            linear-gradient(135deg, $gore-red 0%, $rust-red 30%, $text-fire 70%, $gore-red 100%);
+        color: $text-white;
+        text-shadow: 0 0 8px rgba(204, 102, 0, 0.8);
 
         &::before {
             left: 100%;
+        }
+
+        @include mobile {
+            // Reduce hover intensity on mobile for better touch experience
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.9),
+                0 0 8px rgba(212, 98, 26, 0.3),
+                inset 0 1px 0 rgba(196, 196, 196, 0.2);
         }
     }
 
     &:active {
         box-shadow: 
-            0 2px 4px rgba(0, 0, 0, 0.4),
-            inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            0 2px 4px rgba(0, 0, 0, 1),
+            inset 0 2px 4px rgba(0, 0, 0, 1);
         background: 
-            linear-gradient(135deg, #c9a732 0%, #b8962e 50%, #c9a732 100%);
+            linear-gradient(135deg, $rust-red 0%, $blood-black 50%, $rust-red 100%);
+        color: $text-muted;
+
+        @include mobile {
+            // Enhanced active state for mobile touch feedback
+            box-shadow: 
+                0 1px 2px rgba(0, 0, 0, 1),
+                inset 0 3px 6px rgba(0, 0, 0, 0.95);
+            transform: translateY(1px);
+        }
     }
 
     &:disabled {
-        background: linear-gradient(135deg, #8d6e63, #5d4037);
-        color: rgba(244, 228, 188, 0.5);
-        border-color: #5d4037;
+        background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+        color: rgba(85, 85, 85, 0.6);
+        border-color: #1a1a1a;
         cursor: not-allowed;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-        opacity: 0.7;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+        opacity: 0.4;
+        transform: none !important;
+
+        &:hover,
+        &:active {
+            transform: none !important;
+            background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+    }
+
+    // Focus state for accessibility
+    &:focus {
+        outline: none;
+        border-color: $text-secondary;
+        box-shadow: 
+            0 0 0 3px rgba(212, 98, 26, 0.4),
+            0 6px 16px rgba(0, 0, 0, 1),
+            get($shadows, glow);
+
+        @include mobile {
+            box-shadow: 
+                0 0 0 2px rgba(212, 98, 26, 0.5),
+                0 4px 12px rgba(0, 0, 0, 0.9);
+        }
+    }
+
+    // Touch-specific improvements
+    @media (hover: none) and (pointer: coarse) {
+        // For touch devices, enhance the active state
+        &:active {
+            background: 
+                linear-gradient(135deg, #0d0d0d 0%, #060606 50%, #0d0d0d 100%);
+            transform: translateY(2px);
+            box-shadow: 
+                0 1px 2px rgba(0, 0, 0, 1),
+                inset 0 3px 6px rgba(0, 0, 0, 0.95);
+        }
     }
 }
 
 .btn-secondary {
-    background: $bg-glass;
+    background: linear-gradient(135deg, rgba(13, 13, 13, 0.9), rgba(5, 5, 5, 1));
     color: $text-primary;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(26, 26, 26, 0.6);
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.9),
+        inset 0 1px 0 rgba(212, 98, 26, 0.05);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    @include mobile {
+        min-height: 48px;
+        padding: get($spacings, sm) get($spacings, md);
+    }
 
     &:hover {
-        background: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(13, 13, 13, 1));
+        border-color: rgba(212, 98, 26, 0.4);
+        box-shadow: 
+            0 8px 24px rgba(0, 0, 0, 1),
+            0 0 10px rgba(212, 98, 26, 0.2);
+        color: $text-secondary;
+    }
+
+    &:active {
+        @include mobile {
+            transform: translateY(1px);
+        }
     }
 }
 
@@ -99,6 +230,15 @@
     display: flex;
     gap: get($spacings, sm);
     flex-wrap: wrap;
+
+    @include mobile {
+        flex-direction: column;
+        gap: get($spacings, md);
+    }
+
+    @include xs {
+        gap: get($spacings, sm);
+    }
 }
 
 .file-button {
@@ -111,10 +251,33 @@
     font-weight: get($font-weights, semibold);
     transition: all 0.2s ease;
     font-size: get($font-sizes, sm);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    @include mobile {
+        min-height: 48px;
+        padding: get($spacings, sm) get($spacings, lg);
+        font-size: get($font-sizes, base);
+    }
+
+    @include xs {
+        min-height: 44px;
+        padding: get($spacings, xs) get($spacings, md);
+        font-size: get($font-sizes, sm);
+    }
 
     &:hover {
         box-shadow: 0 5px 15px rgba($info, 0.4);
         filter: brightness(1.1);
+    }
+
+    &:active {
+        @include mobile {
+            transform: translateY(1px);
+            filter: brightness(0.95);
+        }
     }
 
     &.save {
@@ -186,5 +349,17 @@ button[onclick*="startCombat"] {
     // Désactiver l'animation de brillance qui peut interférer
     &::before {
         display: none !important;
+    }
+}
+
+// Animations pour les effets gore
+@keyframes skulllGlow {
+    0%, 100% {
+        opacity: 0.6;
+        text-shadow: 0 0 4px rgba(204, 102, 0, 0.3);
+    }
+    50% {
+        opacity: 0.9;
+        text-shadow: 0 0 8px rgba(139, 0, 0, 0.8);
     }
 }
