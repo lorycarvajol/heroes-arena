@@ -1,35 +1,36 @@
 @use '../abstracts/variables' as *;
 @use '../abstracts/mixins' as *;
 
-// ========== DARK AGE CLASSIC HEADER : layout/_header.scss ==========
+// ========== LUXURY PALATIAL HEADER : layout/_header.scss ==========
 
 .header {
     text-align: center;
     padding: get($spacings, 3xl) 0 get($spacings, 2xl) 0;
     background: 
-        linear-gradient(180deg, rgba(15, 15, 15, 0.03) 0%, transparent 100%),
-        linear-gradient(135deg, rgba(8, 8, 8, 0.98) 0%, rgba(5, 5, 5, 1) 100%);
+        linear-gradient(180deg, rgba(248, 245, 240, 0.02) 0%, transparent 100%),
+        linear-gradient(135deg, rgba(26, 22, 18, 0.98) 0%, rgba(15, 13, 10, 1) 100%);
     border-radius: get($border-radius, lg);
-    border: 2px solid $blood-black;
+    border: 3px solid $gold-bronze;
     box-shadow: 
         get($shadows, xl),
-        inset 0 1px 0 rgba(20, 20, 20, 0.05),
-        get($shadows, void);
+        inset 0 1px 0 rgba(248, 245, 240, 0.08),
+        0 0 25px rgba(212, 175, 55, 0.2);
     margin-bottom: get($spacings, xl);
     position: relative;
 
-    // Ultra dark border with minimal glow
+    // Golden border with luxury glow
     &::before {
         content: '';
         position: absolute;
-        top: -3px;
-        left: -3px;
-        right: -3px;
-        bottom: -3px;
-        background: linear-gradient(45deg, $blood-black, $crimson-shadow, $rust-red, $blood-black);
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        background: linear-gradient(45deg, $gold-bronze, $text-primary, $bronze-shadow, $gold-bronze);
         border-radius: get($border-radius, lg);
         z-index: -1;
-        animation: darkGlow 12s ease-in-out infinite;
+        animation: luxuryGlow 15s ease-in-out infinite;
+        filter: blur(1px);
     }
 
     h1 {
@@ -50,19 +51,19 @@
         filter: drop-shadow(0 0 10px rgba(0, 0, 0, 1));
         position: relative;
         
-        // Dark gothic symbols
+        // Luxury golden symbols
         &::before {
-            content: '⚫ ';
-            color: $text-muted;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 1);
-            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 1));
+            content: '◆ ';
+            color: $text-primary;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
         }
         
         &::after {
-            content: ' ⚫';
-            color: $text-muted;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 1);
-            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 1));
+            content: ' ◆';
+            color: $text-primary;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
         }
 
         @include tablet {
@@ -96,21 +97,21 @@
     }
 }
 
-@keyframes darkGlow {
+@keyframes luxuryGlow {
     0%, 100% { 
-        background: linear-gradient(45deg, $blood-black, $crimson-shadow, $rust-red, $blood-black);
-        opacity: 0.2;
+        background: linear-gradient(45deg, $gold-bronze, $text-primary, $bronze-shadow, $gold-bronze);
+        opacity: 0.3;
     }
     25% { 
-        background: linear-gradient(45deg, $crimson-shadow, $rust-red, $blood-black, $crimson-shadow);
-        opacity: 0.15;
-    }
-    50% { 
-        background: linear-gradient(45deg, $rust-red, $blood-black, $crimson-shadow, $rust-red);
+        background: linear-gradient(45deg, $text-primary, $bronze-shadow, $gold-bronze, $text-primary);
         opacity: 0.25;
     }
+    50% { 
+        background: linear-gradient(45deg, $bronze-shadow, $gold-bronze, $text-primary, $bronze-shadow);
+        opacity: 0.35;
+    }
     75% { 
-        background: linear-gradient(45deg, $blood-black, $crimson-shadow, $rust-red, $blood-black);
-        opacity: 0.18;
+        background: linear-gradient(45deg, $gold-bronze, $text-primary, $bronze-shadow, $gold-bronze);
+        opacity: 0.28;
     }
 }

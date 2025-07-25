@@ -1,20 +1,20 @@
 @use '../abstracts/variables' as *;
 @use '../abstracts/mixins' as *;
 
-// ========== DARK AGE CLASSIC NAVIGATION : layout/_navigation.scss ==========
+// ========== LUXURY PALATIAL NAVIGATION : layout/_navigation.scss ==========
 
 .nav {
     display: flex;
     background: 
-        linear-gradient(135deg, rgba(8, 8, 8, 0.98) 0%, rgba(5, 5, 5, 1) 100%);
+        linear-gradient(135deg, rgba(26, 22, 18, 0.98) 0%, rgba(15, 13, 10, 1) 100%);
     border-radius: get($border-radius, md);
     padding: get($spacings, xs);
     margin-bottom: get($spacings, xl);
-    border: 1px solid $blood-black;
+    border: 2px solid $gold-bronze;
     box-shadow: 
         get($shadows, lg),
-        inset 0 1px 0 rgba(20, 20, 20, 0.05),
-        get($shadows, void);
+        inset 0 1px 0 rgba(248, 245, 240, 0.08),
+        0 0 15px rgba(212, 175, 55, 0.2);
 
     @include tablet {
         padding: get($spacings, xs);
@@ -95,7 +95,7 @@
     }
 
     &.active {
-        background: linear-gradient(135deg, $text-secondary, $crimson-shadow);
+        background: linear-gradient(135deg, $text-secondary, $bronze-shadow);
         color: $text-white;
         border-color: $text-secondary;
         box-shadow: 

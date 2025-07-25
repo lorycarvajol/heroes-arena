@@ -33,7 +33,8 @@
       "Bash(start http://localhost:8080)",
       "Bash(sass:*)",
       "Bash(awk:*)",
-      "Bash(npm start)"
+      "Bash(npm start)",
+      "Bash(start index.html)"
     ],
     "deny": []
   }

@@ -5,13 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heroes Arena - Ultimate Edition</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="background"></div>
 
+    <!-- Page d'accueil -->
+    <div id="homeScreen" class="home-screen">
+        <div class="home-container">
+            <h1 class="home-logo">Heroes Arena</h1>
+            <p class="home-subtitle">
+                Forgez votre légende dans l'arène ultime<br>
+                Où seuls les plus braves survivent
+            </p>
+            <button class="home-enter-btn" onclick="enterApplication()">
+                Entrer dans l'Arène
+            </button>
+        </div>
+    </div>
+
     <!-- Écran d'authentification -->
-    <div id="authScreen" class="auth-screen">
+    <div id="authScreen" class="auth-screen" style="display: none;">
         <div class="auth-container">
             <div class="auth-header">
                 <h1>HEROES ARENA</h1>
@@ -494,6 +508,30 @@
             </div>
         </div>
     </div>
+
+    <!-- Navigation entre pages -->
+    <script>
+        function enterApplication() {
+            const homeScreen = document.getElementById('homeScreen');
+            const authScreen = document.getElementById('authScreen');
+            
+            // Animation de sortie de la page d'accueil
+            homeScreen.classList.add('hidden');
+            
+            // Afficher l'écran d'auth après la transition
+            setTimeout(() => {
+                homeScreen.style.display = 'none';
+                authScreen.style.display = 'flex';
+                authScreen.style.opacity = '0';
+                
+                // Animation d'entrée de l'écran d'auth
+                setTimeout(() => {
+                    authScreen.style.transition = 'opacity 0.8s ease';
+                    authScreen.style.opacity = '1';
+                }, 50);
+            }, 800);
+        }
+    </script>
 
     <!-- Chargeur d'application -->
     <script type="module" src="js/app-loader.js"></script>

@@ -1,46 +1,46 @@
-// ========== DARK AGE GORE PALETTE ==========
-// Primary Dark Age Colors - Blood & Death
-$blood-black: #0d0000;        // Dried blood black
-$crimson-shadow: #1a0505;     // Dark crimson shadow
-$rust-red: #2a0a0a;           // Rusty blood
-$bone-grey: #1f1a17;          // Old bone color
-$decay-brown: #1a1209;        // Decay and rot
-$primary-gradient: linear-gradient(135deg, $blood-black, $crimson-shadow, $rust-red);
-$secondary-gradient: linear-gradient(135deg, $bone-grey, $decay-brown);
+// ========== DARK MINIMAL PALETTE ==========
+// Primary Dark Colors - Ultra Minimal
+$void-black: #0a0a0a;         // Pure void
+$deep-black: #121212;         // Deep structure
+$carbon-grey: #1a1a1a;        // Carbon fiber
+$steel-grey: #242424;         // Cold steel
+$ash-grey: #2a2a2a;           // Dark ash
+$primary-gradient: linear-gradient(135deg, $void-black, $deep-black, $carbon-grey);
+$secondary-gradient: linear-gradient(135deg, $carbon-grey, $steel-grey);
 
-// Gore Base Colors - Death & Decay
-$bg-primary: #080202;         // Blood-stained darkness
-$bg-secondary: #0f0505;       // Deep crimson void
-$bg-tertiary: #0a0303;        // Dark blood pool
-$bg-card: rgba(15, 5, 5, 0.95);      // Blood-stained card
-$bg-glass: rgba(45, 15, 15, 0.08);   // Blood-tinted glass
+// Dark Base Colors - Structural
+$bg-primary: #0a0a0a;         // Pure void background
+$bg-secondary: #121212;       // Deep structure
+$bg-tertiary: #1a1a1a;        // Carbon layer
+$bg-card: rgba(18, 18, 18, 0.95);    // Structured card
+$bg-glass: rgba(42, 42, 42, 0.1);    // Glass overlay
 
-// Text Colors - Weathered & Brutal
-$text-primary: #8b6f47;       // Weathered bronze
-$text-secondary: #a67c52;     // Tarnished gold
-$text-muted: #5a4a3a;         // Dark leather
-$text-white: #c4a484;         // Aged parchment
-$text-fire: #cc6600;          // Forge fire
-$text-blood: #8b0000;         // Dark blood red
+// Text Colors - Minimal & Clean
+$text-primary: #ffffff;       // Pure white
+$text-secondary: #e0e0e0;     // Light grey
+$text-muted: #9e9e9e;         // Muted grey
+$text-white: #ffffff;         // Clean white
+$text-fire: #ff4444;          // Minimal red accent
+$text-accent: #666666;        // Dark accent
 
-// State Colors - Medieval Brutality
-$success: #2d4a2d;            // Dark moss green
-$warning: #4a3d1a;            // Dark amber
-$error: #4a1a1a;              // Deep blood red
-$info: #2a2a3d;               // Dark steel blue
+// State Colors - Dark Minimal
+$success: #00ff00;            // Neon green
+$warning: #ffaa00;            // Bright orange
+$error: #ff0000;              // Pure red
+$info: #0088ff;               // Electric blue
 
-// Combat Colors - Visceral Warfare
-$damage-normal: #555555;      // Weathered steel
-$damage-special: #6a4c93;     // Dark purple magic
-$damage-power: #8b0000;       // Fresh blood
-$damage-critical: #cc6600;    // Molten metal
-$heal-color: #2d4a2d;         // Dark healing herbs
-$poison-color: #4a6a2d;       // Toxic green
+// Combat Colors - Minimal Combat
+$damage-normal: #666666;      // Medium grey
+$damage-special: #aa44ff;     // Purple accent
+$damage-power: #ff4444;       // Red power
+$damage-critical: #ffaa00;    // Orange critical
+$heal-color: #00ff00;         // Green heal
+$poison-color: #88ff00;       // Yellow-green poison
 
-// Badge Colors - Dark Age Ranks
-$badge-bronze: linear-gradient(135deg, $decay-brown, $bone-grey);
-$badge-silver: linear-gradient(135deg, #4a453f, #332e29);
-$badge-gold: linear-gradient(135deg, $text-fire, $text-secondary);
+// Badge Colors - Dark Minimal
+$badge-bronze: linear-gradient(135deg, #444444, #333333);
+$badge-silver: linear-gradient(135deg, #666666, #555555);
+$badge-gold: linear-gradient(135deg, #888888, #666666);
 
 // ========== ESPACEMENTS ==========
 $spacing-xs: 4px;
@@ -58,14 +58,14 @@ $border-radius-lg: 16px;
 $border-radius-xl: 20px;
 $border-radius-round: 50%;
 
-// ========== DARK AGE GORE SHADOWS ==========
-$shadow-sm: 0 2px 8px rgba(13, 0, 0, 0.9);
-$shadow-md: 0 4px 16px rgba(26, 5, 5, 0.95);
-$shadow-lg: 0 8px 24px rgba(15, 5, 5, 1);
-$shadow-glow: 0 0 20px rgba(204, 102, 0, 0.3); // Fire glow
-$shadow-fire: 0 0 15px rgba(204, 102, 0, 0.5); // Forge fire
-$shadow-void: 0 0 40px rgba(13, 0, 0, 1); // Blood void
-$shadow-blood: 0 0 25px rgba(139, 0, 0, 0.6); // Blood red glow
+// ========== DARK MINIMAL SHADOWS ==========
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.8);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.9);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 1);
+$shadow-glow: 0 0 20px rgba(255, 255, 255, 0.1); // Subtle white glow
+$shadow-fire: 0 0 15px rgba(255, 68, 68, 0.3); // Red accent glow
+$shadow-void: 0 0 40px rgba(0, 0, 0, 1); // Pure void
+$shadow-gold: 0 0 25px rgba(255, 255, 255, 0.2); // Clean white glow
 
 // ========== DARK AGE CLASSIC TYPOGRAPHY ==========
 $font-family-primary: 'Cinzel',
@@ -171,11 +171,13 @@ $shadows: (
     sm: $shadow-sm,
     md: $shadow-md,
     lg: $shadow-lg,
-    xl: 0 25px 50px rgba(0, 0, 0, 1),
+    xl: 0 25px 50px rgba(26, 22, 18, 0.8),
     glow: $shadow-glow,
     fire: $shadow-fire,
     void: $shadow-void,
-    crimson: $shadow-fire
+    gold: $shadow-gold,
+    blood: $shadow-gold, // Legacy mapping
+    crimson: $shadow-gold // Legacy mapping
 );
 
 // Transitions map
@@ -204,20 +206,36 @@ $breakpoints: (
     ultrawide: $breakpoint-ultrawide
 );
 
-// Dark Age Gore Variables
-$gore-red: #4a0000;           // Fresh gore
-$dried-blood: #2a0000;        // Dried blood
-$flesh-tone: #4a2a2a;         // Dark flesh
-$bone-white: #e6ddd4;         // Aged bone
-$rust-orange: #8b4513;        // Rusty metal
-$plague-green: #3d4a1a;       // Plague/disease
+// Dark Minimal Variables  
+$gore-red: $text-fire;        // Red accent
+$dried-blood: $deep-black;    // Deep black
+$flesh-tone: $carbon-grey;    // Carbon grey
+$bone-white: $text-white;     // Pure white
+$rust-orange: $text-accent;   // Dark accent
+$plague-green: $success;      // Neon green
+
+// Legacy variable mappings for compatibility
+$crimson-shadow: $carbon-grey;
+$blood-black: $void-black;
+$rust-red: $steel-grey;
+$bone-grey: $ash-grey;
+$decay-brown: $deep-black;
+$noble-gold: $text-secondary;
+$castle-grey: $carbon-grey;
+$dark-stone: $void-black;
+$medieval-copper: $ash-grey;
+$royal-black: $void-black;
+$bronze-shadow: $carbon-grey;
+$gold-bronze: $steel-grey;
+$walnut-brown: $deep-black;
+$marble-white: $text-white;
 
 // Additional variables used in components
 $secondary-blue: $info;
-$primary-bronze: $bone-grey; // Dark bone bronze
-$primary-crimson: $crimson-shadow; // Dark crimson
-$primary-mystic: $blood-black; // Blood magic
-$primary-gold: $text-fire; // Forge gold
+$primary-bronze: $carbon-grey; // Carbon grey
+$primary-crimson: $steel-grey; // Steel grey
+$primary-mystic: $void-black; // Void black
+$primary-gold: $text-secondary; // Light grey
 
 // Badge colors for animations
 $silver-primary: #3a3a3a;
