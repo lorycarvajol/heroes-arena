@@ -13,13 +13,10 @@
     <!-- Page d'accueil -->
     <div id="homeScreen" class="home-screen">
         <div class="home-container">
-            <h1 class="home-logo">Heroes Arena</h1>
-            <p class="home-subtitle">
-                Forgez votre légende dans l'arène ultime<br>
-                Où seuls les plus braves survivent
-            </p>
-            <button class="home-enter-btn" onclick="enterApplication()">
-                Entrer dans l'Arène
+            <h1 class="home-title">Heroes Arena</h1>
+            <p class="home-slogan">Créez vos héros légendaires et dominez l'arène</p>
+            <button class="home-btn" onclick="enterApplication()">
+                Commencer l'aventure
             </button>
         </div>
     </div>
@@ -511,26 +508,42 @@
 
     <!-- Navigation entre pages -->
     <script>
+        // Variable pour éviter les exécutions automatiques
+        let isManualNavigation = false;
+        
         function enterApplication() {
+            console.log('Navigation vers la page de connexion');
+            
+            // Utiliser le système d'authentification si disponible
+            if (window.HeroesAuth && window.HeroesAuth.showAuthScreen) {
+                window.HeroesAuth.showAuthScreen();
+            } else {
+                // Fallback manuel
+                const homeScreen = document.getElementById('homeScreen');
+                const authScreen = document.getElementById('authScreen');
+                
+                if (homeScreen && authScreen) {
+                    homeScreen.classList.add('hidden');
+                    
+                    setTimeout(() => {
+                        homeScreen.style.display = 'none';
+                        authScreen.style.display = 'flex';
+                    }, 500);
+                }
+            }
+        }
+        
+        // S'assurer que la page d'accueil reste affichée au chargement
+        document.addEventListener('DOMContentLoaded', function() {
             const homeScreen = document.getElementById('homeScreen');
             const authScreen = document.getElementById('authScreen');
             
-            // Animation de sortie de la page d'accueil
-            homeScreen.classList.add('hidden');
-            
-            // Afficher l'écran d'auth après la transition
-            setTimeout(() => {
-                homeScreen.style.display = 'none';
-                authScreen.style.display = 'flex';
-                authScreen.style.opacity = '0';
-                
-                // Animation d'entrée de l'écran d'auth
-                setTimeout(() => {
-                    authScreen.style.transition = 'opacity 0.8s ease';
-                    authScreen.style.opacity = '1';
-                }, 50);
-            }, 800);
-        }
+            if (homeScreen && authScreen) {
+                homeScreen.style.display = 'flex';
+                authScreen.style.display = 'none';
+                isManualNavigation = false;
+            }
+        });
     </script>
 
     <!-- Chargeur d'application -->

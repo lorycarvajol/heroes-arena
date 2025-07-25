@@ -27,9 +27,8 @@ class AuthSystem {
                 console.error('Erreur lors du chargement de l\'utilisateur:', error);
                 this.logout();
             }
-        } else {
-            this.showAuthScreen();
         }
+        // Ne pas afficher automatiquement l'écran d'auth - laisser la page d'accueil
     }
     
     // Gestion du stockage des utilisateurs
@@ -446,17 +445,21 @@ class AuthSystem {
     
     // Interface utilisateur
     showAuthScreen() {
+        const homeScreen = document.getElementById('homeScreen');
         const authScreen = document.getElementById('authScreen');
         const mainApp = document.getElementById('mainApp');
         
+        if (homeScreen) homeScreen.style.display = 'none';
         if (authScreen) authScreen.style.display = 'flex';
         if (mainApp) mainApp.style.display = 'none';
     }
     
     showMainApp() {
+        const homeScreen = document.getElementById('homeScreen');
         const authScreen = document.getElementById('authScreen');
         const mainApp = document.getElementById('mainApp');
         
+        if (homeScreen) homeScreen.style.display = 'none';
         if (authScreen) authScreen.style.display = 'none';
         if (mainApp) mainApp.style.display = 'block';
         
