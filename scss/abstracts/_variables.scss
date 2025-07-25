@@ -171,13 +171,13 @@ $shadows: (
     sm: $shadow-sm,
     md: $shadow-md,
     lg: $shadow-lg,
-    xl: 0 25px 50px rgba(26, 22, 18, 0.8),
+    xl: 0 25px 50px rgba(10, 10, 10, 0.9),
     glow: $shadow-glow,
     fire: $shadow-fire,
     void: $shadow-void,
     gold: $shadow-gold,
-    blood: $shadow-gold, // Legacy mapping
-    crimson: $shadow-gold // Legacy mapping
+    blood: 0 0 20px rgba(255, 0, 0, 0.5),
+    crimson: 0 0 25px rgba(220, 20, 60, 0.6)
 );
 
 // Transitions map
@@ -206,41 +206,29 @@ $breakpoints: (
     ultrawide: $breakpoint-ultrawide
 );
 
-// Dark Minimal Variables  
-$gore-red: $text-fire;        // Red accent
-$dried-blood: $deep-black;    // Deep black
-$flesh-tone: $carbon-grey;    // Carbon grey
-$bone-white: $text-white;     // Pure white
-$rust-orange: $text-accent;   // Dark accent
-$plague-green: $success;      // Neon green
-
-// Legacy variable mappings for compatibility
-$crimson-shadow: $carbon-grey;
-$blood-black: $void-black;
-$rust-red: $steel-grey;
-$bone-grey: $ash-grey;
-$decay-brown: $deep-black;
-$noble-gold: $text-secondary;
-$castle-grey: $carbon-grey;
-$dark-stone: $void-black;
-$medieval-copper: $ash-grey;
-$royal-black: $void-black;
-$bronze-shadow: $carbon-grey;
-$gold-bronze: $steel-grey;
-$walnut-brown: $deep-black;
-$marble-white: $text-white;
-
-// Additional variables used in components
-$secondary-blue: $info;
-$primary-bronze: $carbon-grey; // Carbon grey
-$primary-crimson: $steel-grey; // Steel grey
-$primary-mystic: $void-black; // Void black
-$primary-gold: $text-secondary; // Light grey
-
-// Badge colors for animations
-$silver-primary: #3a3a3a;
+// Simplified color mappings
+$primary-bronze: $carbon-grey;
+$primary-gold: $text-secondary;
+$silver-primary: $steel-grey;
 $gold-primary: $text-secondary;
 $gold-secondary: $text-muted;
+$gold-bronze: $ash-grey;
+$bronze-shadow: $steel-grey;
+$secondary-blue: $info;
+$crimson-shadow: $error;
+$gore-red: $damage-power;
+$rust-red: $warning;
+$dried-blood: #800000;
+$primary-crimson: $error;
+$primary-mystic: $damage-special;
+$blood-black: $void-black;
+$decay-brown: $ash-grey;
+$walnut-brown: $steel-grey;
+$marble-white: $text-primary;
+$noble-gold: $text-secondary;
+$castle-grey: $steel-grey;
+$dark-stone: $carbon-grey;
+$medieval-copper: $warning;
 
 // Badge colors map
 $badge-colors: (

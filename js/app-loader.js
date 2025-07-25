@@ -28,7 +28,7 @@ window.HeroesArena = {
 const APP_CONFIG = {
     maxInitAttempts: 3,
     retryDelay: 1000,
-    initModulePath: './init.js'
+    initModulePath: './init-refactored.js'
 };
 
 // Protection contre les erreurs d'extension browser
@@ -42,16 +42,15 @@ async function initializeApp() {
         initializationAttempts++;
         console.log(`🔄 Tentative d'initialisation ${initializationAttempts}/${APP_CONFIG.maxInitAttempts}`);
         
-        // Initialiser l'application
-        const { initHeroesArena } = await import(APP_CONFIG.initModulePath);
-        const app = await initHeroesArena();
+        // Initialiser l'application refactorisée
+        const { initHeroesArenaRefactored } = await import(APP_CONFIG.initModulePath);
+        const app = await initHeroesArenaRefactored();
         
-        // L'objet HeroesArena est déjà défini dans init.js
-        // Vérifier que c'est bien fait
-        if (window.HeroesArena && window.HeroesArena.showHeroDetails) {
-            console.log('✅ HeroesArena correctement exposé');
+        // L'objet HeroesArena est déjà défini dans init-refactored.js
+        if (window.HeroesArena) {
+            console.log('✅ HeroesArena refactorisé correctement exposé');
         } else {
-            console.warn('⚠️ HeroesArena non correctement exposé, correction...');
+            console.warn('⚠️ HeroesArena non exposé, correction...');
             window.HeroesArena = app;
         }
         
