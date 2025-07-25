@@ -10,7 +10,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.215);
     backdrop-filter: blur(8px);
     z-index: get($z-indexes, modal);
     @include flex-center;
@@ -714,7 +714,9 @@
     left: 0;
     width: 100%;
     height: 100vh;
-    background: linear-gradient(135deg, $bg-primary, $bg-secondary);
+    background-image: url("../../assets/background/home-bg1.png");
+    background-position: center;
+    // background: linear-gradient(135deg, $bg-primary, $bg-secondary);
     @include flex-center;
     z-index: get($z-indexes, modal);
 }
@@ -727,7 +729,7 @@
     border-radius: get($border-radius, xl);
     box-shadow: get($shadows, xl);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: linear-gradient(135deg, $bg-primary, $bg-secondary);
+    background: rgba(128, 128, 128, 0.073);
     margin: 0 auto;
     
     @include tablet {

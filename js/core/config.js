@@ -15,31 +15,39 @@ export const AppState = {
 export const avatarCatalog = {
     guerriers: [
         'warrior1.png', 'warrior2.png', 'warrior3.png', 'warrior4.png',
-        'knight1.png', 'knight2.png', 'barbarian1.png', 'berserker1.png'
+        'warrior5.png', 'warrior6.png', 'warrior7.png', 'warrior8.png',
+        'warrior9.png', 'warrior10.png', 'warrior11.png', 'warrior12.png',
+        
     ],
     mages: [
-        'mage1.png', 'mage2.png', 'wizard1.png', 'wizard2.png',
-        'sorcerer1.png', 'necromancer1.png', 'witch1.png', 'warlock1.png','azward.png','unknown.png'
+        'mage1.png', 'mage2.png', 'mage3.png', 'mage4.png',
+        'mage5.png', 'mage6.png', 'mage7.png', 'mage8.png',
+        'mage9.png', 'mage10.png', 'mage11.png', 'mage12.png',
     ],
     archers: [
-        'archer1.png', 'archer2.png', 'ranger1.png', 'ranger2.png',
-        'hunter1.png', 'scout1.png', 'bowman1.png', 'marksman1.png'
+        'archer1.png', 'archer2.png', 'archer3.png', 'archer4.png',
+        'archer5.png', 'archer6.png', 'archer7.png', 'archer8.png',
+        'archer9.png', 'archer10.png', 'archer11.png', 'archer12.png',
     ],
     paladins: [
-        'paladin1.png', 'paladin2.png', 'cleric1.png', 'cleric2.png',
-        'priest1.png', 'templar1.png', 'crusader1.png', 'guardian1.png'
+        'paladin1.png', 'paladin2.png', 'paladin3.png', 'paladin4.png',
+        'paladin5.png', 'paladin6.png', 'paladin7.png', 'paladin8.png',
+        'paladin9.png', 'paladin10.png', 'paladin11.png', 'paladin12.png', 
     ],
     assassins: [
-        'rogue1.png', 'warrior3.png', 'scout1.png', 'hunter1.png',
-        'ranger2.png', 'fighter1.png', 'adventurer1.png', 'marksman1.png'
+        'rogue1.png', 'rogue2.png', 'rogue3.png', 'rogue4.png',
+        'rogue5.png', 'rogue6.png', 'rogue7.png', 'rogue8.png',
+        'rogue9.png', 'rogue10.png', 'rogue11.png', 'rogue12.png', 
     ],
     druides: [
-        'monk1.png', 'cleric1.png', 'priest1.png', 'hero2.png',
-        'mage2.png', 'wizard2.png', 'guardian1.png', 'hero4.png'
+        'druide1.png', 'druide2.png', 'druide3.png', 'druide4.png',
+        'druide5.png', 'druide6.png', 'druide7.png', 'druide8.png',
+        'druide9.png', 'druide10.png', 'druide11.png', 'druide12.png', 
     ],
     generiques: [
-        'hero1.png', 'hero2.png', 'hero3.png', 'hero4.png',
-        'adventurer1.png', 'fighter1.png', 'rogue1.png', 'monk1.png'
+        'warrior1.png', 'warrior2.png', 'mage3.png', 'mage4.png',
+        'archer5.png', 'archer6.png', 'paladin7.png', 'paladin8.png',
+        'rogue9.png', 'rogue10.png', 'druide11.png', 'druide12.png',
     ]
 };
 
